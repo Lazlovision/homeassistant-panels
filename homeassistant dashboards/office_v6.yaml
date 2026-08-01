@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785625976
+  id: office_view_v6_clean_v6_88_1785605641
   badges: []
   type: panel
   cards:
@@ -73,6 +73,20 @@ views:
           gap: 14px !important;
           background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
         }
+        #root > * {
+          flex-shrink: 0 !important;
+        }
+        #root > *:nth-child(2) {
+          flex: 1 1 auto !important;
+          height: 100% !important;
+          min-height: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        #root > *:nth-child(2) > * {
+          height: 100% !important;
+          flex: 1 1 auto !important;
+        }
         app-header, ch-header, ha-menu-button, ha-icon-button, [action-item], .header-right, #view > app-header, header-bar, hui-header-footer {
           display: none !important;
           visibility: hidden !important;
@@ -93,13 +107,22 @@ views:
         }
     cards:
 
-    # ===== MAIN CONTENT AREA =====
+    # ===== MAIN CONTENT AREA (DYNAMICALLY FILLING ALL VERTICAL ROOM) =====
     - type: horizontal-stack
       card_mod:
         style: |
-          :host { flex: 1 1 auto !important; min-height: 0 !important; height: calc(100vh - 130px) !important; max-height: calc(100vh - 130px) !important; display: flex !important; }
+          :host { flex: 1 !important; min-height: 0 !important; height: 100% !important; display: flex !important; }
           ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
-          #root { flex: 1 1 auto !important; min-height: 0 !important; display: flex !important; gap: 20px !important; align-items: stretch !important; height: 100% !important; }
+          #root { flex: 1 !important; min-height: 0 !important; display: flex !important; gap: 20px !important; align-items: stretch !important; height: 100% !important; }
+          #root > * {
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 !important;
+          }
+          #root > *:last-child {
+            flex: 1.3 !important;
+          }
       cards:
 
       # ========================================================
@@ -108,12 +131,12 @@ views:
       - type: vertical-stack
         card_mod:
           style: |
-            :host { flex: 1.3 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; }
+            :host { flex: 1 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; }
             ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
-            #root { display: flex !important; flex-direction: column !important; gap: 16px !important; height: 100% !important; }
+            #root { display: flex !important; flex-direction: column !important; gap: 14px !important; height: 100% !important; justify-content: space-between !important; }
         cards:
 
-        # --- DISTANCE-READABLE HEADER BAR ---
+        # --- DISTANCE-READABLE HEADER BAR WITH SCALED WEATHER & PM2.5 PILLS ---
         - type: custom:button-card
           show_name: false
           show_icon: false
@@ -168,8 +191,46 @@ views:
                       el.style.setProperty('--dialog-surface-bkg', surf, 'important');
                       el.style.setProperty('--mdc-dialog-scrim-color', isN ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0.35)', 'important');
                     });
+                    
+                    try {
+                      if (ha && ha.shadowRoot) {
+                        var dlg = ha.shadowRoot.querySelector('ha-more-info-dialog');
+                        if (dlg) {
+                          [dlg, dlg.shadowRoot ? dlg.shadowRoot.querySelector('ha-dialog') : null].forEach(function(d) {
+                            if (!d) return;
+                            d.style.setProperty('--mdc-theme-surface', surf, 'important');
+                            d.style.setProperty('--dialog-surface-bkg', surf, 'important');
+                            d.style.setProperty('--card-background-color', surf, 'important');
+                            d.style.setProperty('--primary-text-color', text, 'important');
+                            d.style.setProperty('--secondary-text-color', subtext, 'important');
+                            d.style.setProperty('background', surf, 'important');
+                            d.style.setProperty('color', text, 'important');
+                            
+                            if (d.shadowRoot) {
+                              var surfEl = d.shadowRoot.querySelector('.mdc-dialog__surface');
+                              if (surfEl) {
+                                surfEl.style.setProperty('background-color', surf, 'important');
+                                surfEl.style.setProperty('color', text, 'important');
+                                surfEl.style.setProperty('border-radius', '24px', 'important');
+                              }
+                            }
+                          });
+                        }
+                      }
+                    } catch(e) {}
                   }
+
                   applyDialogTheme();
+
+                  if (!window._haDialogThemeListenerAttached) {
+                    window._haDialogThemeListenerAttached = true;
+                    ['hass-more-info', 'click', 'touchend'].forEach(function(ev) {
+                      window.addEventListener(ev, function() {
+                        setTimeout(applyDialogTheme, 50);
+                        setTimeout(applyDialogTheme, 200);
+                      });
+                    });
+                  }
                 })();
 
                 // Custom Detailed Mitsubishi AC Popup Overlay Handler
@@ -786,36 +847,36 @@ views:
                          ontouchstart="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));"
                          ontouchend="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));">Office</div>
                     
-                    <div style="display:flex; align-items:center; gap:8px; pointer-events:auto; flex-shrink:0;">
-                      <div style="display:flex; align-items:center; gap:10px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:8px 14px; border-radius:24px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
+                    <div style="display:flex; align-items:center; gap:8px; pointer-events:auto;">
+                      <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
                            onclick="window.openWeatherPopup(event);"
                            ontouchstart="window.openWeatherPopup(event);"
                            ontouchend="window.openWeatherPopup(event);">
-                        <div style="display:flex; align-items:center; gap:6px; pointer-events:none;">
-                          <ha-icon icon="${wIcon}" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF9F0A; display:flex; align-items:center; justify-content:center;"></ha-icon>
-                          <span style="font-size:20px; font-weight:800; color:${metricText}; letter-spacing:-0.01em;">${wTemp}</span>
+                        <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
+                          <ha-icon icon="${wIcon}" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span style="font-size:19px; font-weight:800; color:${metricText}; letter-spacing:-0.01em;">${wTemp}</span>
                         </div>
-                        <div style="width:1px; height:18px; background:${sepColor}; pointer-events:none;"></div>
-                        <div style="display:flex; align-items:center; gap:5px; font-size:16px; font-weight:700; color:${metricText}; pointer-events:none;">
+                        <div style="width:1px; height:16px; background:${sepColor}; pointer-events:none;"></div>
+                        <div style="display:flex; align-items:center; gap:4px; font-size:15px; font-weight:700; color:${metricText}; pointer-events:none;">
                           <ha-icon icon="mdi:water-percent" style="width:18px; height:18px; --mdc-icon-size:18px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>
                           <span>${hum}</span>
                         </div>
-                        <div style="width:1px; height:18px; background:${sepColor}; pointer-events:none;"></div>
-                        <div style="display:flex; align-items:center; gap:5px; font-size:16px; font-weight:700; color:${metricText}; pointer-events:none;">
+                        <div style="width:1px; height:16px; background:${sepColor}; pointer-events:none;"></div>
+                        <div style="display:flex; align-items:center; gap:4px; font-size:15px; font-weight:700; color:${metricText}; pointer-events:none;">
                           <ha-icon icon="mdi:home-roof" style="width:18px; height:18px; --mdc-icon-size:18px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>
                           <span>${outT}</span>
                         </div>
                       </div>
 
-                      <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:8px 14px; border-radius:24px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
+                      <div style="display:flex; align-items:center; gap:6px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
                            onclick="window.openBlueairPopup(event);"
                            ontouchstart="window.openBlueairPopup(event);"
                            ontouchend="window.openBlueairPopup(event);">
-                        <div style="display:flex; align-items:center; gap:6px; pointer-events:none;">
-                          <ha-icon icon="mdi:air-purifier" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isFanOn ? '#30D158' : '#8A8A93'}; display:flex; align-items:center; justify-content:center;"></ha-icon>
-                          <span style="font-size:18px; font-weight:800; color:${metricText};">PM2.5 ${pm25Val}</span>
+                        <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
+                          <ha-icon icon="mdi:air-purifier" style="width:22px; height:22px; --mdc-icon-size:22px; color:${isFanOn ? '#30D158' : '#8A8A93'}; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span style="font-size:17px; font-weight:800; color:${metricText};">PM2.5 ${pm25Val}</span>
                         </div>
-                        <div style="background:${isFanOn ? 'rgba(48,209,88,0.18)' : 'rgba(138,138,147,0.18)'}; border:1px solid ${isFanOn ? 'rgba(48,209,88,0.4)' : 'rgba(138,138,147,0.3)'}; padding:3px 8px; border-radius:12px; font-size:13px; font-weight:800; color:${isFanOn ? '#30D158' : '#8A8A93'}; letter-spacing:0.04em; pointer-events:none;">
+                        <div style="background:${isFanOn ? 'rgba(48,209,88,0.18)' : 'rgba(138,138,147,0.18)'}; border:1px solid ${isFanOn ? 'rgba(48,209,88,0.4)' : 'rgba(138,138,147,0.3)'}; padding:2px 7px; border-radius:10px; font-size:12px; font-weight:800; color:${isFanOn ? '#30D158' : '#8A8A93'}; letter-spacing:0.04em; pointer-events:none;">
                           ${fanPreset}
                         </div>
                       </div>
@@ -1001,6 +1062,10 @@ views:
             show_name: false
             show_icon: false
             show_state: false
+            card_mod:
+              style: |
+                :host { flex: 1 !important; height: 100% !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; }
+                ha-card { height: 100% !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
             tap_action:
               action: toggle
             hold_action:
@@ -1101,6 +1166,10 @@ views:
             show_name: false
             show_icon: false
             show_state: false
+            card_mod:
+              style: |
+                :host { flex: 1 !important; height: 100% !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; }
+                ha-card { height: 100% !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
             tap_action:
               action: toggle
             hold_action:
@@ -1204,7 +1273,7 @@ views:
                 - width: 100%
 
       # ========================================================
-      # RIGHT COLUMN: REFINED THERMOSTAT CARD (FIXED PROPORTIONS)
+      # RIGHT COLUMN: SINGLE UNIFIED PURE HTML CARD (0% JIGGLE / ZERO COLLAPSE / HIGH-PRECISION TOUCH TARGETS)
       # ========================================================
       - type: custom:button-card
         entity: climate.air_conditioner_office_climate
@@ -1213,8 +1282,8 @@ views:
         show_state: false
         card_mod:
           style: |
-            :host { flex: 1.3 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; }
-            ha-card { height: 100% !important; display: flex !important; flex-direction: column !important; }
+            :host { flex: 1.3 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; min-height: 100% !important; }
+            ha-card { height: 100% !important; min-height: 100% !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
         triggers_update:
         - climate.air_conditioner_office_climate
         - sensor.air_conditioner_living_room_input_power
@@ -1233,7 +1302,7 @@ views:
           - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.06)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
           - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 20px rgba(0,0,0,0.06)"; ]]]'
           - height: 100%
-          - padding: '20px 24px'
+          - padding: '22px 24px'
           - box-sizing: border-box
           - transform: 'translateZ(0)'
           - flex: '1.3'
@@ -1278,7 +1347,7 @@ views:
               var actState = s && s.attributes && s.attributes.hvac_action ? s.attributes.hvac_action : 'idle';
               var fanMode = s && s.attributes && s.attributes.fan_mode ? s.attributes.fan_mode.toLowerCase() : 'auto';
 
-              var actLabel = 'COOLING ACTIVE';
+              var actLabel = 'COOL ACTIVE';
               if (st === 'off') {
                 actLabel = 'SYSTEM OFF';
               } else if (actState === 'idle') {
@@ -1311,7 +1380,8 @@ views:
 
               var targetValStr = (target % 1 === 0 ? Math.round(target) : target.toFixed(1)) + '°';
               var setpointMainTxt = (st === 'auto' ? 'AUTO' : (st === 'fan_only' ? 'FAN' : (st === 'off' ? 'OFF' : targetValStr)));
-              var setpointLabelTxt = (st === 'auto' ? 'AUTO MODE' : (st === 'fan_only' ? 'FAN MODE' : (st === 'off' ? 'SYSTEM OFF' : 'SET POINT')));
+              var setpointLabelTxt = (st === 'auto' ? 'AUTO MODE' : (st === 'fan_only' ? 'FAN MODE' : (st === 'off' ? 'SYSTEM OFF' : 'TARGET SET POINT')));
+              var setpointFontSize = (st === 'auto' || st === 'fan_only' || st === 'off') ? '34px' : '46px';
 
               var nextMinusTemp = Math.max(15, Math.min(31, parseFloat(target) - 0.5));
               var nextPlusTemp = Math.max(15, Math.min(31, parseFloat(target) + 0.5));
@@ -1345,7 +1415,7 @@ views:
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
                 modesRow1Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchstart="event.stopPropagation(); ' + callMode + '"' +
-                                 ' style="flex:1; height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
               var modesRow2Html = '';
@@ -1357,7 +1427,7 @@ views:
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
                 modesRow2Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchstart="event.stopPropagation(); ' + callMode + '"' +
-                                 ' style="flex:1; height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
               var fanRowHtml = '';
@@ -1368,60 +1438,42 @@ views:
                 var txtColor = isSel ? '#FFFFFF' : (isNight ? '#8A8A93' : '#6E6E73');
                 var callFan = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
                 fanRowHtml += '<button onclick="event.stopPropagation(); ' + callFan + '" ontouchstart="event.stopPropagation(); ' + callFan + '"' +
-                              ' style="flex:1; height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
+                              ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
               });
 
               var pipSvg = (!isDisabled) ? ('<circle cx="' + pipX + '" cy="' + pipY + '" r="7" fill="#FFFFFF" stroke="' + act.color + '" stroke-width="3" style="transition: all 0.5s ease; filter: drop-shadow(0 0 6px ' + act.color + ');" />') : '';
 
               return '<div style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; box-sizing:border-box; pointer-events:auto;">' +
-                     
-                     '<!-- DIAL & SETPOINT TOP SECTION -->' +
-                     '<div style="display:flex; align-items:center; justify-content:space-between; width:100%; flex-shrink:0;">' +
-                     
-                     '<!-- MINUS BUTTON -->' +
+                     '<div style="display:flex; align-items:flex-start; justify-content:space-between; width:100%; height:275px; min-height:275px; max-height:275px; flex-shrink:0;">' +
                      '<button onclick="event.stopPropagation(); ' + callMinus + '" ontouchstart="event.stopPropagation(); ' + callMinus + '"' +
-                     ' style="width:68px; height:200px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
-                     '<ha-icon icon="mdi:minus" style="width:40px; height:40px; --mdc-icon-size:40px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
-                     
-                     '<!-- CENTER DIAL & SETPOINT COLUMN -->' +
-                     '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; overflow:hidden;">' +
-                     
-                     '<!-- SVG CIRCULAR ARC WITH CENTERED ROOM TEMP -->' +
-                     '<div style="position:relative; width:145px; height:145px; min-height:145px; max-height:145px; display:flex; align-items:center; justify-content:center; margin:0 auto; flex-shrink:0;">' +
+                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     '<ha-icon icon="mdi:minus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
+                     '<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; flex:1; height:275px; min-height:275px; max-height:275px; overflow:hidden;">' +
+                     '<div style="position:relative; width:205px; height:205px; min-height:205px; max-height:205px; display:flex; align-items:center; justify-content:center; margin:0 auto; flex-shrink:0;">' +
                      '<svg viewBox="0 0 160 160" style="width:100%; height:100%; transform:rotate(-135deg);">' +
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + trackColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="310 117" />' +
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + act.arcColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + activeLen + ' ' + gapLen + '" style="transition: stroke-dasharray 0.6s ease, stroke 0.4s ease;" />' +
                      pipSvg + '</svg>' +
-                     '<div style="position:absolute; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; touch-action:manipulation; padding:6px; border-radius:50%; margin-left:6px;" onclick="window.openMitsubishiPopup(event);" ontouchstart="window.openMitsubishiPopup(event);" ontouchend="window.openMitsubishiPopup(event);">' +
-                     '<span style="font-size:68px; font-weight:800; color:' + mainTempColor + '; line-height:1; letter-spacing:-0.03em;">' + cur + '</span>' +
-                     '<span style="font-size:20px; font-weight:700; color:' + mainTempColor + '; margin-top:4px;">°C</span>' +
-                     '</div></div>' +
-
-                     '<!-- CLEANLY SEPARATED STATUS PILL WITH 4px MARGIN -->' +
-                     '<div style="margin-top:4px; margin-bottom:2px; background:' + act.bg + '; border:1px solid ' + act.border + '; padding:3px 12px; border-radius:14px; display:inline-flex; align-items:center; justify-content:center; gap:5px; pointer-events:auto; cursor:pointer; flex-shrink:0;" onclick="window.openMitsubishiPopup(event);">' +
-                     '<ha-icon icon="' + act.icon + '" style="width:13px; height:13px; --mdc-icon-size:13px; color:' + act.color + '; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin:0; padding:0;"></ha-icon>' +
-                     '<span style="font-size:11px; font-weight:800; color:' + act.color + '; letter-spacing:0.05em; text-transform:uppercase; line-height:1; display:inline-block; transform:translateY(1px);">' + actLabel + '</span></div>' +
-
-                     '<!-- CLEAR SETPOINT READOUT WITH "SET POINT" LABEL -->' +
-                     '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
-                     '<div style="font-size:34px; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; line-height:1;">' + setpointMainTxt + '</div>' +
-                     '<div style="font-size:11px; font-weight:800; color:#8A8A93; letter-spacing:0.12em; margin-top:2px;">' + setpointLabelTxt + '</div></div></div>' +
-
-                     '<!-- PLUS BUTTON -->' +
+                     '<div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; padding:10px; border-radius:50%;" onclick="window.openMitsubishiPopup(event);" ontouchstart="window.openMitsubishiPopup(event);" ontouchend="window.openMitsubishiPopup(event);">' +
+                     '<div style="display:flex; align-items:flex-start; margin-left:6px; pointer-events:none;">' +
+                     '<span style="font-size:74px; font-weight:700; color:' + mainTempColor + '; line-height:1; letter-spacing:-0.03em;">' + cur + '</span>' +
+                     '<span style="font-size:24px; font-weight:600; color:' + mainTempColor + '; margin-top:4px;">°C</span></div>' +
+                     '<div style="margin-top:2px; background:' + act.bg + '; border:1px solid ' + act.border + '; padding:3px 12px; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; gap:5px; pointer-events:none;">' +
+                     '<ha-icon icon="' + act.icon + '" style="width:14px; height:14px; --mdc-icon-size:14px; color:' + act.color + '; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin:0; padding:0;"></ha-icon>' +
+                     '<span style="font-size:11px; font-weight:800; color:' + act.color + '; letter-spacing:0.05em; text-transform:uppercase; line-height:1; display:inline-block; transform:translateY(1px);">' + actLabel + '</span></div></div></div>' +
+                     '<div style="height:62px; min-height:62px; max-height:62px; overflow:hidden; margin-top:4px; text-align:center; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
+                     '<div style="height:44px; min-height:44px; max-height:44px; line-height:44px; font-size:' + setpointFontSize + '; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointMainTxt + '</div>' +
+                     '<div style="height:16px; min-height:16px; max-height:16px; line-height:16px; font-size:12px; font-weight:800; color:#8A8A93; letter-spacing:0.12em; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointLabelTxt + '</div></div></div>' +
                      '<button onclick="event.stopPropagation(); ' + callPlus + '" ontouchstart="event.stopPropagation(); ' + callPlus + '"' +
-                     ' style="width:68px; height:200px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
                      '<ha-icon icon="mdi:plus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button></div>' +
-                     
-                     '<!-- SYSTEM MODE SECTION -->' +
-                     '<div style="display:flex; flex-direction:column; gap:8px; width:100%; flex-shrink:0;">' +
-                     '<div style="font-size:12px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">SYSTEM MODE</div>' +
-                     '<div style="display:flex; gap:10px; width:100%;">' + modesRow1Html + '</div>' +
-                     '<div style="display:flex; gap:10px; width:100%;">' + modesRow2Html + '</div></div>' +
-                     
-                     '<!-- FAN SPEED SECTION -->' +
-                     '<div style="display:flex; flex-direction:column; gap:8px; width:100%; flex-shrink:0; margin-top:auto;">' +
-                     '<div style="font-size:12px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">FAN SPEED</div>' +
-                     '<div style="display:flex; gap:10px; width:100%;">' + fanRowHtml + '</div></div></div>';
+                     '<div style="display:flex; flex-direction:column; gap:14px; width:100%; flex-shrink:0; margin-top:6px;">' +
+                     '<div style="font-size:13px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">SYSTEM MODE</div>' +
+                     '<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; width:100%;">' + modesRow1Html + '</div>' +
+                     '<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; width:100%;">' + modesRow2Html + '</div></div>' +
+                     '<div style="display:flex; flex-direction:column; gap:10px; width:100%; flex-shrink:0; margin-top:auto;">' +
+                     '<div style="font-size:13px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">FAN SPEED</div>' +
+                     '<div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:12px; width:100%;">' + fanRowHtml + '</div></div></div>';
             ]]]
 
     # ===== RESTORED FULLY FEATURED GORGEOUS MEDIA BAR =====
@@ -1458,209 +1510,209 @@ views:
       custom_fields:
         music_player_row: |
           [[[
-              window._plexCache = window._plexCache || {};
+            window._plexCache = window._plexCache || {};
 
-              var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
-              var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
-              var artistColor = isNight ? '#A1A1A8' : '#55555A';
-              var iconColor = isNight ? '#FFFFFF' : '#1C1C1E';
-              var playBg = isNight ? '#FFFFFF' : '#1C1C1E';
-              var playIcon = isNight ? '#0A0A0C' : '#FFFFFF';
-              var sliderBg = isNight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
+            var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+            var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
+            var artistColor = isNight ? '#A1A1A8' : '#55555A';
+            var iconColor = isNight ? '#FFFFFF' : '#1C1C1E';
+            var playBg = isNight ? '#FFFFFF' : '#1C1C1E';
+            var playIcon = isNight ? '#0A0A0C' : '#FFFFFF';
+            var sliderBg = isNight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
 
-              var s = (states && states['media_player.the_moon']) || (states && states['media_player.living_room_speaker']) || (states && states['media_player.television']);
-              var entityId = s ? s.entity_id : 'media_player.the_moon';
-              var st = s ? s.state : 'off';
-              var isPlaying = st === 'playing';
+            var s = states['media_player.the_moon'] || states['media_player.living_room_speaker'] || states['media_player.television'];
+            var entityId = s ? s.entity_id : 'media_player.the_moon';
+            var st = s ? s.state : 'off';
+            var isPlaying = st === 'playing';
 
-              var rawTitle = (s && s.attributes && s.attributes.media_title) ? s.attributes.media_title : '';
-              var appName = (s && s.attributes && s.attributes.app_name) ? s.attributes.app_name : 'Plex';
-              var friendlyName = (s && s.attributes && s.attributes.friendly_name) ? s.attributes.friendly_name : 'The Moon';
-              var contentType = (s && s.attributes && s.attributes.media_content_type) ? s.attributes.media_content_type : '';
-              
-              var rawContentId = (s && s.attributes && s.attributes.media_content_id) ? s.attributes.media_content_id : '';
-              var metaMatch = rawContentId.match(/\/metadata\/(\d+)/);
-              var metaId = metaMatch ? metaMatch[1] : null;
+            var rawTitle = s?.attributes?.media_title;
+            var appName = s?.attributes?.app_name || 'Plex';
+            var friendlyName = s?.attributes?.friendly_name || 'The Moon';
+            var contentType = s?.attributes?.media_content_type;
+            
+            var rawContentId = s?.attributes?.media_content_id || '';
+            var metaMatch = rawContentId.match(/\/metadata\/(\d+)/);
+            var metaId = metaMatch ? metaMatch[1] : null;
 
-              var mainTitle = (rawTitle && rawTitle.trim() !== '') ? rawTitle : '';
-              var mainSubtitle = (s && s.attributes && s.attributes.media_artist) ? s.attributes.media_artist : '';
+            var mainTitle = (rawTitle && rawTitle.trim() !== '') ? rawTitle : '';
+            var mainSubtitle = (s?.attributes?.media_artist) ? s.attributes.media_artist : '';
 
-              if (!mainTitle && metaId) {
-                if (window._plexCache[metaId]) {
-                  mainTitle = window._plexCache[metaId].title;
-                  mainSubtitle = window._plexCache[metaId].subtitle;
-                } else {
-                  mainTitle = appName || 'Plex Media';
-                  mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Playing';
-                  
-                  (function(mId) {
-                    var plexToken = 'YOUR_PLEX_TOKEN';
-                    var fetchUrl = 'http://YOUR_HA_IP:32400/library/metadata/' + mId + '?X-Plex-Token=' + plexToken;
-                    fetch(fetchUrl)
-                      .then(function(res) { return res.text(); })
-                      .then(function(xmlText) {
-                        var parser = new DOMParser();
-                        var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                        var video = xmlDoc.querySelector('Video');
-                        if (video) {
-                          var vType = video.getAttribute('type');
-                          var t = '', sub = '';
-                          if (vType === 'episode') {
-                            var show = video.getAttribute('grandparentTitle') || '';
-                            var sNum = video.getAttribute('parentIndex') || '';
-                            var eNum = video.getAttribute('index') || '';
-                            var eTitle = video.getAttribute('title') || '';
-                            t = show;
-                            sub = (sNum && eNum) ? ('S' + sNum + ':E' + eNum + (eTitle ? ' • ' + eTitle : '')) : eTitle;
-                          } else {
-                            t = video.getAttribute('title') || '';
-                            var yr = video.getAttribute('year') || '';
-                            sub = yr ? ('Plex • Movie (' + yr + ')') : 'Plex • Movie';
-                          }
-                          window._plexCache[mId] = { title: t, subtitle: sub };
-                          
-                          var elT = document.getElementById('restored_media_title');
-                          var elS = document.getElementById('restored_media_sub');
-                          if (elT && t) elT.innerText = t;
-                          if (elS && sub) elS.innerText = sub;
+            if (!mainTitle && metaId) {
+              if (window._plexCache[metaId]) {
+                mainTitle = window._plexCache[metaId].title;
+                mainSubtitle = window._plexCache[metaId].subtitle;
+              } else {
+                mainTitle = appName || 'Plex Media';
+                mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Playing';
+                
+                (function(mId) {
+                  var plexToken = 'YOUR_PLEX_TOKEN';
+                  var fetchUrl = 'http://YOUR_HA_IP:32400/library/metadata/' + mId + '?X-Plex-Token=' + plexToken;
+                  fetch(fetchUrl)
+                    .then(function(res) { return res.text(); })
+                    .then(function(xmlText) {
+                      var parser = new DOMParser();
+                      var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                      var video = xmlDoc.querySelector('Video');
+                      if (video) {
+                        var vType = video.getAttribute('type');
+                        var t = '', sub = '';
+                        if (vType === 'episode') {
+                          var show = video.getAttribute('grandparentTitle') || '';
+                          var sNum = video.getAttribute('parentIndex') || '';
+                          var eNum = video.getAttribute('index') || '';
+                          var eTitle = video.getAttribute('title') || '';
+                          t = show;
+                          sub = (sNum && eNum) ? ('S' + sNum + ':E' + eNum + (eTitle ? ' • ' + eTitle : '')) : eTitle;
+                        } else {
+                          t = video.getAttribute('title') || '';
+                          var yr = video.getAttribute('year') || '';
+                          sub = yr ? ('Plex • Movie (' + yr + ')') : 'Plex • Movie';
                         }
-                      })
-                      .catch(function(err) {});
-                  })(metaId);
+                        window._plexCache[mId] = { title: t, subtitle: sub };
+                        
+                        var elT = document.getElementById('restored_media_title');
+                        var elS = document.getElementById('restored_media_sub');
+                        if (elT && t) elT.innerText = t;
+                        if (elS && sub) elS.innerText = sub;
+                      }
+                    })
+                    .catch(function(err) {});
+                })(metaId);
+              }
+            }
+
+            if (!mainTitle) mainTitle = rawTitle || appName || friendlyName;
+            if (!mainSubtitle) mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : friendlyName;
+
+            var rawArt = s?.attributes?.entity_picture;
+            var art = rawArt ? rawArt.replace('https://YOUR_HA_IP:32400', 'http://YOUR_HA_IP:32400') : null;
+
+            var vol = (s?.attributes?.volume_level !== undefined) ? Math.round(s.attributes.volume_level * 100) : 50;
+            var isMuted = s?.attributes?.is_volume_muted || false;
+
+            var duration = s?.attributes?.media_duration ? parseFloat(s.attributes.media_duration) : 0;
+            var position = s?.attributes?.media_position ? parseFloat(s.attributes.media_position) : 0;
+
+            function fmtTime(sec) {
+              if (!sec || isNaN(sec) || sec <= 0) return '0:00';
+              var m = Math.floor(sec / 60);
+              var r = Math.floor(sec % 60);
+              return m + ':' + (r < 10 ? '0' : '') + r;
+            }
+            var posStr = fmtTime(position);
+            var durStr = fmtTime(duration);
+
+            return `
+              <style>
+                .res-vol-slider {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 110px;
+                  height: 8px;
+                  background: ${sliderBg};
+                  border-radius: 4px;
+                  outline: none;
+                  margin: 0;
+                  cursor: pointer;
+                  touch-action: manipulation;
+                  pointer-events: auto !important;
                 }
-              }
-
-              if (!mainTitle) mainTitle = rawTitle || appName || friendlyName || 'Plex • Media Player';
-              if (!mainSubtitle) mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Office Audio System';
-
-              var rawArt = (s && s.attributes && s.attributes.entity_picture) ? s.attributes.entity_picture : null;
-              var art = rawArt ? rawArt.replace('https://YOUR_HA_IP:32400', 'http://YOUR_HA_IP:32400') : null;
-
-              var vol = (s && s.attributes && s.attributes.volume_level !== undefined) ? Math.round(s.attributes.volume_level * 100) : 50;
-              var isMuted = (s && s.attributes && s.attributes.is_volume_muted) || false;
-
-              var duration = (s && s.attributes && s.attributes.media_duration) ? parseFloat(s.attributes.media_duration) : 0;
-              var position = (s && s.attributes && s.attributes.media_position) ? parseFloat(s.attributes.media_position) : 0;
-
-              function fmtTime(sec) {
-                if (!sec || isNaN(sec) || sec <= 0) return '0:00';
-                var m = Math.floor(sec / 60);
-                var r = Math.floor(sec % 60);
-                return m + ':' + (r < 10 ? '0' : '') + r;
-              }
-              var posStr = fmtTime(position);
-              var durStr = fmtTime(duration);
-
-              return `
-                <style>
-                  .res-vol-slider {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 110px;
-                    height: 8px;
-                    background: ${sliderBg};
-                    border-radius: 4px;
-                    outline: none;
-                    margin: 0;
-                    cursor: pointer;
-                    touch-action: manipulation;
-                    pointer-events: auto !important;
-                  }
-                  .res-vol-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    background: ${isNight ? '#FFFFFF' : '#1C1C1E'};
-                    cursor: pointer;
-                    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
-                  }
-                  .res-seek-slider {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 100%;
-                    height: 6px;
-                    background: ${sliderBg};
-                    border-radius: 3px;
-                    outline: none;
-                    margin: 0;
-                    cursor: pointer;
-                    touch-action: manipulation;
-                    pointer-events: auto !important;
-                  }
-                  .res-seek-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50%;
-                    background: #00B0DF;
-                    cursor: pointer;
-                    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
-                  }
-                </style>
-                <div style="display:flex; align-items:center; justify-content:space-between; width:100%; height:100%; padding:10px 24px; box-sizing:border-box; gap:16px; pointer-events:auto;">
-                  
-                  <div style="display:flex; align-items:center; gap:14px; flex:1.3; min-width:0; text-align:left;">
-                    <div style="width:54px; height:54px; border-radius:12px; background:${isNight ? '#1A1A22' : '#E5E5EA'}; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid ${isNight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
-                      ${art ? `<img src="${art}" onerror="this.style.display='none'; this.parentElement.innerHTML='<ha-icon icon=\'mdi:television-play\' style=\'width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;\'></ha-icon>';" style="width:100%; height:100%; object-fit:cover;">` : '<ha-icon icon="mdi:television-play" style="width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>'}
+                .res-vol-slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  background: ${isNight ? '#FFFFFF' : '#1C1C1E'};
+                  cursor: pointer;
+                  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+                }
+                .res-seek-slider {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 100%;
+                  height: 6px;
+                  background: ${sliderBg};
+                  border-radius: 3px;
+                  outline: none;
+                  margin: 0;
+                  cursor: pointer;
+                  touch-action: manipulation;
+                  pointer-events: auto !important;
+                }
+                .res-seek-slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 50%;
+                  background: #00B0DF;
+                  cursor: pointer;
+                  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+                }
+              </style>
+              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; height:100%; padding:10px 24px; box-sizing:border-box; gap:16px; pointer-events:auto;">
+                
+                <div style="display:flex; align-items:center; gap:14px; flex:1.3; min-width:0; text-align:left;">
+                  <div style="width:54px; height:54px; border-radius:12px; background:${isNight ? '#1A1A22' : '#E5E5EA'}; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid ${isNight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
+                    ${art ? `<img src="${art}" onerror="this.style.display='none'; this.parentElement.innerHTML='<ha-icon icon=\'mdi:television-play\' style=\'width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;\'></ha-icon>';" style="width:100%; height:100%; object-fit:cover;">` : '<ha-icon icon="mdi:television-play" style="width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>'}
+                  </div>
+                  <div style="overflow:hidden; min-width:0; text-align:left; display:flex; flex-direction:column; justify-content:center;">
+                    <div id="restored_media_title" style="font-size:20px; font-weight:800; color:${titleColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; letter-spacing:-0.01em; line-height:1.2;">${mainTitle}</div>
+                    <div id="restored_media_sub" style="font-size:16px; font-weight:700; color:${artistColor}; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; line-height:1.2;">${mainSubtitle}</div>
+                  </div>
+                </div>
+                
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
+                  <div style="display:flex; align-items:center; gap:20px;">
+                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
+                         onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }"
+                         ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
+                      <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
-                    <div style="overflow:hidden; min-width:0; text-align:left; display:flex; flex-direction:column; justify-content:center;">
-                      <div id="restored_media_title" style="font-size:20px; font-weight:800; color:${titleColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; letter-spacing:-0.01em; line-height:1.2;">${mainTitle}</div>
-                      <div id="restored_media_sub" style="font-size:16px; font-weight:700; color:${artistColor}; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; line-height:1.2;">${mainSubtitle}</div>
+                    
+                    <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
+                         onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }"
+                         ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
+                      <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; ${isPlaying ? '' : 'margin-left:3px;'}"></ha-icon>
+                    </div>
+                    
+                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
+                         onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }"
+                         ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
+                      <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                   </div>
                   
-                  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
-                    <div style="display:flex; align-items:center; gap:20px;">
-                      <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
-                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }"
-                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
-                        <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
-                      </div>
-                      
-                      <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
-                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }"
-                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
-                        <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; ${isPlaying ? '' : 'margin-left:3px;'}"></ha-icon>
-                      </div>
-                      
-                      <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
-                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }"
-                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
-                        <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
-                      </div>
-                    </div>
-                    
-                    <div style="width:100%; max-width:340px; display:flex; align-items:center; gap:10px;">
-                      <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:right;">${posStr}</span>
-                      <input type="range" min="0" max="${duration > 0 ? duration : 100}" value="${position}" class="res-seek-slider"
-                             onclick="event.stopPropagation();"
-                             ontouchstart="event.stopPropagation();"
-                             ontouchend="event.stopPropagation();"
-                             oninput="event.stopPropagation();"
-                             onchange="event.stopPropagation(); const v=parseFloat(this.value); const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_seek', {entity_id: '${entityId}', position: v}); }">
-                      <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:left;">${durStr}</span>
-                    </div>
-                  </div>
-                  
-                  <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
-                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:6px; pointer-events:auto;"
-                         onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }"
-                         ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
-                      <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
-                    </div>
-                    
-                    <input type="range" min="0" max="100" value="${vol}" class="res-vol-slider"
+                  <div style="width:100%; max-width:340px; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:right;">${posStr}</span>
+                    <input type="range" min="0" max="${duration > 0 ? duration : 100}" value="${position}" class="res-seek-slider"
                            onclick="event.stopPropagation();"
                            ontouchstart="event.stopPropagation();"
                            ontouchend="event.stopPropagation();"
-                           oninput="event.stopPropagation(); const rd=document.getElementById('restored_media_vol_txt'); if(rd){ rd.innerText=this.value+'%'; }"
-                           onchange="event.stopPropagation(); const v=parseInt(this.value)/100; const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_set', {entity_id: '${entityId}', volume_level: v}); }">
-                    
-                    <span id="restored_media_vol_txt" style="font-size:16px; font-weight:800; color:${titleColor}; width:48px; text-align:right;">${isMuted ? 'MUTED' : vol + '%'}</span>
+                           oninput="event.stopPropagation();"
+                           onchange="event.stopPropagation(); const v=parseFloat(this.value); const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_seek', {entity_id: '${entityId}', position: v}); }">
+                    <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:left;">${durStr}</span>
                   </div>
                 </div>
-              `;
-            ]]]
+                
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
+                  <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:6px; pointer-events:auto;"
+                       onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }"
+                       ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
+                    <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
+                  </div>
+                  
+                  <input type="range" min="0" max="100" value="${vol}" class="res-vol-slider"
+                         onclick="event.stopPropagation();"
+                         ontouchstart="event.stopPropagation();"
+                         ontouchend="event.stopPropagation();"
+                         oninput="event.stopPropagation(); const rd=document.getElementById('restored_media_vol_txt'); if(rd){ rd.innerText=this.value+'%'; }"
+                         onchange="event.stopPropagation(); const v=parseInt(this.value)/100; const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_set', {entity_id: '${entityId}', volume_level: v}); }">
+                  
+                  <span id="restored_media_vol_txt" style="font-size:16px; font-weight:800; color:${titleColor}; width:48px; text-align:right;">${isMuted ? 'MUTED' : vol + '%'}</span>
+                </div>
+              </div>
+            `;
+          ]]]
