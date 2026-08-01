@@ -1,0 +1,10 @@
+/* Force sidebar to collapse in kiosk mode */
+ha-panel-lovelace[sidebar-hidden] ha-app-layout {
+  --mdc-drawer-width: 0 !important;
+}
+ha-panel-lovelace[sidebar-hidden] ha-app-layout .app-toolbar {
+  left: 0 !important;
+}
+ha-panel-lovelace[sidebar-hidden] ha-app-layout .content-area {
+  margin-left: 0 !important;
+}

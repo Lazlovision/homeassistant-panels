@@ -1,0 +1,1666 @@
+theme: default
+kiosk_mode:
+  kiosk: true
+  hide_header: true
+  hide_sidebar: true
+path: office-panel
+title: Office Panel
+views:
+- title: Office
+  path: office-panel
+  id: office_view_v6_clean_v6_88_1785625976
+  badges: []
+  type: panel
+  cards:
+  - type: vertical-stack
+    card_mod:
+      style: |
+        :host {
+          background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+          display: block !important;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          max-height: 100vh !important;
+          min-height: 100vh !important;
+          overflow: hidden !important;
+          z-index: 1 !important;
+          transform: translateZ(0) !important;
+          --primary-background-color: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+          --card-background-color: {{ 'rgba(26, 26, 36, 0.95)' if is_state('sun.sun', 'below_horizon') else '#FFFFFF' }} !important;
+          --mdc-theme-surface: {{ '#161622' if is_state('sun.sun', 'below_horizon') else '#FFFFFF' }} !important;
+          --primary-text-color: {{ '#FFFFFF' if is_state('sun.sun', 'below_horizon') else '#1C1C1E' }} !important;
+          --secondary-text-color: {{ '#8A8A93' if is_state('sun.sun', 'below_horizon') else '#6E6E73' }} !important;
+          --paper-dialog-background-color: {{ '#161622' if is_state('sun.sun', 'below_horizon') else '#FFFFFF' }} !important;
+          --ha-card-background: {{ 'rgba(26, 26, 36, 0.95)' if is_state('sun.sun', 'below_horizon') else '#FFFFFF' }} !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        ha-card {
+          background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          max-height: 100vh !important;
+          min-height: 100vh !important;
+          overflow: hidden !important;
+          font-family: 'Hanken Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+          touch-action: manipulation !important;
+          transform: translateZ(0) !important;
+          transition: background-color 0.6s ease !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        #root {
+          display: flex !important;
+          flex-direction: column !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          max-height: 100vh !important;
+          min-height: 100vh !important;
+          padding: 22px 28px 14px 28px !important;
+          box-sizing: border-box !important;
+          justify-content: space-between !important;
+          gap: 14px !important;
+          background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+        }
+        app-header, ch-header, ha-menu-button, ha-icon-button, [action-item], .header-right, #view > app-header, header-bar, hui-header-footer {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        ha-panel-lovelace$ha-lovelace$ha-lovelace-main$ha-drawer$ {
+          aside { display: none !important; }
+          div { flex: 1 1 auto !important; width: 100% !important; }
+        }
+        ha-panel-lovelace ha-lovelace ha-lovelace-main {
+          margin-left: 0 !important;
+          padding-top: 0 !important;
+          background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+        }
+    cards:
+
+    # ===== MAIN CONTENT AREA =====
+    - type: horizontal-stack
+      card_mod:
+        style: |
+          :host { flex: 1 1 auto !important; min-height: 0 !important; height: calc(100vh - 130px) !important; max-height: calc(100vh - 130px) !important; display: flex !important; }
+          ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
+          #root { flex: 1 1 auto !important; min-height: 0 !important; display: flex !important; gap: 20px !important; align-items: stretch !important; height: 100% !important; }
+      cards:
+
+      # ========================================================
+      # LEFT COLUMN: Dynamic Stretching Scenes & Light Cards
+      # ========================================================
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host { flex: 1.3 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; }
+            ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
+            #root { display: flex !important; flex-direction: column !important; gap: 16px !important; height: 100% !important; }
+        cards:
+
+        # --- DISTANCE-READABLE HEADER BAR ---
+        - type: custom:button-card
+          show_name: false
+          show_icon: false
+          show_state: false
+          triggers_update:
+          - weather.forecast_home
+          - sensor.air_conditioner_office_outside_air_temp
+          - sensor.office_air_purifier_pm_2_5
+          - fan.office_air_purifier_fan
+          tap_action:
+            action: none
+          hold_action:
+            action: none
+          styles:
+            card:
+            - background: transparent
+            - border: none
+            - box-shadow: none
+            - padding: '0'
+            - pointer-events: 'none'
+            grid:
+            - grid-template-areas: '"header_row"'
+            - grid-template-columns: 1fr
+            custom_fields:
+              header_row:
+              - width: 100%
+              - pointer-events: 'auto'
+          custom_fields:
+            header_row: |
+              [[[
+                var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+
+                // Optimized Shadow DOM Theme Injector
+                (function() {
+                  function applyDialogTheme() {
+                    var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                    var ha = document.querySelector('home-assistant');
+                    var root = document.documentElement;
+                    var bg = isN ? '#09090C' : '#F2F2F7';
+                    var surf = isN ? '#161622' : '#FFFFFF';
+                    var text = isN ? '#FFFFFF' : '#1C1C1E';
+                    var subtext = isN ? '#8A8A93' : '#6E6E73';
+                    
+                    [root, ha, document.body].forEach(function(el) {
+                      if (!el) return;
+                      el.style.setProperty('--primary-background-color', bg, 'important');
+                      el.style.setProperty('--card-background-color', surf, 'important');
+                      el.style.setProperty('--mdc-theme-surface', surf, 'important');
+                      el.style.setProperty('--primary-text-color', text, 'important');
+                      el.style.setProperty('--secondary-text-color', subtext, 'important');
+                      el.style.setProperty('--paper-dialog-background-color', surf, 'important');
+                      el.style.setProperty('--dialog-surface-bkg', surf, 'important');
+                      el.style.setProperty('--mdc-dialog-scrim-color', isN ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0.35)', 'important');
+                    });
+                  }
+                  applyDialogTheme();
+                })();
+
+                // Custom Detailed Mitsubishi AC Popup Overlay Handler
+                window.openMitsubishiPopup = function(e) {
+                  if (e) { e.preventDefault(); e.stopPropagation(); }
+
+                  if (window._mitsubishiPopupInterval) clearInterval(window._mitsubishiPopupInterval);
+
+                  var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                  var modalBg = isN ? 'rgba(22, 22, 34, 0.98)' : 'rgba(255, 255, 255, 0.98)';
+                  var cardBg = isN ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+                  var itemBg = isN ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF';
+                  var textColor = isN ? '#FFFFFF' : '#1C1C1E';
+                  var subColor = isN ? '#8A8A93' : '#6E6E73';
+                  var borderColor = isN ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+
+                  var getPopupData = function() {
+                    var hCur = window.hass || document.querySelector('home-assistant')?.hass;
+                    var st = hCur ? hCur.states : states;
+
+                    var climate = st['climate.air_conditioner_office_climate'];
+                    var curState = climate ? climate.state.toLowerCase() : 'cool';
+                    var curTemp = climate?.attributes?.current_temperature ? Math.round(parseFloat(climate.attributes.current_temperature)) + '°C' : '22°C';
+                    
+                    var rawAction = climate?.attributes?.hvac_action ? climate.attributes.hvac_action.toLowerCase() : 'idle';
+                    var hvacActionLabel = 'COOLING ACTIVE';
+                    if (curState === 'off') {
+                      hvacActionLabel = 'SYSTEM OFF';
+                    } else if (rawAction === 'cooling') {
+                      hvacActionLabel = 'COMPRESSOR COOLING';
+                    } else if (rawAction === 'heating') {
+                      hvacActionLabel = 'COMPRESSOR HEATING';
+                    } else if (rawAction === 'idle') {
+                      hvacActionLabel = curState.toUpperCase() + ' (IDLE • TARGET REACHED)';
+                    } else {
+                      hvacActionLabel = curState.toUpperCase() + ' ACTIVE';
+                    }
+
+                    var fanMode = climate?.attributes?.fan_mode ? climate.attributes.fan_mode.toLowerCase() : 'auto';
+
+                    var vaneEnt = st['select.air_conditioner_office_vertical_vane'];
+                    var vanePos = vaneEnt ? vaneEnt.state : 'AUTO';
+                    var vaneOpts = vaneEnt?.attributes?.options || ['AUTO', '↑↑', '↑', '—', '↓', '↓↓', 'SWING'];
+
+                    var iseeEnt = st['binary_sensor.air_conditioner_office_i_see_sensor'];
+                    var iseeDetected = iseeEnt ? iseeEnt.state === 'on' : false;
+
+                    var nightEnt = st['switch.air_conditioner_office_night_mode'];
+                    var nightState = nightEnt ? nightEnt.state === 'on' : false;
+
+                    var powerEnt = st['sensor.air_conditioner_living_room_input_power'] || st['sensor.air_conditioner_office_input_power'];
+                    var powerVal = powerEnt ? Math.round(parseFloat(powerEnt.state)) + ' W' : '327 W';
+
+                    var outdoorEnt = st['sensor.air_conditioner_office_outside_air_temp'];
+                    var outdoorVal = outdoorEnt ? Math.round(parseFloat(outdoorEnt.state)) + '°C' : '22°C';
+
+                    return { climate, curState, curTemp, hvacActionLabel, fanMode, vaneEnt, vanePos, vaneOpts, iseeEnt, iseeDetected, nightEnt, nightState, powerVal, outdoorVal };
+                  };
+
+                  var d = getPopupData();
+
+                  var modalId = 'custom_mitsubishi_popup_overlay';
+                  var oldModal = document.getElementById(modalId);
+                  if (oldModal) oldModal.remove();
+
+                  var modal = document.createElement('div');
+                  modal.id = modalId;
+                  modal.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.65); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+                  
+                  var closeModal = function() {
+                    if (window._mitsubishiPopupInterval) clearInterval(window._mitsubishiPopupInterval);
+                    modal.remove();
+                  };
+
+                  modal.onclick = function(ev) { if (ev.target === modal) closeModal(); };
+
+                  var renderVaneButtons = function(activePos) {
+                    var html = '';
+                    d.vaneOpts.forEach(function(opt) {
+                      var isSelected = activePos === opt;
+                      var label = opt === 'AUTO' ? 'AUTO' : (opt === 'SWING' ? 'SWING' : opt);
+                      html += `
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('select','select_option',{entity_id:'select.air_conditioner_office_vertical_vane', option:'${opt}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                                style="padding:12px 6px; border-radius:14px; border:${isSelected ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSelected ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSelected ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${label}</button>
+                      `;
+                    });
+                    return html;
+                  };
+
+                  var modes = [
+                    { id: 'cool', name: 'COOL', color: '#00B0DF' },
+                    { id: 'heat', name: 'HEAT', color: '#FF4D4D' },
+                    { id: 'auto', name: 'AUTO', color: '#FF9F0A' },
+                    { id: 'dry', name: 'DRY', color: '#30D158' },
+                    { id: 'fan_only', name: 'FAN', color: '#A1A1A6' },
+                    { id: 'off', name: 'OFF', color: '#8A8A93' }
+                  ];
+                  var renderModeButtons = function(activeState) {
+                    var html = '';
+                    modes.forEach(function(m) {
+                      var isSel = activeState === m.id;
+                      html += `
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'${m.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                                style="padding:12px; border-radius:14px; border:${isSel ? ('1.5px solid ' + m.color) : ('1px solid ' + borderColor)}; background:${isSel ? (m.color + '25') : cardBg}; color:${isSel ? m.color : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${m.name}</button>
+                      `;
+                    });
+                    return html;
+                  };
+
+                  var speeds = [
+                    { id: 'auto', name: 'AUTO' },
+                    { id: 'low', name: 'LOW' },
+                    { id: 'medium', name: 'MED' },
+                    { id: 'high', name: 'HIGH' }
+                  ];
+                  var renderSpeedButtons = function(activeSpeed) {
+                    var html = '';
+                    speeds.forEach(function(sp) {
+                      var isSel = activeSpeed === sp.id;
+                      html += `
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'${sp.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                                style="padding:12px; border-radius:14px; border:${isSel ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSel ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSel ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${sp.name}</button>
+                      `;
+                    });
+                    return html;
+                  };
+
+                  modal.innerHTML = `
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:640px; padding:26px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                          <ha-icon icon="mdi:hvac" style="width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF;"></ha-icon>
+                          <div>
+                            <span style="font-size:24px; font-weight:800;">Mitsubishi AC System Controls</span>
+                            <div style="font-size:12px; font-weight:700; color:${subColor};">Live Real-Time Compressor & Sensor Diagnostics</div>
+                          </div>
+                        </div>
+                        <div id="close_mitsubishi_modal_btn" style="width:36px; height:36px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                      </div>
+
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:16px; display:grid; grid-template-columns: 1.1fr 0.9fr 1fr; gap:10px; text-align:center;">
+                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:11px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOM TEMP</div>
+                          <div id="pop_room_temp_val" style="font-size:26px; font-weight:800; color:${textColor}; margin-top:2px;">${d.curTemp}</div>
+                          <div id="pop_hvac_action_val" style="font-size:10px; font-weight:800; color:#00B0DF; margin-top:2px; letter-spacing:0.02em;">${d.hvacActionLabel}</div>
+                        </div>
+                        
+                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:11px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">SYSTEM POWER</div>
+                          <div id="pop_power_val" style="font-size:26px; font-weight:800; color:#FF9F0A; margin-top:2px;">${d.powerVal}</div>
+                          <div style="font-size:11px; font-weight:700; color:${subColor}; margin-top:2px;">Compressor Usage</div>
+                        </div>
+
+                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:11px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
+                          <div id="pop_roof_temp_val" style="font-size:26px; font-weight:800; color:${textColor}; margin-top:2px;">${d.outdoorVal}</div>
+                          <div style="font-size:11px; font-weight:700; color:${subColor}; margin-top:2px;">Outdoor Unit</div>
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                          <span style="font-size:13px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">VENT DIRECTION / VANE POSITION</span>
+                          <span id="pop_vane_pos_title" style="font-size:13px; font-weight:800; color:#00B0DF;">CURRENT: ${d.vanePos}</span>
+                        </div>
+                        <div id="pop_vane_buttons_grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;">
+                          ${renderVaneButtons(d.vanePos)}
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <span style="font-size:13px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">SYSTEM HVAC MODE</span>
+                        <div id="pop_mode_buttons_grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;">
+                          ${renderModeButtons(d.curState)}
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <span style="font-size:13px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">FAN SPEED CONTROL</span>
+                        <div id="pop_speed_buttons_grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px;">
+                          ${renderSpeedButtons(d.fanMode)}
+                        </div>
+                      </div>
+
+                      <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:10px;">
+                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px; display:flex; align-items:center; gap:12px;">
+                          <ha-icon icon="mdi:eye-outline" style="width:28px; height:28px; --mdc-icon-size:28px; color:${d.iseeDetected ? '#30D158' : '#00B0DF'}; flex-shrink:0;"></ha-icon>
+                          <div>
+                            <div style="font-size:11px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">3D i-SEE OCCUPANCY SENSOR</div>
+                            <div id="pop_isee_status_txt" style="font-size:13px; font-weight:800; color:${d.iseeDetected ? '#30D158' : textColor}; margin-top:2px;">
+                              ${d.iseeDetected ? 'OCCUPANCY DETECTED' : 'CLEAR (NO MOTION DETECTED)'}
+                            </div>
+                            <div style="font-size:10px; font-weight:700; color:${subColor}; margin-top:2px;">Direct/Indirect modes are managed by remote / AC hardware</div>
+                          </div>
+                        </div>
+
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                                style="padding:14px; border-radius:16px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; touch-action:manipulation;">
+                          <ha-icon icon="mdi:weather-night" style="width:22px; height:22px; --mdc-icon-size:22px; color:${d.nightState ? '#FF9F0A' : subColor};"></ha-icon>
+                          Night Mode: ${d.nightState ? 'ON' : 'OFF'}
+                        </button>
+                      </div>
+                    </div>
+                  `;
+
+                  document.body.appendChild(modal);
+
+                  document.getElementById('close_mitsubishi_modal_btn').onclick = closeModal;
+
+                  window.updateMitsubishiPopupLive = function() {
+                    var latest = getPopupData();
+                    var elRoom = document.getElementById('pop_room_temp_val');
+                    var elAction = document.getElementById('pop_hvac_action_val');
+                    var elPower = document.getElementById('pop_power_val');
+                    var elRoof = document.getElementById('pop_roof_temp_val');
+                    var elVaneTitle = document.getElementById('pop_vane_pos_title');
+                    var elIseeTxt = document.getElementById('pop_isee_status_txt');
+
+                    if (elRoom) elRoom.innerText = latest.curTemp;
+                    if (elAction) elAction.innerText = latest.hvacActionLabel;
+                    if (elPower) elPower.innerText = latest.powerVal;
+                    if (elRoof) elRoof.innerText = latest.outdoorVal;
+                    if (elVaneTitle) elVaneTitle.innerText = 'CURRENT: ' + latest.vanePos;
+                    if (elIseeTxt) elIseeTxt.innerText = latest.iseeDetected ? 'OCCUPANCY DETECTED' : 'CLEAR (NO MOTION DETECTED)';
+                  };
+
+                  window._mitsubishiPopupInterval = setInterval(window.updateMitsubishiPopupLive, 2000);
+                };
+
+                // Custom Weather Popup Handler
+                window.openWeatherPopup = function(e) {
+                  if (e) { e.preventDefault(); e.stopPropagation(); }
+
+                  var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                  var modalBg = isN ? 'rgba(22, 22, 34, 0.98)' : 'rgba(255, 255, 255, 0.98)';
+                  var cardBg = isN ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+                  var itemBg = isN ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF';
+                  var textColor = isN ? '#FFFFFF' : '#1C1C1E';
+                  var subColor = isN ? '#8A8A93' : '#6E6E73';
+                  var borderColor = isN ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+
+                  var w = states['weather.forecast_home'];
+                  var st = w?.state || 'partlycloudy';
+                  var condText = st.replace('-', ' ').toUpperCase();
+                  var wTemp = w?.attributes?.temperature ? Math.round(w.attributes.temperature) + '°C' : '18°C';
+                  var hum = w?.attributes?.humidity ? w.attributes.humidity + '%' : '88%';
+                  var pressure = w?.attributes?.pressure ? w.attributes.pressure + ' hPa' : '1016 hPa';
+                  var windSpd = w?.attributes?.wind_speed ? w.attributes.wind_speed + ' km/h' : '8 km/h';
+                  var uv = w?.attributes?.uv_index !== undefined ? w.attributes.uv_index : '4.5';
+                  var dew = w?.attributes?.dew_point !== undefined ? Math.round(w.attributes.dew_point) + '°C' : '14°C';
+
+                  var sun = states['sun.sun'];
+                  function fmtSunTime(isoStr) {
+                    if (!isoStr) return '--:--';
+                    var d = new Date(isoStr);
+                    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  }
+                  var sunriseStr = fmtSunTime(sun?.attributes?.next_rising);
+                  var sunsetStr = fmtSunTime(sun?.attributes?.next_setting);
+
+                  var iconMap = {
+                    'sunny': 'mdi:weather-sunny',
+                    'clear-night': 'mdi:weather-night',
+                    'partlycloudy': 'mdi:weather-partly-cloudy',
+                    'cloudy': 'mdi:weather-cloudy',
+                    'rainy': 'mdi:weather-rainy',
+                    'snowy': 'mdi:weather-snowy',
+                    'windy': 'mdi:weather-windy',
+                    'fog': 'mdi:weather-fog'
+                  };
+                  var wIcon = iconMap[st] || 'mdi:weather-partly-cloudy';
+
+                  var out = states['sensor.air_conditioner_office_outside_air_temp'];
+                  var outT = out ? (out.state % 1 === 0 ? Math.round(parseFloat(out.state)) : parseFloat(out.state).toFixed(1)) + '°C' : '18°C';
+
+                  var modalId = 'custom_weather_popup_overlay';
+                  var oldModal = document.getElementById(modalId);
+                  if (oldModal) oldModal.remove();
+
+                  var modal = document.createElement('div');
+                  modal.id = modalId;
+                  modal.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.65); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;';
+                  
+                  modal.onclick = function(ev) { if (ev.target === modal) modal.remove(); };
+
+                  modal.innerHTML = `
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:680px; padding:24px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                          <ha-icon icon="${wIcon}" style="width:32px; height:32px; --mdc-icon-size:32px; color:#FF9F0A;"></ha-icon>
+                          <div>
+                            <span style="font-size:22px; font-weight:800;">Outdoor Weather & Roof Sensor</span>
+                            <div style="font-size:12px; font-weight:700; color:${subColor};">Met.no Live Forecast</div>
+                          </div>
+                        </div>
+                        <div onclick="document.getElementById('${modalId}').remove();" style="width:36px; height:36px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                      </div>
+
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:22px; padding:18px; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="display:flex; align-items:center; gap:16px;">
+                          <ha-icon icon="${wIcon}" style="width:52px; height:52px; --mdc-icon-size:52px; color:#FF9F0A;"></ha-icon>
+                          <div>
+                            <div style="font-size:36px; font-weight:800; line-height:1; color:${textColor};">${wTemp}</div>
+                            <div style="font-size:14px; font-weight:800; color:#FF9F0A; letter-spacing:0.06em; margin-top:4px;">${condText}</div>
+                          </div>
+                        </div>
+
+                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:18px; padding:12px 18px; display:flex; align-items:center; gap:12px;">
+                          <ha-icon icon="mdi:home-roof" style="width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF;"></ha-icon>
+                          <div>
+                            <div style="font-size:11px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
+                            <div style="font-size:22px; font-weight:800; color:${textColor}; margin-top:2px;">${outT}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <span style="font-size:13px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">5-DAY WEATHER FORECAST</span>
+                        <div id="weather_forecast_grid" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
+                          <div style="background:${cardBg}; padding:14px; border-radius:16px; text-align:center; font-size:12px; font-weight:700; color:${subColor}; grid-column: span 5;">Loading 5-day forecast...</div>
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <span style="font-size:13px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">ATMOSPHERIC & DAYLIGHT METRICS</span>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px;">
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:water-percent" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">HUMIDITY</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${hum}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:weather-windy" style="width:24px; height:24px; --mdc-icon-size:24px; color:#30D158;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">WIND</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${windSpd}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:gauge" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">PRESSURE</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${pressure}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:sun-wireless" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">UV INDEX</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${uv}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:weather-sunset-up" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">SUNRISE</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${sunriseStr}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:weather-sunset-down" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF4D4D;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">SUNSET</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${sunsetStr}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:thermometer-water" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">DEW POINT</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${dew}</div>
+                            </div>
+                          </div>
+
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
+                            <ha-icon icon="mdi:home-roof" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                            <div>
+                              <div style="font-size:11px; font-weight:700; color:${subColor};">ROOF TEMP</div>
+                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${outT}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+
+                  document.body.appendChild(modal);
+
+                  (function() {
+                    var h = window.hass || document.querySelector('home-assistant')?.hass;
+                    if (!h || !h.callWS) return;
+
+                    h.callWS({
+                      type: 'call_service',
+                      domain: 'weather',
+                      service: 'get_forecasts',
+                      service_data: { type: 'daily' },
+                      target: { entity_id: 'weather.forecast_home' },
+                      return_response: true
+                    }).then(function(res) {
+                      var forecastData = res?.response?.['weather.forecast_home']?.forecast;
+                      if (!forecastData || !forecastData.length) return;
+
+                      var gridEl = document.getElementById('weather_forecast_grid');
+                      if (!gridEl) return;
+
+                      var daysMap = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+                      var html = '';
+
+                      forecastData.slice(0, 5).forEach(function(item, idx) {
+                        var dt = new Date(item.datetime);
+                        var dayLabel = idx === 0 ? 'TODAY' : daysMap[dt.getDay()];
+                        var icon = iconMap[item.condition] || 'mdi:weather-partly-cloudy';
+                        var high = Math.round(item.temperature) + '°';
+                        var low = item.templow !== undefined ? Math.round(item.templow) + '°' : '--';
+                        var rain = item.precipitation ? (parseFloat(item.precipitation).toFixed(1) + 'mm') : '';
+
+                        html += `
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:18px; padding:12px 8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; gap:6px;">
+                            <span style="font-size:12px; font-weight:800; color:${idx === 0 ? '#FF9F0A' : subColor}; letter-spacing:0.04em;">${dayLabel}</span>
+                            <ha-icon icon="${icon}" style="width:30px; height:30px; --mdc-icon-size:30px; color:${item.condition==='sunny'?'#FF9F0A':'#00B0DF'}; margin:2px 0;"></ha-icon>
+                            <div style="display:flex; align-items:center; gap:4px; font-size:15px; font-weight:800;">
+                              <span style="color:${textColor};">${high}</span>
+                              <span style="font-size:12px; color:${subColor}; font-weight:700;">/ ${low}</span>
+                            </div>
+                            ${rain ? `<span style="font-size:11px; font-weight:800; color:#00B0DF; background:rgba(0,176,223,0.14); padding:2px 6px; border-radius:8px;">${rain}</span>` : '<span style="font-size:11px; height:18px;"></span>'}
+                          </div>
+                        `;
+                      });
+
+                      gridEl.innerHTML = html;
+                    }).catch(function(err) {});
+                  })();
+                };
+
+                // Custom Interactive Blueair Air Purifier Modal Overlay Handler
+                window.openBlueairPopup = function(e) {
+                  if (e) { e.preventDefault(); e.stopPropagation(); }
+                  var h = window.hass || document.querySelector('home-assistant')?.hass;
+                  if (!h) return;
+
+                  var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                  var modalBg = isN ? 'rgba(22, 22, 34, 0.98)' : 'rgba(255, 255, 255, 0.98)';
+                  var cardBg = isN ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+                  var itemBg = isN ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF';
+                  var textColor = isN ? '#FFFFFF' : '#1C1C1E';
+                  var subColor = isN ? '#8A8A93' : '#6E6E73';
+                  var borderColor = isN ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+
+                  var pm25 = states['sensor.office_air_purifier_pm_2_5'] ? states['sensor.office_air_purifier_pm_2_5'].state : '0';
+                  var pm1 = states['sensor.living_room_purifier_pm_1'] ? states['sensor.living_room_purifier_pm_1'].state : (states['sensor.office_air_purifier_pm_1'] ? states['sensor.office_air_purifier_pm_1'].state : '0');
+                  var pm10 = states['sensor.living_room_purifier_pm_10'] ? states['sensor.living_room_purifier_pm_10'].state : (states['sensor.office_air_purifier_pm_10'] ? states['sensor.office_air_purifier_pm_10'].state : '0');
+                  var filterLife = states['sensor.office_air_purifier_filter_life'] ? states['sensor.office_air_purifier_filter_life'].state : '24';
+                  
+                  var fan = states['fan.office_air_purifier_fan'];
+                  var fanState = fan ? fan.state : 'off';
+                  var preset = fan?.attributes?.preset_mode || '';
+                  var pct = fan?.attributes?.percentage !== undefined ? Math.round(fan.attributes.percentage) : 0;
+                  
+                  var childLock = states['switch.office_air_purifier_child_lock'] ? states['switch.office_air_purifier_child_lock'].state === 'on' : false;
+                  var ledLight = states['light.office_air_purifier_led_light'] ? states['light.office_air_purifier_led_light'].state === 'on' : false;
+
+                  var aqText = (parseFloat(pm25) <= 12) ? 'EXCELLENT' : (parseFloat(pm25) <= 35 ? 'MODERATE' : 'POOR');
+                  var aqColor = (parseFloat(pm25) <= 12) ? '#30D158' : (parseFloat(pm25) <= 35 ? '#FF9F0A' : '#FF4D4D');
+
+                  var modalId = 'custom_blueair_popup_overlay';
+                  var oldModal = document.getElementById(modalId);
+                  if (oldModal) oldModal.remove();
+
+                  var modal = document.createElement('div');
+                  modal.id = modalId;
+                  modal.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.65); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+                  
+                  modal.onclick = function(ev) { if (ev.target === modal) modal.remove(); };
+
+                  modal.innerHTML = `
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:600px; padding:26px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                          <ha-icon icon="mdi:air-purifier" style="width:32px; height:32px; --mdc-icon-size:32px; color:#30D158;"></ha-icon>
+                          <span style="font-size:24px; font-weight:800;">Office Air Purifier</span>
+                        </div>
+                        <div onclick="document.getElementById('${modalId}').remove();" style="width:36px; height:36px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                      </div>
+
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:10px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                          <span style="font-size:13px; font-weight:700; color:${subColor}; letter-spacing:0.05em;">AIR QUALITY READINGS</span>
+                          <span style="background:${aqColor}22; border:1px solid ${aqColor}66; color:${aqColor}; padding:4px 12px; border-radius:14px; font-size:12px; font-weight:800; letter-spacing:0.04em;">${aqText}</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:center;">
+                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:12px; font-weight:700; color:${subColor};">PM2.5</div>
+                            <div style="font-size:24px; font-weight:800; color:${aqColor}; margin-top:2px;">${pm25} <span style="font-size:12px;">µg/m³</span></div>
+                          </div>
+                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:12px; font-weight:700; color:${subColor};">PM1.0</div>
+                            <div style="font-size:24px; font-weight:800; color:${textColor}; margin-top:2px;">${pm1} <span style="font-size:12px;">µg/m³</span></div>
+                          </div>
+                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:12px; font-weight:700; color:${subColor};">PM10</div>
+                            <div style="font-size:24px; font-weight:800; color:${textColor}; margin-top:2px;">${pm10} <span style="font-size:12px;">µg/m³</span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:700;">
+                          <span style="color:${subColor}; display:flex; align-items:center; gap:8px;">
+                            <ha-icon icon="mdi:air-filter" style="width:18px; height:18px; --mdc-icon-size:18px; color:#FF9F0A;"></ha-icon>
+                            Filter Health
+                          </span>
+                          <span style="color:${textColor}; font-weight:800;">${filterLife}% Remaining</span>
+                        </div>
+                        <div style="width:100%; height:8px; background:${isN?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'}; border-radius:4px; overflow:hidden;">
+                          <div style="width:${filterLife}%; height:100%; background:linear-gradient(90deg, #FF9F0A, #30D158); border-radius:4px;"></div>
+                        </div>
+                      </div>
+
+                      <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                          <span style="font-size:13px; font-weight:700; color:${subColor}; letter-spacing:0.08em;">FAN MODE & SPEED CONTROL</span>
+                          <span style="font-size:13px; font-weight:800; color:#30D158;">${fanState === 'off' ? 'OFF' : (preset ? preset.toUpperCase() : (pct > 0 ? pct + '%' : 'ON'))}</span>
+                        </div>
+                        
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'auto'}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${preset==='auto'?'1.5px solid #30D158':('1px solid '+borderColor)}; background:${preset==='auto'?'rgba(48,209,88,0.2)':cardBg}; color:${preset==='auto'?'#30D158':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">AUTO MODE</button>
+                          
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'night'}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${preset==='night'?'1.5px solid #00B0DF':('1px solid '+borderColor)}; background:${preset==='night'?'rgba(0,176,223,0.2)':cardBg}; color:${preset==='night'?'#00B0DF':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">NIGHT MODE</button>
+                          
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','turn_off',{entity_id:'fan.office_air_purifier_fan'}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${fanState==='off'?'1.5px solid #FF4D4D':('1px solid '+borderColor)}; background:${fanState==='off'?'rgba(255,77,77,0.2)':cardBg}; color:${fanState==='off'?'#FF4D4D':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">FAN OFF</button>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:33}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 1 (LOW)</button>
+                          
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:66}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 2 (MED)</button>
+
+                          <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:100}); document.getElementById('${modalId}').remove();"
+                                  style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 3 (HIGH)</button>
+                        </div>
+                      </div>
+
+                      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('light','toggle',{entity_id:'light.office_air_purifier_led_light'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                                style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
+                          <ha-icon icon="mdi:led-on" style="width:18px; height:18px; --mdc-icon-size:18px; color:${ledLight?'#FF9F0A':subColor};"></ha-icon>
+                          LED Display: ${ledLight?'ON':'OFF'}
+                        </button>
+
+                        <button onclick="(window.hass||document.querySelector('home-assistant')?.hass)?.callService('switch','toggle',{entity_id:'switch.office_air_purifier_child_lock'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                                style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
+                          <ha-icon icon="mdi:lock" style="width:18px; height:18px; --mdc-icon-size:18px; color:${childLock?'#FF4D4D':subColor};"></ha-icon>
+                          Child Lock: ${childLock?'ON':'OFF'}
+                        </button>
+                      </div>
+                    </div>
+                  `;
+
+                  document.body.appendChild(modal);
+                };
+
+                var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
+                var pillBg = isNight ? 'rgba(255,255,255,0.09)' : '#FFFFFF';
+                var pillBorder = isNight ? 'rgba(255,159,10,0.4)' : 'rgba(0,0,0,0.08)';
+                var pillShadow = isNight ? 'none' : '0 4px 16px rgba(0,0,0,0.06)';
+                var metricText = isNight ? '#FFFFFF' : '#1C1C1E';
+                var sepColor = isNight ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)';
+
+                var w = states['weather.forecast_home'];
+                var st = w?.state || 'partlycloudy';
+                var wTemp = w?.attributes?.temperature ? Math.round(w.attributes.temperature) + '°C' : '18°C';
+                var hum = w?.attributes?.humidity ? w.attributes.humidity + '%' : '88%';
+                
+                var iconMap = {
+                  'sunny': 'mdi:weather-sunny',
+                  'clear-night': 'mdi:weather-night',
+                  'partlycloudy': 'mdi:weather-partly-cloudy',
+                  'cloudy': 'mdi:weather-cloudy',
+                  'rainy': 'mdi:weather-rainy',
+                  'snowy': 'mdi:weather-snowy',
+                  'windy': 'mdi:weather-windy',
+                  'fog': 'mdi:weather-fog'
+                };
+                var wIcon = iconMap[st] || 'mdi:weather-partly-cloudy';
+                
+                var out = states['sensor.air_conditioner_office_outside_air_temp'];
+                var outT = out ? (out.state % 1 === 0 ? Math.round(parseFloat(out.state)) : parseFloat(out.state).toFixed(1)) + '°C' : '18°C';
+
+                var blueFan = states['fan.office_air_purifier_fan'];
+                var bluePm25 = states['sensor.office_air_purifier_pm_2_5'];
+
+                var pm25Val = bluePm25 ? bluePm25.state : '0';
+                var fanPreset = blueFan?.attributes?.preset_mode ? blueFan.attributes.preset_mode.toUpperCase() : (blueFan?.state === 'on' ? (blueFan?.attributes?.percentage ? blueFan.attributes.percentage + '%' : 'ON') : 'OFF');
+                var isFanOn = blueFan?.state === 'on';
+
+                return `
+                  <div style="display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; pointer-events:auto;">
+                    <div style="font-size:38px; font-weight:800; color:${titleColor}; letter-spacing:-0.02em; line-height:1.1; text-align:left; cursor:pointer; touch-action:manipulation; padding:2px 8px 2px 2px; user-select:none; -webkit-user-select:none; pointer-events:auto;"
+                         onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));"
+                         ontouchstart="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));"
+                         ontouchend="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));">Office</div>
+                    
+                    <div style="display:flex; align-items:center; gap:8px; pointer-events:auto; flex-shrink:0;">
+                      <div style="display:flex; align-items:center; gap:10px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:8px 14px; border-radius:24px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
+                           onclick="window.openWeatherPopup(event);"
+                           ontouchstart="window.openWeatherPopup(event);"
+                           ontouchend="window.openWeatherPopup(event);">
+                        <div style="display:flex; align-items:center; gap:6px; pointer-events:none;">
+                          <ha-icon icon="${wIcon}" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF9F0A; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span style="font-size:20px; font-weight:800; color:${metricText}; letter-spacing:-0.01em;">${wTemp}</span>
+                        </div>
+                        <div style="width:1px; height:18px; background:${sepColor}; pointer-events:none;"></div>
+                        <div style="display:flex; align-items:center; gap:5px; font-size:16px; font-weight:700; color:${metricText}; pointer-events:none;">
+                          <ha-icon icon="mdi:water-percent" style="width:18px; height:18px; --mdc-icon-size:18px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span>${hum}</span>
+                        </div>
+                        <div style="width:1px; height:18px; background:${sepColor}; pointer-events:none;"></div>
+                        <div style="display:flex; align-items:center; gap:5px; font-size:16px; font-weight:700; color:${metricText}; pointer-events:none;">
+                          <ha-icon icon="mdi:home-roof" style="width:18px; height:18px; --mdc-icon-size:18px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span>${outT}</span>
+                        </div>
+                      </div>
+
+                      <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:8px 14px; border-radius:24px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
+                           onclick="window.openBlueairPopup(event);"
+                           ontouchstart="window.openBlueairPopup(event);"
+                           ontouchend="window.openBlueairPopup(event);">
+                        <div style="display:flex; align-items:center; gap:6px; pointer-events:none;">
+                          <ha-icon icon="mdi:air-purifier" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isFanOn ? '#30D158' : '#8A8A93'}; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          <span style="font-size:18px; font-weight:800; color:${metricText};">PM2.5 ${pm25Val}</span>
+                        </div>
+                        <div style="background:${isFanOn ? 'rgba(48,209,88,0.18)' : 'rgba(138,138,147,0.18)'}; border:1px solid ${isFanOn ? 'rgba(48,209,88,0.4)' : 'rgba(138,138,147,0.3)'}; padding:3px 8px; border-radius:12px; font-size:13px; font-weight:800; color:${isFanOn ? '#30D158' : '#8A8A93'}; letter-spacing:0.04em; pointer-events:none;">
+                          ${fanPreset}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              ]]]
+          styles:
+            card:
+            - background: transparent
+            - border: none
+            - box-shadow: none
+            - padding: '0'
+            grid:
+            - grid-template-areas: '"header_row"'
+            - grid-template-columns: 1fr
+            custom_fields:
+              header_row:
+              - width: 100%
+
+        # --- PERFECTLY BALANCED 3-SCENE ROW ---
+        - type: horizontal-stack
+          card_mod:
+            style: |
+              :host { flex: 0 0 112px !important; min-height: 112px !important; max-height: 112px !important; display: flex !important; }
+              ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
+              #root { display: flex !important; gap: 14px !important; height: 100% !important; width: 100% !important; }
+          cards:
+
+          # Scene 1: DAY
+          - type: custom:button-card
+            entity: light.office_main_lights
+            name: DAY
+            icon: mdi:weather-sunny
+            styles:
+              card:
+              - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+              - border-radius: 24px
+              - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+              - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+              - height: '100%'
+              - transform: 'translateZ(0)'
+              - position: 'relative'
+              grid:
+              - grid-template-areas: '"i" "n"'
+              - grid-template-rows: 1fr auto
+              icon:
+              - color: '#00B0DF'
+              - width: 44px
+              - height: 44px
+              name:
+              - color: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "#FFFFFF" : "#1C1C1E"; ]]]'
+              - font-size: 18px
+              - font-weight: 900
+              - letter-spacing: 0.1em
+              - padding-bottom: 14px
+            tap_action:
+              action: call-service
+              service: light.turn_on
+              service_data:
+                entity_id: light.office_main_lights
+            custom_fields:
+              action_trigger: |
+                [[[
+                  window.runDayPreset = function(e) {
+                    if (e) { e.preventDefault(); e.stopPropagation(); }
+                    var h = window.hass || document.querySelector('home-assistant')?.hass;
+                    if (h) {
+                      h.callService('light', 'turn_on', { entity_id: 'light.office_main_lights' });
+                      h.callService('light', 'turn_off', { entity_id: 'light.nanoleaf_light_panels_51_c8_ca_2' });
+                      h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', hvac_mode: 'cool', temperature: 21.5 });
+                    }
+                  };
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" onclick="window.runDayPreset(event);" ontouchstart="window.runDayPreset(event);" ontouchend="window.runDayPreset(event);"></div>`;
+                ]]]
+
+          # Scene 2: NIGHT
+          - type: custom:button-card
+            entity: light.nanoleaf_light_panels_51_c8_ca_2
+            name: NIGHT
+            icon: mdi:theme-light-dark
+            styles:
+              card:
+              - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+              - border-radius: 24px
+              - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+              - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+              - height: '100%'
+              - transform: 'translateZ(0)'
+              - position: 'relative'
+              grid:
+              - grid-template-areas: '"i" "n"'
+              - grid-template-rows: 1fr auto
+              icon:
+              - color: '#FF9F0A'
+              - width: 44px
+              - height: 44px
+              name:
+              - color: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "#FFFFFF" : "#1C1C1E"; ]]]'
+              - font-size: 18px
+              - font-weight: 900
+              - letter-spacing: 0.1em
+              - padding-bottom: 14px
+            tap_action:
+              action: call-service
+              service: light.turn_on
+              service_data:
+                entity_id: light.nanoleaf_light_panels_51_c8_ca_2
+            custom_fields:
+              action_trigger: |
+                [[[
+                  window.runNightPreset = function(e) {
+                    if (e) { e.preventDefault(); e.stopPropagation(); }
+                    var h = window.hass || document.querySelector('home-assistant')?.hass;
+                    if (h) {
+                      h.callService('light', 'turn_on', { entity_id: 'light.nanoleaf_light_panels_51_c8_ca_2' });
+                      h.callService('light', 'turn_off', { entity_id: 'light.office_main_lights' });
+                      h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 21.5 });
+                    }
+                  };
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" onclick="window.runNightPreset(event);" ontouchstart="window.runNightPreset(event);" ontouchend="window.runNightPreset(event);"></div>`;
+                ]]]
+
+          # Scene 3: SLEEP
+          - type: custom:button-card
+            entity: climate.air_conditioner_office_climate
+            name: SLEEP
+            icon: mdi:moon-waning-crescent
+            styles:
+              card:
+              - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+              - border-radius: 24px
+              - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+              - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+              - height: '100%'
+              - transform: 'translateZ(0)'
+              - position: 'relative'
+              grid:
+              - grid-template-areas: '"i" "n"'
+              - grid-template-rows: 1fr auto
+              icon:
+              - color: '#30D158'
+              - width: 44px
+              - height: 44px
+              name:
+              - color: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "#FFFFFF" : "#1C1C1E"; ]]]'
+              - font-size: 18px
+              - font-weight: 900
+              - letter-spacing: 0.1em
+              - padding-bottom: 14px
+            tap_action:
+              action: call-service
+              service: light.turn_off
+              service_data:
+                entity_id: light.office_main_lights
+            custom_fields:
+              action_trigger: |
+                [[[
+                  window.runSleepPreset = function(e) {
+                    if (e) { e.preventDefault(); e.stopPropagation(); }
+                    var h = window.hass || document.querySelector('home-assistant')?.hass;
+                    if (h) {
+                      h.callService('light', 'turn_off', { entity_id: 'light.office_main_lights' });
+                      h.callService('light', 'turn_off', { entity_id: 'light.nanoleaf_light_panels_51_c8_ca_2' });
+                      h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 22.5 });
+                    }
+                  };
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer;" onclick="window.runSleepPreset(event);" ontouchstart="window.runSleepPreset(event);" ontouchend="window.runSleepPreset(event);"></div>`;
+                ]]]
+
+        # --- DYNAMICALLY STRETCHED LIGHT CARDS ---
+        - type: vertical-stack
+          card_mod:
+            style: |
+              :host { flex: 1 1 auto !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; }
+              ha-card { background: transparent !important; border: none !important; box-shadow: none !important; height: 100% !important; }
+              #root { display: flex !important; flex-direction: column !important; gap: 16px !important; justify-content: space-between !important; height: 100% !important; }
+          cards:
+
+          # Office Light 1: Ceiling Lights
+          - type: custom:button-card
+            entity: light.office_main_lights
+            show_name: false
+            show_icon: false
+            show_state: false
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            custom_fields:
+              light_row: |
+                [[[
+                  var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                  var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
+                  var sliderBg = isNight ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+                  var iconOffBg = isNight ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)';
+                  var iconOffBorder = isNight ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+
+                  var s = states['light.office_main_lights'];
+                  var isOff = !s || s.state === 'off';
+                  var lName = (s && s.attributes && s.attributes.friendly_name) ? s.attributes.friendly_name : 'Ceiling Lights';
+                  var pct = (s && s.attributes && s.attributes.brightness) ? Math.round((s.attributes.brightness / 255) * 100) : (isOff ? 0 : 100);
+                  var pctText = isOff ? 'OFF' : pct + '%';
+                  var iconColor = isOff ? '#8A8A93' : '#00B0DF';
+                  var pctColor = isOff ? '#8A8A93' : '#00B0DF';
+                  var sliderThumb = isOff ? '#8A8A93' : '#00B0DF';
+
+                  return `
+                    <style>
+                      .range-slider-c1 {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 100%;
+                        height: 44px;
+                        background: ${sliderBg};
+                        border-radius: 22px;
+                        outline: none;
+                        margin: 0;
+                        cursor: pointer;
+                        box-sizing: border-box;
+                        touch-action: manipulation;
+                        will-change: transform;
+                        transform: translateZ(0);
+                      }
+                      .range-slider-c1::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: ${sliderThumb};
+                        cursor: pointer;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                        border: 2px solid #FFFFFF;
+                      }
+                      .range-slider-c1::-moz-range-thumb {
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: ${sliderThumb};
+                        cursor: pointer;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                        border: 2px solid #FFFFFF;
+                      }
+                    </style>
+                    <div style="display:flex; flex-direction:column; gap:18px; width:100%; height:100%; justify-content:center; box-sizing:border-box;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:16px;">
+                          <div style="width:56px; height:56px; border-radius:50%; background:${isOff ? iconOffBg : 'rgba(0,176,223,0.18)'}; border:1px solid ${isOff ? iconOffBorder : 'rgba(0,176,223,0.4)'}; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+                            <ha-icon icon="mdi:lightbulb-outline" style="width:30px; height:30px; --mdc-icon-size:30px; color:${iconColor}; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          </div>
+                          <span style="font-size:26px; font-weight:800; color:${titleColor}; letter-spacing:-0.01em; pointer-events:none;">${lName}</span>
+                        </div>
+                        <span id="c1_readout" style="font-size:22px; font-weight:800; color:${pctColor}; text-align:right; pointer-events:none;">${pctText}</span>
+                      </div>
+
+                      <input type="range" min="0" max="100" value="${pct}" class="range-slider-c1"
+                             onclick="event.stopPropagation();"
+                             oninput="event.stopPropagation(); const v=parseInt(this.value); const rd=document.getElementById('c1_readout'); if(rd){ rd.innerText=v<=0?'OFF':v+'%'; rd.style.color=v<=0?'#8A8A93':'#00B0DF'; }"
+                             onchange="event.stopPropagation(); const v=parseInt(this.value); const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ if(v<=1){ h.callService('light','turn_off',{entity_id:'light.office_main_lights'}); } else { h.callService('light','turn_on',{entity_id:'light.office_main_lights', brightness_pct:v}); } }">
+                    </div>
+                  `;
+                ]]]
+            styles:
+              card:
+              - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+              - border-radius: 24px
+              - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.06)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+              - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+              - padding: '18px 22px'
+              - height: '100%'
+              - transform: 'translateZ(0)'
+              grid:
+              - grid-template-areas: '"light_row"'
+              - grid-template-columns: 1fr
+              custom_fields:
+                light_row:
+                - width: 100%
+
+          # Office Light 2: Nanoleaf Light Panels
+          - type: custom:button-card
+            entity: light.nanoleaf_light_panels_51_c8_ca_2
+            show_name: false
+            show_icon: false
+            show_state: false
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            custom_fields:
+              light_row: |
+                [[[
+                  var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                  var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
+                  var sliderBg = isNight ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+                  var iconOffBg = isNight ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)';
+                  var iconOffBorder = isNight ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+
+                  var s = states['light.nanoleaf_light_panels_51_c8_ca_2'];
+                  var isOff = !s || s.state === 'off';
+                  var lName = (s && s.attributes && s.attributes.friendly_name) ? s.attributes.friendly_name : 'Nanoleaf';
+                  var pct = (s && s.attributes && s.attributes.brightness) ? Math.round((s.attributes.brightness / 255) * 100) : (isOff ? 0 : 100);
+                  var effect = (s && s.attributes && s.attributes.effect) ? s.attributes.effect : '';
+                  var pctText = isOff ? 'OFF' : (effect ? effect + ' • ' + pct + '%' : pct + '%');
+                  var iconColor = isOff ? '#8A8A93' : '#30D158';
+                  var pctColor = isOff ? '#8A8A93' : '#30D158';
+                  var sliderThumb = isOff ? '#8A8A93' : '#30D158';
+
+                  return `
+                    <style>
+                      .range-slider-c2 {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 100%;
+                        height: 44px;
+                        background: ${sliderBg};
+                        border-radius: 22px;
+                        outline: none;
+                        margin: 0;
+                        cursor: pointer;
+                        box-sizing: border-box;
+                        touch-action: manipulation;
+                        will-change: transform;
+                        transform: translateZ(0);
+                      }
+                      .range-slider-c2::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: ${sliderThumb};
+                        cursor: pointer;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                        border: 2px solid #FFFFFF;
+                      }
+                      .range-slider-c2::-moz-range-thumb {
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        background: ${sliderThumb};
+                        cursor: pointer;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                        border: 2px solid #FFFFFF;
+                      }
+                    </style>
+                    <div style="display:flex; flex-direction:column; gap:18px; width:100%; height:100%; justify-content:center; box-sizing:border-box;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:16px;">
+                          <div style="width:56px; height:56px; border-radius:50%; background:${isOff ? iconOffBg : 'rgba(48,209,88,0.18)'}; border:1px solid ${isOff ? iconOffBorder : 'rgba(48,209,88,0.4)'}; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+                            <ha-icon icon="mdi:triangle-outline" style="width:30px; height:30px; --mdc-icon-size:30px; color:${iconColor}; display:flex; align-items:center; justify-content:center;"></ha-icon>
+                          </div>
+                          
+                          <span style="font-size:26px; font-weight:800; color:${titleColor}; letter-spacing:-0.01em; pointer-events:none;">${lName}</span>
+                          
+                          <div style="width:40px; height:40px; border-radius:50%; background:${iconOffBg}; border:1px solid ${iconOffBorder}; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation;"
+                               onclick="event.stopPropagation(); this.dispatchEvent(new CustomEvent('hass-more-info', {detail: {entityId: 'light.nanoleaf_light_panels_51_c8_ca_2'}, bubbles: true, composed: true}));">
+                            <ha-icon icon="mdi:palette-outline" style="width:22px; height:22px; --mdc-icon-size:22px; color:#FF9F0A; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
+                          </div>
+                        </div>
+                        
+                        <span id="c2_readout" style="font-size:22px; font-weight:800; color:${pctColor}; text-align:right; pointer-events:none;">${pctText}</span>
+                      </div>
+
+                      <input type="range" min="0" max="100" value="${pct}" class="range-slider-c2"
+                             onclick="event.stopPropagation();"
+                             oninput="event.stopPropagation(); const v=parseInt(this.value); const rd=document.getElementById('c2_readout'); if(rd){ rd.innerText=v<=0?'OFF':v+'%'; rd.style.color=v<=0?'#8A8A93':'#30D158'; }"
+                             onchange="event.stopPropagation(); const v=parseInt(this.value); const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ if(v<=1){ h.callService('light','turn_off',{entity_id:'light.nanoleaf_light_panels_51_c8_ca_2'}); } else { h.callService('light','turn_on',{entity_id:'light.nanoleaf_light_panels_51_c8_ca_2', brightness_pct:v}); } }">
+                    </div>
+                  `;
+                ]]]
+            styles:
+              card:
+              - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+              - border-radius: 24px
+              - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.06)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+              - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+              - padding: '18px 22px'
+              - height: '100%'
+              - transform: 'translateZ(0)'
+              grid:
+              - grid-template-areas: '"light_row"'
+              - grid-template-columns: 1fr
+              custom_fields:
+                light_row:
+                - width: 100%
+
+      # ========================================================
+      # RIGHT COLUMN: REFINED THERMOSTAT CARD (FIXED PROPORTIONS)
+      # ========================================================
+      - type: custom:button-card
+        entity: climate.air_conditioner_office_climate
+        show_name: false
+        show_icon: false
+        show_state: false
+        card_mod:
+          style: |
+            :host { flex: 1.3 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; height: 100% !important; }
+            ha-card { height: 100% !important; display: flex !important; flex-direction: column !important; }
+        triggers_update:
+        - climate.air_conditioner_office_climate
+        - sensor.air_conditioner_living_room_input_power
+        - sensor.air_conditioner_office_outside_air_temp
+        - select.air_conditioner_office_vertical_vane
+        - binary_sensor.air_conditioner_office_i_see_sensor
+        - switch.air_conditioner_office_night_mode
+        tap_action:
+          action: none
+        hold_action:
+          action: none
+        styles:
+          card:
+          - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+          - border-radius: 24px
+          - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.06)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+          - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 20px rgba(0,0,0,0.06)"; ]]]'
+          - height: 100%
+          - padding: '20px 24px'
+          - box-sizing: border-box
+          - transform: 'translateZ(0)'
+          - flex: '1.3'
+          - min-width: '0'
+          - pointer-events: 'none'
+          - -webkit-tap-highlight-color: 'transparent'
+          grid:
+          - grid-template-areas: '"hvac_panel"'
+          - grid-template-columns: 1fr
+          - grid-template-rows: 1fr
+          custom_fields:
+            hvac_panel:
+            - width: 100%
+            - height: 100%
+            - pointer-events: 'auto'
+        custom_fields:
+          hvac_panel: |
+            [[[
+              var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+              var mainTempColor = isNight ? '#FFFFFF' : '#1C1C1E';
+              var trackColor = isNight ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+              var btnBg = isNight ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+              var btnBorder = isNight ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)';
+              var pillBg = isNight ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
+              var pillBorder = isNight ? '1.5px solid rgba(255,255,255,0.15)' : '1.5px solid rgba(0,0,0,0.12)';
+              var titleColor = isNight ? '#8A8A93' : '#6E6E73';
+
+              var s = states['climate.air_conditioner_office_climate'];
+              var cur = s && s.attributes && s.attributes.current_temperature ? Math.round(parseFloat(s.attributes.current_temperature)) : 21;
+              
+              var getHaT = function(e) {
+                if (!e || !e.attributes) return 21.5;
+                var t = e.attributes.temperature;
+                if (t === null || t === undefined || isNaN(parseFloat(t))) {
+                  t = e.attributes.target_temp_low || e.attributes.current_temperature || 21.5;
+                }
+                var p = parseFloat(t);
+                return isNaN(p) ? 21.5 : p;
+              };
+              var target = getHaT(s);
+              var st = s ? s.state : 'cool';
+              var actState = s && s.attributes && s.attributes.hvac_action ? s.attributes.hvac_action : 'idle';
+              var fanMode = s && s.attributes && s.attributes.fan_mode ? s.attributes.fan_mode.toLowerCase() : 'auto';
+
+              var actLabel = 'COOLING ACTIVE';
+              if (st === 'off') {
+                actLabel = 'SYSTEM OFF';
+              } else if (actState === 'idle') {
+                actLabel = st.toUpperCase() + ' (IDLE)';
+              } else {
+                actLabel = st.toUpperCase() + ' ACTIVE';
+              }
+
+              var stMap = {
+                'cool': { icon: 'mdi:snowflake', color: '#00B0DF', bg: 'rgba(0,176,223,0.16)', border: 'rgba(0,176,223,0.35)', arcColor: '#00B0DF' },
+                'heat': { icon: 'mdi:fire', color: '#FF4D4D', bg: 'rgba(255,77,77,0.16)', border: 'rgba(255,77,77,0.35)', arcColor: '#FF4D4D' },
+                'auto': { icon: 'mdi:autorenew', color: '#FF9F0A', bg: 'rgba(255,159,10,0.16)', border: 'rgba(255,159,10,0.35)', arcColor: '#FF9F0A' },
+                'dry': { icon: 'mdi:water-percent', color: '#30D158', bg: 'rgba(48,209,88,0.16)', border: 'rgba(48,209,88,0.35)', arcColor: '#30D158' },
+                'fan_only': { icon: 'mdi:fan', color: '#A1A1A6', bg: 'rgba(161,161,166,0.16)', border: 'rgba(161,161,166,0.35)', arcColor: '#A1A1A6' },
+                'off': { icon: 'mdi:power', color: isNight ? '#8A8A93' : '#6E6E73', bg: isNight ? 'rgba(138,138,147,0.16)' : 'rgba(0,0,0,0.06)', border: isNight ? 'rgba(138,138,147,0.35)' : 'rgba(0,0,0,0.12)', arcColor: isNight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)' }
+              };
+              var act = stMap[st] || stMap['off'];
+
+              var minT = 16, maxT = 30;
+              var ratioCur = Math.max(0, Math.min(1, (cur - minT) / (maxT - minT)));
+              var totalArc = 310;
+              var activeLen = st === 'off' ? 0 : Math.round(ratioCur * totalArc);
+              var gapLen = 427 - activeLen;
+
+              var ratioTarget = Math.max(0, Math.min(1, (target - minT) / (maxT - minT)));
+              var angleDeg = ratioTarget * 270;
+              var angleRad = angleDeg * Math.PI / 180;
+              var pipX = Math.round((80 + 68 * Math.cos(angleRad)) * 100) / 100;
+              var pipY = Math.round((80 + 68 * Math.sin(angleRad)) * 100) / 100;
+
+              var targetValStr = (target % 1 === 0 ? Math.round(target) : target.toFixed(1)) + '°';
+              var setpointMainTxt = (st === 'auto' ? 'AUTO' : (st === 'fan_only' ? 'FAN' : (st === 'off' ? 'OFF' : targetValStr)));
+              var setpointLabelTxt = (st === 'auto' ? 'AUTO MODE' : (st === 'fan_only' ? 'FAN MODE' : (st === 'off' ? 'SYSTEM OFF' : 'SET POINT')));
+
+              var nextMinusTemp = Math.max(15, Math.min(31, parseFloat(target) - 0.5));
+              var nextPlusTemp = Math.max(15, Math.min(31, parseFloat(target) + 0.5));
+              var isDisabled = (st === 'auto' || st === 'fan_only' || st === 'off');
+
+              var modesList = [
+                { id: 'cool', name: 'COOL', color: '#00B0DF' },
+                { id: 'heat', name: 'HEAT', color: '#FF4D4D' },
+                { id: 'auto', name: 'AUTO', color: '#FF9F0A' },
+                { id: 'dry', name: 'DRY', color: '#30D158' },
+                { id: 'fan_only', name: 'FAN', color: '#A1A1A6' },
+                { id: 'off', name: 'OFF', color: '#8A8A93' }
+              ];
+
+              var fanSpeedsList = [
+                { id: 'auto', name: 'AUTO' },
+                { id: 'low', name: 'LOW' },
+                { id: 'medium', name: 'MED' },
+                { id: 'high', name: 'HIGH' }
+              ];
+
+              var callMinus = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextMinusTemp + "}); }";
+              var callPlus = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextPlusTemp + "}); }";
+
+              var modesRow1Html = '';
+              modesList.slice(0, 3).forEach(function(m) {
+                var isSel = st === m.id;
+                var bg = isSel ? m.color : btnBg;
+                var border = isSel ? ('1px solid ' + m.color) : btnBorder;
+                var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
+                var txtColor = isSel ? '#FFFFFF' : mainTempColor;
+                var callMode = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                modesRow1Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchstart="event.stopPropagation(); ' + callMode + '"' +
+                                 ' style="flex:1; height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+              });
+
+              var modesRow2Html = '';
+              modesList.slice(3, 6).forEach(function(m) {
+                var isSel = st === m.id;
+                var bg = isSel ? m.color : btnBg;
+                var border = isSel ? ('1px solid ' + m.color) : btnBorder;
+                var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
+                var txtColor = isSel ? '#FFFFFF' : mainTempColor;
+                var callMode = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                modesRow2Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchstart="event.stopPropagation(); ' + callMode + '"' +
+                                 ' style="flex:1; height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+              });
+
+              var fanRowHtml = '';
+              fanSpeedsList.forEach(function(sp) {
+                var isSel = fanMode === sp.id;
+                var bg = isSel ? (isNight ? 'rgba(255,255,255,0.22)' : '#1C1C1E') : btnBg;
+                var border = isSel ? (isNight ? '1px solid #FFFFFF' : '1px solid #1C1C1E') : btnBorder;
+                var txtColor = isSel ? '#FFFFFF' : (isNight ? '#8A8A93' : '#6E6E73');
+                var callFan = "var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
+                fanRowHtml += '<button onclick="event.stopPropagation(); ' + callFan + '" ontouchstart="event.stopPropagation(); ' + callFan + '"' +
+                              ' style="flex:1; height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
+              });
+
+              var pipSvg = (!isDisabled) ? ('<circle cx="' + pipX + '" cy="' + pipY + '" r="7" fill="#FFFFFF" stroke="' + act.color + '" stroke-width="3" style="transition: all 0.5s ease; filter: drop-shadow(0 0 6px ' + act.color + ');" />') : '';
+
+              return '<div style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; box-sizing:border-box; pointer-events:auto;">' +
+                     
+                     '<!-- DIAL & SETPOINT TOP SECTION -->' +
+                     '<div style="display:flex; align-items:center; justify-content:space-between; width:100%; flex-shrink:0;">' +
+                     
+                     '<!-- MINUS BUTTON -->' +
+                     '<button onclick="event.stopPropagation(); ' + callMinus + '" ontouchstart="event.stopPropagation(); ' + callMinus + '"' +
+                     ' style="width:68px; height:200px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     '<ha-icon icon="mdi:minus" style="width:40px; height:40px; --mdc-icon-size:40px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
+                     
+                     '<!-- CENTER DIAL & SETPOINT COLUMN -->' +
+                     '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; overflow:hidden;">' +
+                     
+                     '<!-- SVG CIRCULAR ARC WITH CENTERED ROOM TEMP -->' +
+                     '<div style="position:relative; width:145px; height:145px; min-height:145px; max-height:145px; display:flex; align-items:center; justify-content:center; margin:0 auto; flex-shrink:0;">' +
+                     '<svg viewBox="0 0 160 160" style="width:100%; height:100%; transform:rotate(-135deg);">' +
+                     '<circle cx="80" cy="80" r="68" fill="none" stroke="' + trackColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="310 117" />' +
+                     '<circle cx="80" cy="80" r="68" fill="none" stroke="' + act.arcColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + activeLen + ' ' + gapLen + '" style="transition: stroke-dasharray 0.6s ease, stroke 0.4s ease;" />' +
+                     pipSvg + '</svg>' +
+                     '<div style="position:absolute; display:flex; align-items:flex-start; justify-content:center; cursor:pointer; touch-action:manipulation; padding:6px; border-radius:50%; margin-left:6px;" onclick="window.openMitsubishiPopup(event);" ontouchstart="window.openMitsubishiPopup(event);" ontouchend="window.openMitsubishiPopup(event);">' +
+                     '<span style="font-size:68px; font-weight:800; color:' + mainTempColor + '; line-height:1; letter-spacing:-0.03em;">' + cur + '</span>' +
+                     '<span style="font-size:20px; font-weight:700; color:' + mainTempColor + '; margin-top:4px;">°C</span>' +
+                     '</div></div>' +
+
+                     '<!-- CLEANLY SEPARATED STATUS PILL WITH 4px MARGIN -->' +
+                     '<div style="margin-top:4px; margin-bottom:2px; background:' + act.bg + '; border:1px solid ' + act.border + '; padding:3px 12px; border-radius:14px; display:inline-flex; align-items:center; justify-content:center; gap:5px; pointer-events:auto; cursor:pointer; flex-shrink:0;" onclick="window.openMitsubishiPopup(event);">' +
+                     '<ha-icon icon="' + act.icon + '" style="width:13px; height:13px; --mdc-icon-size:13px; color:' + act.color + '; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin:0; padding:0;"></ha-icon>' +
+                     '<span style="font-size:11px; font-weight:800; color:' + act.color + '; letter-spacing:0.05em; text-transform:uppercase; line-height:1; display:inline-block; transform:translateY(1px);">' + actLabel + '</span></div>' +
+
+                     '<!-- CLEAR SETPOINT READOUT WITH "SET POINT" LABEL -->' +
+                     '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
+                     '<div style="font-size:34px; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; line-height:1;">' + setpointMainTxt + '</div>' +
+                     '<div style="font-size:11px; font-weight:800; color:#8A8A93; letter-spacing:0.12em; margin-top:2px;">' + setpointLabelTxt + '</div></div></div>' +
+
+                     '<!-- PLUS BUTTON -->' +
+                     '<button onclick="event.stopPropagation(); ' + callPlus + '" ontouchstart="event.stopPropagation(); ' + callPlus + '"' +
+                     ' style="width:68px; height:200px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     '<ha-icon icon="mdi:plus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button></div>' +
+                     
+                     '<!-- SYSTEM MODE SECTION -->' +
+                     '<div style="display:flex; flex-direction:column; gap:8px; width:100%; flex-shrink:0;">' +
+                     '<div style="font-size:12px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">SYSTEM MODE</div>' +
+                     '<div style="display:flex; gap:10px; width:100%;">' + modesRow1Html + '</div>' +
+                     '<div style="display:flex; gap:10px; width:100%;">' + modesRow2Html + '</div></div>' +
+                     
+                     '<!-- FAN SPEED SECTION -->' +
+                     '<div style="display:flex; flex-direction:column; gap:8px; width:100%; flex-shrink:0; margin-top:auto;">' +
+                     '<div style="font-size:12px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">FAN SPEED</div>' +
+                     '<div style="display:flex; gap:10px; width:100%;">' + fanRowHtml + '</div></div></div>';
+            ]]]
+
+    # ===== RESTORED FULLY FEATURED GORGEOUS MEDIA BAR =====
+    - type: custom:button-card
+      entity: media_player.the_moon
+      show_name: false
+      show_icon: false
+      show_state: false
+      tap_action:
+        action: none
+      card_mod:
+        style: |
+          :host { flex: 0 0 80px !important; margin-top: auto !important; height: 80px !important; min-height: 80px !important; max-height: 80px !important; display: block !important; }
+          ha-card { background: {{ 'rgba(26, 26, 36, 0.95)' if is_state('sun.sun', 'below_horizon') else '#FFFFFF' }} !important; border-radius: 20px !important; border: {{ '1px solid rgba(255, 255, 255, 0.06)' if is_state('sun.sun', 'below_horizon') else '1px solid rgba(0, 0, 0, 0.08)' }} !important; box-shadow: {{ 'none' if is_state('sun.sun', 'below_horizon') else '0 4px 14px rgba(0,0,0,0.05)' }} !important; padding: 0 !important; height: 80px !important; }
+      styles:
+        card:
+        - background: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
+        - border-radius: 20px
+        - border: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "1px solid rgba(255, 255, 255, 0.06)" : "1px solid rgba(0, 0, 0, 0.08)"; ]]]'
+        - box-shadow: '[[[ return states["sun.sun"]?.state === "below_horizon" ? "none" : "0 4px 14px rgba(0,0,0,0.05)"; ]]]'
+        - padding: '0'
+        - height: '80px'
+        - transform: 'translateZ(0)'
+        - pointer-events: 'none'
+        grid:
+        - grid-template-areas: '"music_player_row"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr
+        custom_fields:
+          music_player_row:
+          - width: 100%
+          - height: 100%
+          - pointer-events: 'auto'
+      custom_fields:
+        music_player_row: |
+          [[[
+              window._plexCache = window._plexCache || {};
+
+              var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+              var titleColor = isNight ? '#FFFFFF' : '#1C1C1E';
+              var artistColor = isNight ? '#A1A1A8' : '#55555A';
+              var iconColor = isNight ? '#FFFFFF' : '#1C1C1E';
+              var playBg = isNight ? '#FFFFFF' : '#1C1C1E';
+              var playIcon = isNight ? '#0A0A0C' : '#FFFFFF';
+              var sliderBg = isNight ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
+
+              var s = (states && states['media_player.the_moon']) || (states && states['media_player.living_room_speaker']) || (states && states['media_player.television']);
+              var entityId = s ? s.entity_id : 'media_player.the_moon';
+              var st = s ? s.state : 'off';
+              var isPlaying = st === 'playing';
+
+              var rawTitle = (s && s.attributes && s.attributes.media_title) ? s.attributes.media_title : '';
+              var appName = (s && s.attributes && s.attributes.app_name) ? s.attributes.app_name : 'Plex';
+              var friendlyName = (s && s.attributes && s.attributes.friendly_name) ? s.attributes.friendly_name : 'The Moon';
+              var contentType = (s && s.attributes && s.attributes.media_content_type) ? s.attributes.media_content_type : '';
+              
+              var rawContentId = (s && s.attributes && s.attributes.media_content_id) ? s.attributes.media_content_id : '';
+              var metaMatch = rawContentId.match(/\/metadata\/(\d+)/);
+              var metaId = metaMatch ? metaMatch[1] : null;
+
+              var mainTitle = (rawTitle && rawTitle.trim() !== '') ? rawTitle : '';
+              var mainSubtitle = (s && s.attributes && s.attributes.media_artist) ? s.attributes.media_artist : '';
+
+              if (!mainTitle && metaId) {
+                if (window._plexCache[metaId]) {
+                  mainTitle = window._plexCache[metaId].title;
+                  mainSubtitle = window._plexCache[metaId].subtitle;
+                } else {
+                  mainTitle = appName || 'Plex Media';
+                  mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Playing';
+                  
+                  (function(mId) {
+                    var plexToken = 'YOUR_PLEX_TOKEN';
+                    var fetchUrl = 'http://YOUR_HA_IP:32400/library/metadata/' + mId + '?X-Plex-Token=' + plexToken;
+                    fetch(fetchUrl)
+                      .then(function(res) { return res.text(); })
+                      .then(function(xmlText) {
+                        var parser = new DOMParser();
+                        var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                        var video = xmlDoc.querySelector('Video');
+                        if (video) {
+                          var vType = video.getAttribute('type');
+                          var t = '', sub = '';
+                          if (vType === 'episode') {
+                            var show = video.getAttribute('grandparentTitle') || '';
+                            var sNum = video.getAttribute('parentIndex') || '';
+                            var eNum = video.getAttribute('index') || '';
+                            var eTitle = video.getAttribute('title') || '';
+                            t = show;
+                            sub = (sNum && eNum) ? ('S' + sNum + ':E' + eNum + (eTitle ? ' • ' + eTitle : '')) : eTitle;
+                          } else {
+                            t = video.getAttribute('title') || '';
+                            var yr = video.getAttribute('year') || '';
+                            sub = yr ? ('Plex • Movie (' + yr + ')') : 'Plex • Movie';
+                          }
+                          window._plexCache[mId] = { title: t, subtitle: sub };
+                          
+                          var elT = document.getElementById('restored_media_title');
+                          var elS = document.getElementById('restored_media_sub');
+                          if (elT && t) elT.innerText = t;
+                          if (elS && sub) elS.innerText = sub;
+                        }
+                      })
+                      .catch(function(err) {});
+                  })(metaId);
+                }
+              }
+
+              if (!mainTitle) mainTitle = rawTitle || appName || friendlyName || 'Plex • Media Player';
+              if (!mainSubtitle) mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Office Audio System';
+
+              var rawArt = (s && s.attributes && s.attributes.entity_picture) ? s.attributes.entity_picture : null;
+              var art = rawArt ? rawArt.replace('https://YOUR_HA_IP:32400', 'http://YOUR_HA_IP:32400') : null;
+
+              var vol = (s && s.attributes && s.attributes.volume_level !== undefined) ? Math.round(s.attributes.volume_level * 100) : 50;
+              var isMuted = (s && s.attributes && s.attributes.is_volume_muted) || false;
+
+              var duration = (s && s.attributes && s.attributes.media_duration) ? parseFloat(s.attributes.media_duration) : 0;
+              var position = (s && s.attributes && s.attributes.media_position) ? parseFloat(s.attributes.media_position) : 0;
+
+              function fmtTime(sec) {
+                if (!sec || isNaN(sec) || sec <= 0) return '0:00';
+                var m = Math.floor(sec / 60);
+                var r = Math.floor(sec % 60);
+                return m + ':' + (r < 10 ? '0' : '') + r;
+              }
+              var posStr = fmtTime(position);
+              var durStr = fmtTime(duration);
+
+              return `
+                <style>
+                  .res-vol-slider {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 110px;
+                    height: 8px;
+                    background: ${sliderBg};
+                    border-radius: 4px;
+                    outline: none;
+                    margin: 0;
+                    cursor: pointer;
+                    touch-action: manipulation;
+                    pointer-events: auto !important;
+                  }
+                  .res-vol-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: ${isNight ? '#FFFFFF' : '#1C1C1E'};
+                    cursor: pointer;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+                  }
+                  .res-seek-slider {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 100%;
+                    height: 6px;
+                    background: ${sliderBg};
+                    border-radius: 3px;
+                    outline: none;
+                    margin: 0;
+                    cursor: pointer;
+                    touch-action: manipulation;
+                    pointer-events: auto !important;
+                  }
+                  .res-seek-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: #00B0DF;
+                    cursor: pointer;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+                  }
+                </style>
+                <div style="display:flex; align-items:center; justify-content:space-between; width:100%; height:100%; padding:10px 24px; box-sizing:border-box; gap:16px; pointer-events:auto;">
+                  
+                  <div style="display:flex; align-items:center; gap:14px; flex:1.3; min-width:0; text-align:left;">
+                    <div style="width:54px; height:54px; border-radius:12px; background:${isNight ? '#1A1A22' : '#E5E5EA'}; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid ${isNight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
+                      ${art ? `<img src="${art}" onerror="this.style.display='none'; this.parentElement.innerHTML='<ha-icon icon=\'mdi:television-play\' style=\'width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;\'></ha-icon>';" style="width:100%; height:100%; object-fit:cover;">` : '<ha-icon icon="mdi:television-play" style="width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>'}
+                    </div>
+                    <div style="overflow:hidden; min-width:0; text-align:left; display:flex; flex-direction:column; justify-content:center;">
+                      <div id="restored_media_title" style="font-size:20px; font-weight:800; color:${titleColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; letter-spacing:-0.01em; line-height:1.2;">${mainTitle}</div>
+                      <div id="restored_media_sub" style="font-size:16px; font-weight:700; color:${artistColor}; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; line-height:1.2;">${mainSubtitle}</div>
+                    </div>
+                  </div>
+                  
+                  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
+                    <div style="display:flex; align-items:center; gap:20px;">
+                      <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
+                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }"
+                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
+                        <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
+                      </div>
+                      
+                      <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
+                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }"
+                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
+                        <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; ${isPlaying ? '' : 'margin-left:3px;'}"></ha-icon>
+                      </div>
+                      
+                      <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
+                           onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }"
+                           ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
+                        <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
+                      </div>
+                    </div>
+                    
+                    <div style="width:100%; max-width:340px; display:flex; align-items:center; gap:10px;">
+                      <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:right;">${posStr}</span>
+                      <input type="range" min="0" max="${duration > 0 ? duration : 100}" value="${position}" class="res-seek-slider"
+                             onclick="event.stopPropagation();"
+                             ontouchstart="event.stopPropagation();"
+                             ontouchend="event.stopPropagation();"
+                             oninput="event.stopPropagation();"
+                             onchange="event.stopPropagation(); const v=parseFloat(this.value); const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_seek', {entity_id: '${entityId}', position: v}); }">
+                      <span style="font-size:14px; font-weight:800; color:${artistColor}; width:44px; text-align:left;">${durStr}</span>
+                    </div>
+                  </div>
+                  
+                  <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
+                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:6px; pointer-events:auto;"
+                         onclick="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }"
+                         ontouchstart="event.stopPropagation(); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
+                      <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
+                    </div>
+                    
+                    <input type="range" min="0" max="100" value="${vol}" class="res-vol-slider"
+                           onclick="event.stopPropagation();"
+                           ontouchstart="event.stopPropagation();"
+                           ontouchend="event.stopPropagation();"
+                           oninput="event.stopPropagation(); const rd=document.getElementById('restored_media_vol_txt'); if(rd){ rd.innerText=this.value+'%'; }"
+                           onchange="event.stopPropagation(); const v=parseInt(this.value)/100; const h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_set', {entity_id: '${entityId}', volume_level: v}); }">
+                    
+                    <span id="restored_media_vol_txt" style="font-size:16px; font-weight:800; color:${titleColor}; width:48px; text-align:right;">${isMuted ? 'MUTED' : vol + '%'}</span>
+                  </div>
+                </div>
+              `;
+            ]]]

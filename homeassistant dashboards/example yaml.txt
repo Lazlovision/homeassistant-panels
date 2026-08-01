@@ -1,0 +1,428 @@
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+title: Climate Control
+views:
+  - title: Climate
+    path: climate
+    type: panel
+    cards:
+      - type: horizontal-stack
+        card_mod:
+          style: |
+            ha-card, :host {
+              /* Dynamic Day/Night Theme */
+              {% if is_state('sun.sun', 'above_horizon') %}
+                --bg-color: #F2F2F7;
+                --text-color: #1C1C1E;
+                --text-muted: #8A8A93;
+                --card-surface: rgba(255, 255, 255, 0.8);
+                --border-glass: rgba(0, 0, 0, 0.08);
+                --nav-bg: rgba(0, 0, 0, 0.04);
+                --color-primary: #0088FF;
+                --color-accent-warm: #E62E5C;
+              {% else %}
+                --bg-color: #050507;
+                --text-color: #F2F2F5;
+                --text-muted: #8A8A93;
+                --card-surface: rgba(25, 25, 30, 0.4);
+                --border-glass: rgba(255, 255, 255, 0.08);
+                --nav-bg: rgba(255, 255, 255, 0.03);
+                --color-primary: #00E5FF;
+                --color-accent-warm: #FF3366;
+              {% endif %}
+              font-family: 'Outfit', sans-serif;
+            }
+            #root {
+              background-color: var(--bg-color);
+              min-height: 100vh;
+              padding: 32px;
+              gap: 32px !important;
+              box-sizing: border-box;
+            }
+        cards:
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: var(--nav-bg)
+                - backdrop-filter: blur(24px)
+                - '-webkit-backdrop-filter': blur(24px)
+                - border: 1px solid var(--border-glass)
+                - border-radius: 24px
+                - width: 100px
+                - height: 700px
+                - margin: '0'
+                - box-shadow: inset 0 1px 0 rgba(255,255,255,0.05)
+            custom_fields:
+              icons: |
+                [[[
+                  return `
+                    <div style="display:flex; flex-direction:column; gap:48px; align-items:center; padding-top:40px; color:var(--text-color);">
+                      <ha-icon icon="mdi:home-outline" style="--mdc-icon-size: 32px; opacity:0.4;"></ha-icon>
+                      <div style="position:relative; color:var(--color-primary);">
+                        <ha-icon icon="mdi:thermostat" style="--mdc-icon-size: 32px;"></ha-icon>
+                        <div style="position:absolute; top:50%; right:-34px; transform:translateY(-50%); width:4px; height:32px; background:var(--color-primary); border-radius:4px 0 0 4px;"></div>
+                      </div>
+                      <ha-icon icon="mdi:lightbulb-outline" style="--mdc-icon-size: 32px; opacity:0.4;"></ha-icon>
+                      <ha-icon icon="mdi:play-circle-outline" style="--mdc-icon-size: 32px; opacity:0.4;"></ha-icon>
+                    </div>
+                  `;
+                ]]]
+          - type: vertical-stack
+            cards:
+              - type: custom:button-card
+                show_name: false
+                show_icon: false
+                styles:
+                  card:
+                    - background: transparent
+                    - border: none
+                    - box-shadow: none
+                    - padding: 0 0 24px 0
+                custom_fields:
+                  header: |
+                    [[[
+                      return `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                          <div>
+                            <h1 style="font-family:'Space Grotesk', sans-serif; font-size:40px; font-weight:600; color:var(--text-color); margin:0 0 8px 0; letter-spacing:1px;">Climate Control</h1>
+                            <p style="color:var(--text-muted); font-size:13px; font-weight:600; letter-spacing:3px; text-transform:uppercase; margin:0;">Multi-Zone Environmental Management</p>
+                          </div>
+                        </div>
+                      `;
+                    ]]]
+              - type: horizontal-stack
+                card_mod:
+                  style: |
+                    #root { gap: 32px !important; }
+                cards:
+                  - type: custom:button-card
+                    entity: climate.air_conditioner_living_room_climate
+                    show_name: false
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: var(--card-surface)
+                        - backdrop-filter: blur(24px)
+                        - '-webkit-backdrop-filter': blur(24px)
+                        - border: 1px solid var(--border-glass)
+                        - box-shadow: >-
+                            inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px
+                            rgba(0, 0, 0, 0.4)
+                        - border-radius: 24px
+                        - padding: 24px
+                        - height: 580px
+                      grid:
+                        - grid-template-areas: '"header" "dial" "modes"'
+                        - grid-template-rows: min-content 1fr min-content
+                      custom_fields:
+                        btn_up:
+                          - position: absolute
+                          - top: 20%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                        btn_down:
+                          - position: absolute
+                          - top: 50%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                    custom_fields:
+                      header: |
+                        [[[
+                          return `
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                              <h2 style="font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:600; color:var(--text-color); margin:0;">Living Room</h2>
+                            </div>
+                          `;
+                        ]]]
+                      dial: |
+                        [[[
+                          let target = states['climate.air_conditioner_living_room_climate']?.attributes?.temperature || '22';
+                          let state = states['climate.air_conditioner_living_room_climate']?.state || 'off';
+                          let glow = state === 'cool' ? 'var(--color-primary)' : 'rgba(255,255,255,0.1)';
+                          return `
+                            <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                              <div style="position:absolute; width:150px; height:150px; background:${glow}; filter:blur(60px); opacity:0.15; border-radius:50%;"></div>
+                              <svg style="width:280px; height:280px; transform:rotate(-90deg); filter:drop-shadow(0 0 12px ${glow});" viewBox="0 0 320 320">
+                                <circle cx="160" cy="160" r="140" fill="none" stroke="rgba(150, 150, 150, 0.1)" stroke-width="16"></circle>
+                                <circle cx="160" cy="160" r="140" fill="none" stroke="${glow}" stroke-width="16" stroke-linecap="round" stroke-dasharray="550 880" stroke-dashoffset="0"></circle>
+                              </svg>
+                              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                                <span style="color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:500;">Set To</span>
+                                <div style="font-family:'Space Grotesk', sans-serif; font-size:72px; font-weight:300; color:var(--text-color); line-height:1; margin-top:8px;">${target}&deg;</div>
+                                <span style="color:${glow}; font-size:12px; font-weight:600; margin-top:12px; text-transform:uppercase;">${state}</span>
+                              </div>
+                            </div>
+                          `;
+                        ]]]
+                      btn_up:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_living_room_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_living_room_climate']?.attributes?.temperature)
+                                || 20) + 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      btn_down:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_living_room_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_living_room_climate']?.attributes?.temperature)
+                                || 20) - 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      modes: |
+                        [[[
+                          return `
+                            <div style="width:100%; background:var(--nav-bg); border-radius:9999px; padding:4px; display:flex; border:1px solid var(--border-glass);">
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Heat</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; background:rgba(0, 229, 255, 0.15); color:var(--color-primary); border:1px solid rgba(0,229,255,0.3);">Cool</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Auto</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Off</div>
+                            </div>
+                          `;
+                        ]]]
+                  - type: custom:button-card
+                    entity: climate.air_conditioner_bedroom_climate
+                    show_name: false
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: var(--card-surface)
+                        - backdrop-filter: blur(24px)
+                        - '-webkit-backdrop-filter': blur(24px)
+                        - border: 1px solid var(--border-glass)
+                        - box-shadow: >-
+                            inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px
+                            rgba(0, 0, 0, 0.4)
+                        - border-radius: 24px
+                        - padding: 24px
+                        - height: 580px
+                      grid:
+                        - grid-template-areas: '"header" "dial" "modes"'
+                        - grid-template-rows: min-content 1fr min-content
+                      custom_fields:
+                        btn_up:
+                          - position: absolute
+                          - top: 20%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                        btn_down:
+                          - position: absolute
+                          - top: 50%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                    custom_fields:
+                      header: |
+                        [[[
+                          return `
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                              <h2 style="font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:600; color:var(--text-color); margin:0;">Bedroom</h2>
+                            </div>
+                          `;
+                        ]]]
+                      dial: |
+                        [[[
+                          let target = states['climate.air_conditioner_bedroom_climate']?.attributes?.temperature || '22';
+                          let state = states['climate.air_conditioner_bedroom_climate']?.state || 'off';
+                          let glow = state === 'heat' ? 'var(--color-accent-warm)' : 'rgba(255,255,255,0.1)';
+                          return `
+                            <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                              <div style="position:absolute; width:150px; height:150px; background:${glow}; filter:blur(60px); opacity:0.15; border-radius:50%;"></div>
+                              <svg style="width:280px; height:280px; transform:rotate(-90deg); filter:drop-shadow(0 0 12px ${glow});" viewBox="0 0 320 320">
+                                <circle cx="160" cy="160" r="140" fill="none" stroke="rgba(150, 150, 150, 0.1)" stroke-width="16"></circle>
+                                <circle cx="160" cy="160" r="140" fill="none" stroke="${glow}" stroke-width="16" stroke-linecap="round" stroke-dasharray="680 880" stroke-dashoffset="0"></circle>
+                              </svg>
+                              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                                <span style="color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:500;">Set To</span>
+                                <div style="font-family:'Space Grotesk', sans-serif; font-size:72px; font-weight:300; color:var(--text-color); line-height:1; margin-top:8px;">${target}&deg;</div>
+                                <span style="color:${glow}; font-size:12px; font-weight:600; margin-top:12px; text-transform:uppercase;">${state}</span>
+                              </div>
+                            </div>
+                          `;
+                        ]]]
+                      btn_up:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_bedroom_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_bedroom_climate']?.attributes?.temperature)
+                                || 20) + 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      btn_down:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_bedroom_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_bedroom_climate']?.attributes?.temperature)
+                                || 20) - 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      modes: |
+                        [[[
+                          return `
+                            <div style="width:100%; background:var(--nav-bg); border-radius:9999px; padding:4px; display:flex; border:1px solid var(--border-glass);">
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; background:rgba(255, 51, 102, 0.15); color:var(--color-accent-warm); border:1px solid rgba(255,51,102,0.3);">Heat</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Cool</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Auto</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Off</div>
+                            </div>
+                          `;
+                        ]]]
+                  - type: custom:button-card
+                    entity: climate.air_conditioner_office_climate
+                    show_name: false
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: var(--card-surface)
+                        - backdrop-filter: blur(24px)
+                        - '-webkit-backdrop-filter': blur(24px)
+                        - border: 1px solid var(--border-glass)
+                        - box-shadow: >-
+                            inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px
+                            rgba(0, 0, 0, 0.4)
+                        - border-radius: 24px
+                        - padding: 24px
+                        - height: 580px
+                        - opacity: '0.8'
+                      grid:
+                        - grid-template-areas: '"header" "dial" "modes"'
+                        - grid-template-rows: min-content 1fr min-content
+                      custom_fields:
+                        btn_up:
+                          - position: absolute
+                          - top: 20%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                        btn_down:
+                          - position: absolute
+                          - top: 50%
+                          - left: 10%
+                          - right: 10%
+                          - height: 30%
+                          - z-index: 10
+                    custom_fields:
+                      header: |
+                        [[[
+                          return `
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                              <h2 style="font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:600; color:var(--text-muted); margin:0;">Office</h2>
+                            </div>
+                          `;
+                        ]]]
+                      dial: |
+                        [[[
+                          let target = states['climate.air_conditioner_office_climate']?.attributes?.temperature || '22';
+                          return `
+                            <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; opacity:0.5;">
+                              <svg style="width:280px; height:280px; transform:rotate(-90deg);" viewBox="0 0 320 320">
+                                <circle cx="160" cy="160" r="140" fill="none" stroke="rgba(150, 150, 150, 0.2)" stroke-width="16"></circle>
+                              </svg>
+                              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                                <span style="color:var(--text-muted); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:500;">Current</span>
+                                <div style="font-family:'Space Grotesk', sans-serif; font-size:72px; font-weight:300; color:var(--text-color); line-height:1; margin-top:8px;">${target}&deg;</div>
+                                <span style="color:var(--text-muted); font-size:12px; font-weight:600; margin-top:12px; text-transform:uppercase;">OFF</span>
+                              </div>
+                            </div>
+                          `;
+                        ]]]
+                      btn_up:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_office_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_office_climate']?.attributes?.temperature)
+                                || 20) + 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      btn_down:
+                        card:
+                          type: custom:button-card
+                          show_name: false
+                          tap_action:
+                            action: call-service
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.air_conditioner_office_climate
+                              temperature: >-
+                                [[[ return
+                                (parseFloat(states['climate.air_conditioner_office_climate']?.attributes?.temperature)
+                                || 20) - 0.5; ]]]
+                          styles:
+                            card:
+                              - background: transparent
+                              - border: none
+                              - box-shadow: none
+                      modes: |
+                        [[[
+                          return `
+                            <div style="width:100%; background:var(--nav-bg); border-radius:9999px; padding:4px; display:flex; border:1px solid var(--border-glass);">
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Heat</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Cool</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; color:var(--text-muted);">Auto</div>
+                              <div style="flex:1; padding:12px 0; text-align:center; font-size:14px; font-weight:500; border-radius:9999px; background:rgba(255, 255, 255, 0.1); color:var(--text-color); box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);">Off</div>
+                            </div>
+                          `;
+                        ]]]

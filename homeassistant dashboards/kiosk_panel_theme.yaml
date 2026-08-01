@@ -1,0 +1,14 @@
+# Deploy to: \\obelisk\docker\homeassistant\themes\kiosk_panel.yaml
+# Or add via UI: Settings → Themes → Create New
+kiosk_panel:
+  card-mod-theme: kiosk_panel
+  card-mod-root-yaml: |
+    ha-drawer$: |
+      aside {
+        display: none !important;
+      }
+      div {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }

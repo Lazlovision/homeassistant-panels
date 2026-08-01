@@ -1,0 +1,595 @@
+theme: kiosk_panel
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+path: office-panel
+title: Office Panel
+views:
+- title: Office
+  path: office-panel
+  badges: []
+  type: panel
+  cards:
+  # === ROOT CONTAINER ===
+  - type: vertical-stack
+    card_mod:
+      style: |
+        ha-card {
+          background: #0E0E11 !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          height: 100vh !important;
+        }
+        #root {
+          display: flex !important;
+          flex-direction: column !important;
+          height: 100% !important;
+          padding: 12px 20px 10px 20px !important;
+          gap: 10px !important;
+        }
+        ha-panel-lovelace$ha-lovelace$ha-lovelace-main$ha-drawer$ {
+          aside { display: none !important; }
+          div { flex: 1 1 auto !important; width: 100% !important; }
+        }
+        ha-panel-lovelace ha-lovelace ha-lovelace-main {
+          margin-left: 0 !important;
+        }
+    cards:
+
+    # ===== TOP BAR =====
+    - type: custom:button-card
+      entity: weather.forecast_home
+      show_name: false
+      show_icon: false
+      show_state: false
+      custom_fields:
+        content: |
+          [[[
+            var w = states['weather.forecast_home'];
+            var out = states['sensor.air_conditioner_office_outside_air_temp'];
+            var icon = {clear_night:'☀️',sunny:'☀️',cloudy:'⛅',partlycloudy:'⛅',rainy:'🌧️',snowy:'❄️',windy:'🎐'}[w?.state] || '⛅';
+            var outT = out ? parseFloat(out.state) + '°C' : '--°C';
+            return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 12px;">' +
+              '<span style="color:#FFFFFF;font-size:20px;font-weight:700;letter-spacing:0.02em;">Office</span>' +
+              '<div style="display:flex;align-items:center;gap:8px;color:#8A8A93;font-size:13px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;">' +
+              '<span>' + icon + '</span><span style="font-weight:500;color:#E4E1E6;">' + outT + ' Outside</span></div></div>';
+          ]]]
+      styles:
+        card:
+        - background: transparent
+        - box-shadow: none
+        - border: none
+
+    # ===== SCENES ROW =====
+    - type: horizontal-stack
+      card_mod:
+        style: |
+          :host {
+            --scene-w: 100px;
+            --scene-h: 100px;
+          }
+          ha-card { background: transparent !important; border: none !important; box-shadow: none !important; }
+      cards:
+
+      # Scene 1 - Arrive
+      - type: custom:button-card
+        entity: scene.office_arrive
+        name: Arrive
+        show_icon: false
+        custom_fields:
+          icon: |
+            <ha-icon icon="mdi:door-open" style="width:32px;height:32px;--mdc-icon-size:32px;color:#00B0DF;"></ha-icon>
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          service_data: { entity_id: scene.office_arrive }
+        styles:
+          card:
+          - background: rgba(0,176,223,0.12)
+          - border-radius: 20px
+          - width: var(--scene-w)
+          - height: var(--scene-h)
+          - display: flex
+          - flex-direction: column
+          - align-items: center
+          - justify-content: center
+          - gap: 6px
+          name:
+          - color: '#E4E1E6'
+          - font-size: 12px
+          - font-weight: 600
+          - margin-top: '0'
+
+      # Scene 2 - Movie
+      - type: custom:button-card
+        entity: scene.office_movie
+        name: Movie
+        show_icon: false
+        custom_fields:
+          icon: |
+            <ha-icon icon="mdi:filmstrip" style="width:32px;height:32px;--mdc-icon-size:32px;color:#FF9100;"></ha-icon>
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          service_data: { entity_id: scene.office_movie }
+        styles:
+          card:
+          - background: rgba(255,145,0,0.12)
+          - border-radius: 20px
+          - width: var(--scene-w)
+          - height: var(--scene-h)
+          - display: flex
+          - flex-direction: column
+          - align-items: center
+          - justify-content: center
+          - gap: 6px
+          name:
+          - color: '#E4E1E6'
+          - font-size: 12px
+          - font-weight: 600
+          - margin-top: '0'
+
+      # Scene 3 - Leave
+      - type: custom:button-card
+        entity: scene.office_leave
+        name: Leave
+        show_icon: false
+        custom_fields:
+          icon: |
+            <ha-icon icon="mdi:exit-run" style="width:32px;height:32px;--mdc-icon-size:32px;color:#FF5252;"></ha-icon>
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          service_data: { entity_id: scene.office_leave }
+        styles:
+          card:
+          - background: rgba(255,82,82,0.12)
+          - border-radius: 20px
+          - width: var(--scene-w)
+          - height: var(--scene-h)
+          - display: flex
+          - flex-direction: column
+          - align-items: center
+          - justify-content: center
+          - gap: 6px
+          name:
+          - color: '#E4E1E6'
+          - font-size: 12px
+          - font-weight: 600
+          - margin-top: '0'
+
+      # Scene 4 - Sleep
+      - type: custom:button-card
+        entity: scene.office_sleep
+        name: Sleep
+        show_icon: false
+        custom_fields:
+          icon: |
+            <ha-icon icon="mdi:moon-waning-crescent" style="width:32px;height:32px;--mdc-icon-size:32px;color:#8ADB52;"></ha-icon>
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          service_data: { entity_id: scene.office_sleep }
+        styles:
+          card:
+          - background: rgba(138,217,82,0.12)
+          - border-radius: 20px
+          - width: var(--scene-w)
+          - height: var(--scene-h)
+          - display: flex
+          - flex-direction: column
+          - align-items: center
+          - justify-content: center
+          - gap: 6px
+          name:
+          - color: '#E4E1E6'
+          - font-size: 12px
+          - font-weight: 600
+          - margin-top: '0'
+
+    # ===== MAIN CONTENT (Lights 2x2 + Thermostat) =====
+    - type: horizontal-stack
+      card_mod:
+        style: |
+          ha-card { background: transparent !important; border: none !important; box-shadow: none !important; }
+          #root { flex: 1 !important; min-height: 0 !important; }
+      cards:
+
+      # --- LEFT: Lights 2x2 Grid ---
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host { flex: 1 !important; min-width: 0 !important; }
+            ha-card { background: transparent !important; border: none !important; box-shadow: none !important; }
+        cards:
+
+        # LIGHTS Label
+        - type: custom:button-card
+          show_name: true
+          show_icon: false
+          show_state: false
+          name: LIGHTS
+          styles:
+            card:
+            - background: transparent
+            - box-shadow: none
+            - border: none
+            - padding: '4px 0 2px 0'
+            name:
+            - color: '#8A8A93'
+            - font-size: 10px
+            - font-weight: 700
+            - letter-spacing: 0.15em
+
+        # 2x2 Grid
+        - type: grid
+          square: false
+          columns: 2
+          card_mod:
+            style: |
+              ha-card { background: transparent !important; border: none !important; box-shadow: none !important; }
+          cards:
+
+          # Light 1 - Ceiling Lights
+          - type: custom:button-card
+            entity: light.office_main_lights
+            name: Ceiling Lights
+            show_icon: false
+            show_state: false
+            custom_fields:
+              top_row: |
+                [[[
+                  var s = states[entity_id];
+                  var on = s?.state === 'on';
+                  var br = s?.attributes?.brightness || 0;
+                  var pct = Math.round(br / 255 * 100);
+                  return '<div style="display:flex;justify-content:space-between;align-items:center;width:100%;">' +
+                    '<div style="display:flex;align-items:center;gap:8px;">' +
+                    '<ha-icon icon="' + (on ? 'mdi:lightbulb' : 'mdi:lightbulb-off-outline') + '" style="width:20px;height:20px;--mdc-icon-size:20px;color:' + (on ? '#00B0DF' : '#8A8A93') + ';"></ha-icon>' +
+                    '<span style="font-size:12px;font-weight:500;color:' + (on ? '#E4E1E6' : '#8A8A93') + ';">' + (on ? pct + '%' : 'OFF') + '</span></div>' +
+                    '<div style="width:36px;height:20px;border-radius:10px;background:' + (on ? '#00B0DF' : 'rgba(255,255,255,0.12)') + ';position:relative;cursor:pointer;">' +
+                    '<div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:left 0.2s;' +
+                    (on ? 'left:18px;box-shadow:0 1px 3px rgba(0,0,0,0.3);' : 'left:2px;') + '"></div></div></div>';
+                ]]]
+              slider: |
+                [[[
+                  var s = states[entity_id];
+                  var on = s?.state === 'on';
+                  var br = s?.attributes?.brightness || 0;
+                  var pct = Math.round(br / 255 * 100);
+                  return '<div style="position:relative;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);cursor:pointer;">' +
+                    '<div style="position:absolute;left:0;top:0;height:100%;width:' + pct + '%;border-radius:2px;background:' + (on ? '#00B0DF' : 'transparent') + ';"></div>' +
+                    '<div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:' + pct + '%;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);' + (on ? '' : 'opacity:0.3;') + '"></div></div>';
+                ]]]
+            tap_action:
+              action: toggle
+            styles:
+              card:
+              - background: 'rgba(255,255,255,0.04)'
+              - border-radius: 16px
+              - padding: '12px 14px'
+              - display: flex
+              - flex-direction: column
+              - justify-content: space-between
+              - gap: 10px
+              name:
+              - color: '#E4E1E6'
+              - font-size: 12px
+              - font-weight: 600
+              custom_fields:
+                top_row:
+                - align_self: stretch
+                slider:
+                - margin_top: 'auto'
+
+          # Light 2 - Floor Lights
+          - type: custom:button-card
+            entity: light.office_nanol
+            name: Floor Lights
+            show_icon: false
+            show_state: false
+            custom_fields:
+              top_row: |
+                [[[
+                  var s = states[entity_id];
+                  var on = s?.state === 'on';
+                  var br = s?.attributes?.brightness || 0;
+                  var pct = Math.round(br / 255 * 100);
+                  return '<div style="display:flex;justify-content:space-between;align-items:center;width:100%;">' +
+                    '<div style="display:flex;align-items:center;gap:8px;">' +
+                    '<ha-icon icon="' + (on ? 'mdi:led-strip-variant' : 'mdi:led-strip-variant-off') + '" style="width:20px;height:20px;--mdc-icon-size:20px;color:' + (on ? '#00B0DF' : '#8A8A93') + ';"></ha-icon>' +
+                    '<span style="font-size:12px;font-weight:500;color:' + (on ? '#E4E1E6' : '#8A8A93') + ';">' + (on ? pct + '%' : 'OFF') + '</span></div>' +
+                    '<div style="width:36px;height:20px;border-radius:10px;background:' + (on ? '#00B0DF' : 'rgba(255,255,255,0.12)') + ';position:relative;cursor:pointer;">' +
+                    '<div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;transition:left 0.2s;' +
+                    (on ? 'left:18px;box-shadow:0 1px 3px rgba(0,0,0,0.3);' : 'left:2px;') + '"></div></div></div>';
+                ]]]
+              slider: |
+                [[[
+                  var s = states[entity_id];
+                  var on = s?.state === 'on';
+                  var br = s?.attributes?.brightness || 0;
+                  var pct = Math.round(br / 255 * 100);
+                  return '<div style="position:relative;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);cursor:pointer;">' +
+                    '<div style="position:absolute;left:0;top:0;height:100%;width:' + pct + '%;border-radius:2px;background:' + (on ? '#00B0DF' : 'transparent') + ';"></div>' +
+                    '<div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:' + pct + '%;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);' + (on ? '' : 'opacity:0.3;') + '"></div></div>';
+                ]]]
+            tap_action:
+              action: toggle
+            styles:
+              card:
+              - background: 'rgba(255,255,255,0.04)'
+              - border-radius: 16px
+              - padding: '12px 14px'
+              - display: flex
+              - flex-direction: column
+              - justify-content: space-between
+              - gap: 10px
+              name:
+              - color: '#E4E1E6'
+              - font-size: 12px
+              - font-weight: 600
+              custom_fields:
+                top_row:
+                - align_self: stretch
+                slider:
+                - margin_top: 'auto'
+
+          # Light 3 - Chandelier (placeholder)
+          - type: custom:button-card
+            name: Chandelier
+            show_icon: false
+            show_state: false
+            custom_fields:
+              top_row: |
+                <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <ha-icon icon="mdi:sitemap" style="width:20px;height:20px;--mdc-icon-size:20px;color:#8A8A93;"></ha-icon>
+                    <span style="font-size:12px;font-weight:500;color:#8A8A93;">OFF</span>
+                  </div>
+                  <div style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.12);position:relative;">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;opacity:0.3;"></div>
+                  </div>
+                </div>
+              slider: |
+                <div style="position:relative;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);">
+                  <div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:0%;width:12px;height:12px;border-radius:50%;background:#fff;opacity:0.3;"></div>
+                </div>
+            styles:
+              card:
+              - background: 'rgba(255,255,255,0.04)'
+              - border-radius: 16px
+              - padding: '12px 14px'
+              - display: flex
+              - flex-direction: column
+              - justify-content: space-between
+              - gap: 10px
+              name:
+              - color: '#E4E1E6'
+              - font-size: 12px
+              - font-weight: 600
+              custom_fields:
+                top_row:
+                - align_self: stretch
+                slider:
+                - margin_top: 'auto'
+
+          # Light 4 - Accent Wall (placeholder)
+          - type: custom:button-card
+            name: Accent Wall
+            show_icon: false
+            show_state: false
+            custom_fields:
+              top_row: |
+                <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <ha-icon icon="mdi:wall-sconce" style="width:20px;height:20px;--mdc-icon-size:20px;color:#8A8A93;"></ha-icon>
+                    <span style="font-size:12px;font-weight:500;color:#8A8A93;">OFF</span>
+                  </div>
+                  <div style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.12);position:relative;">
+                    <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;opacity:0.3;"></div>
+                  </div>
+                </div>
+              slider: |
+                <div style="position:relative;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);">
+                  <div style="position:absolute;top:50%;transform:translate(-50%,-50%);left:0%;width:12px;height:12px;border-radius:50%;background:#fff;opacity:0.3;"></div>
+                </div>
+            styles:
+              card:
+              - background: 'rgba(255,255,255,0.04)'
+              - border-radius: 16px
+              - padding: '12px 14px'
+              - display: flex
+              - flex-direction: column
+              - justify-content: space-between
+              - gap: 10px
+              name:
+              - color: '#E4E1E6'
+              - font-size: 12px
+              - font-weight: 600
+              custom_fields:
+                top_row:
+                - align_self: stretch
+                slider:
+                - margin_top: 'auto'
+
+      # --- RIGHT: Thermostat ---
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host { flex: 0 0 260px !important; }
+            ha-card { background: transparent !important; border: none !important; box-shadow: none !important; }
+        cards:
+
+        # THERMOSTAT Label
+        - type: custom:button-card
+          show_name: true
+          show_icon: false
+          show_state: false
+          name: THERMOSTAT
+          styles:
+            card:
+            - background: transparent
+            - box-shadow: none
+            - border: none
+            - padding: '4px 0 2px 0'
+            name:
+            - color: '#8A8A93'
+            - font-size: 10px
+            - font-weight: 700
+            - letter-spacing: 0.15em
+
+        # Thermostat Card
+        - type: custom:button-card
+          entity: climate.air_conditioner_office_climate
+          show_name: false
+          show_icon: false
+          show_state: false
+          custom_fields:
+            dial: |
+              [[[
+                var s = states[entity_id];
+                var target = parseFloat(s?.attributes?.temperature) || 22;
+                var st = s?.state || 'off';
+                var cur = s?.attributes?.current_temperature ?? '--';
+                var glow;
+                if (st==='heat'||st==='heating') glow='#FF4D4D';
+                else if (st==='cool'||st==='cooling'||st==='auto') glow='#64D3FF';
+                else if (st==='dry'||st==='drying') glow='#8ADB52';
+                else glow='rgba(161,161,166,0.3)';
+                var frac = Math.max(0, Math.min(1, (target-15)/16));
+                var circumference = Math.PI * 2 * 42;
+                var offset = circumference * (1 - frac);
+                return '<svg viewBox="0 0 120 120" style="width:140px;height:140px;">' +
+                  '<circle cx="60" cy="60" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5"/>' +
+                  '<circle cx="60" cy="60" r="42" fill="none" stroke="' + glow + '" stroke-width="5"' +
+                  ' stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '"' +
+                  ' stroke-linecap="round" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 0.5s;filter:drop-shadow(0 0 6px ' + glow + '44);"/>' +
+                  '<text x="60" y="50" text-anchor="middle" fill="#E4E1E6" font-size="26" font-weight="700">' + cur + '°</text>' +
+                  '<text x="60" y="70" text-anchor="middle" fill="#8A8A93" font-size="10" font-weight="500">SET ' + target + '°</text>' +
+                  '</svg>';
+              ]]]
+            setpoint: |
+              [[[
+                var s = states[entity_id];
+                var target = parseFloat(s?.attributes?.temperature) || 22;
+                return '<div style="display:flex;align-items:center;justify-content:center;gap:20px;">' +
+                  '<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;" data-action="down">' +
+                  '<ha-icon icon="mdi:minus" style="width:20px;height:20px;--mdc-icon-size:20px;color:#E4E1E6;"></ha-icon></div>' +
+                  '<span style="font-size:32px;font-weight:700;color:#E4E1E6;min-width:60px;text-align:center;">' + target + '°</span>' +
+                  '<div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;" data-action="up">' +
+                  '<ha-icon icon="mdi:plus" style="width:20px;height:20px;--mdc-icon-size:20px;color:#E4E1E6;"></ha-icon></div></div>';
+              ]]]
+            status_pill: |
+              [[[
+                var s = states[entity_id];
+                var st = s?.state || 'off';
+                if (st === 'off') return '<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.04);padding:4px 10px;border-radius:12px;">' +
+                  '<span style="font-size:10px;font-weight:600;color:#8A8A93;">OFF</span></div>';
+                var color, icon, text;
+                if (st==='heat'||st==='heating') { color='#FF4D4D'; icon='mdi:fire'; text='Heating'; }
+                else if (st==='cool'||st==='cooling') { color='#64D3FF'; icon='mdi:snowflake'; text='Cooling'; }
+                else if (st==='dry'||st==='drying') { color='#8ADB52'; icon='mdi:water'; text='Dry'; }
+                else if (st==='fan_only') { color='#A1A1A6'; icon='mdi:fan'; text='Fan Only'; }
+                else { color='#64D3FF'; icon='mdi:auto-mode'; text='Auto'; }
+                return '<div style="display:inline-flex;align-items:center;gap:4px;background:' + color + '22;padding:4px 10px;border-radius:12px;">' +
+                  '<ha-icon icon="' + icon + '" style="width:12px;height:12px;--mdc-icon-size:12px;color:' + color + ';"></ha-icon>' +
+                  '<span style="font-size:10px;font-weight:600;color:' + color + ';">' + text + '</span></div>';
+              ]]]
+            info_row: |
+              [[[
+                var s = states[entity_id];
+                var fan = s?.attributes?.fan_mode || 'auto';
+                var out = states['sensor.air_conditioner_office_outside_air_temp'];
+                var outT = out?.state || '--';
+                return '<div style="display:flex;justify-content:center;gap:20px;font-size:11px;color:#8A8A93;">' +
+                  '<div style="display:flex;align-items:center;gap:5px;"><ha-icon icon="mdi:fan" style="width:13px;height:13px;--mdc-icon-size:13px;"></ha-icon><span>' + fan + '</span></div>' +
+                  '<div style="display:flex;align-items:center;gap:5px;"><ha-icon icon="mdi:thermometer-outline" style="width:13px;height:13px;--mdc-icon-size:13px;"></ha-icon><span>' + outT + '° outside</span></div></div>';
+              ]]]
+          action:
+            tap:
+              action: none
+          styles:
+            card:
+            - display: flex
+            - flex-direction: column
+            - align-items: center
+            - justify-content: center
+            - gap: 10px
+            - background: 'rgba(255,255,255,0.03)'
+            - border-radius: 20px
+            - padding: '16px'
+            - height: '100%'
+            custom_fields:
+              dial:
+              - margin: '0 auto'
+              setpoint:
+              - align_self: center
+              status_pill:
+              - align_self: center
+              info_row:
+              - align_self: center
+
+    # ===== MUSIC BAR =====
+    - type: custom:button-card
+      entity: media_player.office
+      show_name: false
+      show_icon: false
+      show_state: false
+      custom_fields:
+        album_art: |
+          [[[
+            var s = states[entity_id];
+            var art = s?.attributes?.entity_picture;
+            if (art) return '<img src="' + art + '" style="width:42px;height:42px;border-radius:10px;object-fit:cover;">';
+            return '<div style="width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;">' +
+              '<ha-icon icon="mdi:music-note" style="width:18px;height:18px;--mdc-icon-size:18px;color:#8A8A93;"></ha-icon></div>';
+          ]]]
+        song_info: |
+          [[[
+            var s = states[entity_id];
+            var title = s?.attributes?.media_title || 'No Media';
+            var artist = s?.attributes?.media_artist || '';
+            return '<div style="overflow:hidden;min-width:0;">' +
+              '<div style="font-size:13px;font-weight:600;color:#E4E1E6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + title + '</div>' +
+              '<div style="font-size:11px;color:#8A8A93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + artist + '</div></div>';
+          ]]]
+        controls: |
+          [[[
+            var s = states[entity_id];
+            var playing = s?.state === 'playing';
+            return '<div style="display:flex;align-items:center;gap:14px;">' +
+              '<ha-icon icon="mdi:skip-previous" style="width:18px;height:18px;--mdc-icon-size:18px;color:#8A8A93;cursor:pointer;"></ha-icon>' +
+              '<div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;">' +
+              '<ha-icon icon="' + (playing ? 'mdi:pause' : 'mdi:play') + '" style="width:18px;height:18px;--mdc-icon-size:18px;color:#E4E1E6;"></ha-icon></div>' +
+              '<ha-icon icon="mdi:skip-next" style="width:18px;height:18px;--mdc-icon-size:18px;color:#8A8A93;cursor:pointer;"></ha-icon></div>';
+          ]]]
+        volume: |
+          [[[
+            var s = states[entity_id];
+            var vol = Math.round((s?.attributes?.volume_level || 0.5) * 100);
+            return '<div style="display:flex;align-items:center;gap:6px;min-width:80px;">' +
+              '<ha-icon icon="mdi:volume-high" style="width:14px;height:14px;--mdc-icon-size:14px;color:#8A8A93;"></ha-icon>' +
+              '<div style="position:relative;flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.08);cursor:pointer;">' +
+              '<div style="position:absolute;left:0;top:0;height:100%;width:' + vol + '%;border-radius:2px;background:#64D3FF;"></div></div></div>';
+          ]]]
+      styles:
+        card:
+        - display: flex
+        - align-items: center
+        - gap: 12px
+        - padding: '10px 14px'
+        - background: 'rgba(255,255,255,0.04)'
+        - border-radius: 16px
+        custom_fields:
+          album_art:
+          - flex: '0 0 42px'
+          song_info:
+          - flex: 1
+          - min_width: 0
+          controls:
+          - flex: '0 0 auto'
+          volume:
+          - flex: '0 0 100px'

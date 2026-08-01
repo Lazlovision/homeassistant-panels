@@ -1,0 +1,418 @@
+title: Office Panel
+path: office-panel
+theme: default
+
+views:
+  - title: Office
+    path: office
+    type: panel
+    badges: []
+    cards:
+      # ================================================================
+      # ROOT VERTICAL STACK (Main Content + Bottom Media Bar)
+      # ================================================================
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host {
+              --bg-color: #000000;
+              --surface: #131316;
+              --text-primary: #e4e1e6;
+              --text-muted: #A1A1A6;
+              --card-bg: rgba(255, 255, 255, 0.05);
+              --primary-cyan: #00B0DF;
+              --primary-heat: #ff4d4d;
+              --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+            ha-card { 
+              background: var(--bg-color) !important; 
+              border: none !important; 
+              box-shadow: none !important; 
+              padding: 24px;
+              font-family: 'Hanken Grotesk', sans-serif;
+            }
+        cards:
+          # --- MAIN TWO-COLUMN LAYOUT ---
+          - type: horizontal-stack
+            cards:
+              # ============================================================
+              # LEFT COLUMN (Scenes & Lights)
+              # ============================================================
+              - type: vertical-stack
+                card_mod:
+                  style: |
+                    :host { flex: 2 !important; padding-right: 24px; }
+                cards:
+                  # --- TOP BAR ---
+                  - type: custom:button-card
+                    entity: weather.forecast_home
+                    show_name: false
+                    show_icon: false
+                    show_state: false
+                    custom_fields:
+                      content: |
+                        [[[
+                          var w = states['weather.forecast_home'];
+                          var icon = {clear_night:'☀️',sunny:'☀️',cloudy:'⛅',partlycloudy:'⛅',rainy:'🌧️',snowy:'❄️',windy:'💨'}[w?.state] || '⛅';
+                          var temp = w ? (w.attributes.temperature||'--')+'°C' : '--°C';
+                          return '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                            '<span style="color:var(--text-primary);font-size:24px;font-weight:500;">Office</span>' +
+                            '<div style="display:flex;align-items:center;gap:8px;background:var(--card-bg);border:var(--glass-border);padding:8px 16px;border-radius:9999px;">' +
+                            '<span style="font-size:16px;">' + icon + '</span><span style="color:var(--text-primary);font-size:12px;font-weight:700;letter-spacing:0.05em;">' + temp + '</span></div></div>';
+                        ]]]
+                    styles:
+                      card:
+                        - background: "transparent"
+                        - border: "none"
+                        - box-shadow: "none"
+                        - padding: "0 0 16px 0"
+
+                  # --- SCENES HEADER ---
+                  - type: custom:button-card
+                    name: "SCENES"
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: "transparent"
+                        - border: "none"
+                        - box-shadow: "none"
+                        - padding: "0 0 8px 0"
+                      name:
+                        - justify-self: "start"
+                        - color: "var(--text-muted)"
+                        - font-size: "12px"
+                        - font-weight: "700"
+                        - letter-spacing: "0.05em"
+
+                  # --- SCENES GRID ---
+                  - type: horizontal-stack
+                    cards:
+                      - type: custom:button-card
+                        entity: scene.office_daytime
+                        name: ARRIVE
+                        icon: mdi:home-outline
+                        tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.office_daytime } }
+                        styles:
+                          card:
+                            - background: "var(--card-bg)"
+                            - border: "var(--glass-border)"
+                            - border-radius: "16px"
+                            - height: "120px"
+                          icon:
+                            - color: "var(--primary-cyan)"
+                            - width: "24px"
+                            - margin-bottom: "12px"
+                          name:
+                            - color: "var(--text-primary)"
+                            - font-size: "12px"
+                            - font-weight: "700"
+                      
+                      - type: custom:button-card
+                        entity: scene.movie_office
+                        name: MOVIE
+                        icon: mdi:filmstrip
+                        tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.movie_office } }
+                        styles:
+                          card:
+                            - background: "var(--card-bg)"
+                            - border: "var(--glass-border)"
+                            - border-radius: "16px"
+                            - height: "120px"
+                          icon:
+                            - color: "#e48f29"
+                            - width: "24px"
+                            - margin-bottom: "12px"
+                          name:
+                            - color: "var(--text-primary)"
+                            - font-size: "12px"
+                            - font-weight: "700"
+
+                      - type: custom:button-card
+                        entity: scene.leave_office
+                        name: LEAVE
+                        icon: mdi:door-open
+                        tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.leave_office } }
+                        styles:
+                          card:
+                            - background: "var(--card-bg)"
+                            - border: "var(--glass-border)"
+                            - border-radius: "16px"
+                            - height: "120px"
+                          icon:
+                            - color: "#ffb4ab"
+                            - width: "24px"
+                            - margin-bottom: "12px"
+                          name:
+                            - color: "var(--text-primary)"
+                            - font-size: "12px"
+                            - font-weight: "700"
+
+                      - type: custom:button-card
+                        entity: scene.sleep_office
+                        name: SLEEP
+                        icon: mdi:moon-waning-crescent
+                        tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.sleep_office } }
+                        styles:
+                          card:
+                            - background: "var(--card-bg)"
+                            - border: "var(--glass-border)"
+                            - border-radius: "16px"
+                            - height: "120px"
+                          icon:
+                            - color: "#8adb52"
+                            - width: "24px"
+                            - margin-bottom: "12px"
+                          name:
+                            - color: "var(--text-primary)"
+                            - font-size: "12px"
+                            - font-weight: "700"
+
+                  # --- LIGHTS HEADER ---
+                  - type: custom:button-card
+                    name: "LIGHTS"
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: "transparent"
+                        - border: "none"
+                        - box-shadow: "none"
+                        - padding: "24px 0 8px 0"
+                      name:
+                        - justify-self: "start"
+                        - color: "var(--text-muted)"
+                        - font-size: "12px"
+                        - font-weight: "700"
+                        - letter-spacing: "0.05em"
+
+                  # --- SINGLE LIGHT CARD ---
+                  - type: custom:button-card
+                    entity: light.office_main_lights
+                    show_name: false
+                    show_icon: false
+                    tap_action: { action: call-service, service: light.toggle, data: { entity_id: light.office_main_lights } }
+                    styles:
+                      card:
+                        - background: "var(--card-bg)"
+                        - border: "var(--glass-border)"
+                        - border-radius: "16px"
+                        - padding: "24px"
+                    custom_fields:
+                      content: |
+                        [[[
+                          var s = states['light.office_main_lights'];
+                          var on = s && s.state === 'on';
+                          var pct = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+                          return '<div style="display:flex;flex-direction:column;">' +
+                            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
+                              '<div style="display:flex;align-items:center;gap:16px;">' +
+                                '<ha-icon icon="mdi:lightbulb-outline" style="color:' + (on ? '#ffb86f' : 'var(--text-muted)') + ';--mdc-icon-size:28px;width:28px;height:28px;"></ha-icon>' +
+                                '<span style="color:var(--text-primary);font-size:18px;font-weight:500;">Main Lights</span>' +
+                              '</div>' +
+                              '<div style="width:44px;height:24px;border-radius:12px;background:' +
+                                (on ? 'var(--primary-cyan)' : '#353438') + ';' +
+                                'display:flex;align-items:center;padding:' +
+                                (on ? '2px 2px 2px 22px' : '2px 22px 2px 2px') + ';">' +
+                                '<div style="width:20px;height:20px;border-radius:50%;background:#ffffff;"></div>' +
+                              '</div>' +
+                            '</div>' +
+                            '<div style="position:relative;width:100%;height:8px;background:#353438;border-radius:4px;">' +
+                              '<div style="position:absolute;top:0;left:0;width:' + pct + '%;height:100%;background:var(--primary-cyan);border-radius:4px;"></div>' +
+                              (on ? '<div style="position:absolute;top:-4px;left:calc(' + pct + '% - 8px);width:16px;height:16px;border-radius:50%;background:#ffffff;"></div>' : '') +
+                            '</div></div>';
+                        ]]]
+
+              # ============================================================
+              # RIGHT COLUMN (HVAC Thermostat)
+              # ============================================================
+              - type: vertical-stack
+                card_mod:
+                  style: |
+                    :host { flex: 1.2 !important; }
+                cards:
+                  - type: custom:button-card
+                    entity: climate.air_conditioner_office_climate
+                    show_name: false
+                    show_icon: false
+                    styles:
+                      card:
+                        - background: "var(--card-bg)"
+                        - border: "var(--glass-border)"
+                        - border-radius: "24px"
+                        - padding: "32px"
+                        - height: "100%"
+                      # THIS GRID FIXES THE "SMASHED TOGETHER" BUG
+                      grid:
+                        - grid-template-areas: '"visual" "controls" "modes"'
+                        - grid-template-columns: "1fr"
+                        - grid-template-rows: "auto auto auto"
+                        - grid-gap: "32px"
+                    custom_fields:
+                      visual: |
+                        [[[
+                          var s = states['climate.air_conditioner_office_climate'];
+                          var cur = s ? parseFloat(s.attributes.current_temperature) : '--';
+                          var action = s ? s.attributes.hvac_action : 'idle';
+                          var isCooling = action === 'cooling';
+                          
+                          return `
+                            <div style="position:relative;width:280px;height:280px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+                              <svg style="position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="4" />
+                                <circle cx="50" cy="50" r="46" fill="none" stroke="url(#hvac-grad)" stroke-width="4" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="70" />
+                                <defs>
+                                  <linearGradient id="hvac-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#00B0DF" />
+                                    <stop offset="100%" stop-color="#ff4d4d" />
+                                  </linearGradient>
+                                </defs>
+                              </svg>
+                              <div style="text-align:center;z-index:10;display:flex;flex-direction:column;align-items:center;">
+                                <div style="display:flex;align-items:baseline;justify-content:center;">
+                                  <span style="font-size:72px;font-weight:700;line-height:1;color:var(--text-primary);">${cur}</span>
+                                  <span style="font-size:24px;font-weight:700;color:var(--text-muted);margin-left:4px;">°C</span>
+                                </div>
+                                <div style="margin-top:16px;display:flex;align-items:center;gap:8px;padding:8px 20px;border-radius:9999px;background:${isCooling ? 'rgba(0,176,223,0.1)' : 'rgba(255,255,255,0.05)'};border:1px solid ${isCooling ? 'rgba(0,176,223,0.2)' : 'transparent'};">
+                                  <ha-icon icon="mdi:snowflake" style="color:${isCooling ? 'var(--primary-cyan)' : 'var(--text-muted)'};--mdc-icon-size:16px;width:16px;height:16px;"></ha-icon>
+                                  <span style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:${isCooling ? 'var(--primary-cyan)' : 'var(--text-muted)'};">${isCooling ? 'COOLING ACTIVE' : 'IDLE'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          `;
+                        ]]]
+                      controls:
+                        card:
+                          type: custom:button-card
+                          styles:
+                            card:
+                              - background: "transparent"
+                              - border: "none"
+                              - box-shadow: "none"
+                              - padding: "0"
+                            grid:
+                              - grid-template-columns: "1fr auto 1fr"
+                              - align-items: "center"
+                          custom_fields:
+                            btn_down:
+                              card:
+                                type: custom:button-card
+                                icon: mdi:minus
+                                tap_action:
+                                  action: call-service
+                                  service: climate.set_temperature
+                                  data:
+                                    entity_id: climate.air_conditioner_office_climate
+                                    temperature: >
+                                      [[[ return Math.max((states['climate.air_conditioner_office_climate'].attributes.temperature || 21) - 0.5, 15); ]]]
+                                styles:
+                                  card:
+                                    - background: "var(--card-bg)"
+                                    - border: "var(--glass-border)"
+                                    - border-radius: "50%"
+                                    - width: "64px"
+                                    - height: "64px"
+                                    - justify-self: "start"
+                                  icon:
+                                    - color: "var(--text-primary)"
+                            target_temp: |
+                              [[[
+                                var s = states['climate.air_conditioner_office_climate'];
+                                var tgt = s ? parseFloat(s.attributes.temperature) : '--';
+                                return `
+                                  <div style="display:flex;flex-direction:column;align-items:center;padding:0 24px;">
+                                    <span style="font-size:36px;font-weight:700;color:var(--text-primary);line-height:1;">${tgt}°</span>
+                                    <span style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:0.05em;margin-top:8px;">SET POINT</span>
+                                  </div>
+                                `;
+                              ]]]
+                            btn_up:
+                              card:
+                                type: custom:button-card
+                                icon: mdi:plus
+                                tap_action:
+                                  action: call-service
+                                  service: climate.set_temperature
+                                  data:
+                                    entity_id: climate.air_conditioner_office_climate
+                                    temperature: >
+                                      [[[ return Math.min((states['climate.air_conditioner_office_climate'].attributes.temperature || 21) + 0.5, 31); ]]]
+                                styles:
+                                  card:
+                                    - background: "var(--card-bg)"
+                                    - border: "var(--glass-border)"
+                                    - border-radius: "50%"
+                                    - width: "64px"
+                                    - height: "64px"
+                                    - justify-self: "end"
+                                  icon:
+                                    - color: "var(--text-primary)"
+                      modes: |
+                        [[[
+                          var s = states['climate.air_conditioner_office_climate'];
+                          var curMode = s ? s.state : 'off';
+                          function btn(label, mode, color) {
+                            var active = curMode === mode;
+                            return `
+                              <div style="padding:12px;border-radius:8px;text-align:center;font-size:12px;font-weight:700;background:${active ? 'rgba(0,176,223,0.2)' : 'var(--card-bg)'};border:${active ? '1px solid rgba(0,176,223,0.4)' : 'transparent'};color:${active ? 'var(--primary-cyan)' : 'var(--text-primary)'};">
+                                ${label}
+                              </div>
+                            `;
+                          }
+                          return `
+                            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;">
+                              ${btn('AUTO','auto')} ${btn('COOL','cool')} ${btn('HEAT','heat')}
+                              ${btn('DRY','dry')} ${btn('FAN','fan_only')} ${btn('OFF','off')}
+                            </div>
+                          `;
+                        ]]]
+
+          # ============================================================
+          # BOTTOM BAR (Media Player - Fixed SVG scaling bug)
+          # ============================================================
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: "var(--card-bg)"
+                - border: "var(--glass-border)"
+                - border-radius: "24px"
+                - height: "96px"
+                - padding: "0 32px"
+                - margin-top: "24px"
+            custom_fields:
+              content: |
+                [[[
+                  return `
+                    <div style="display:flex;align-items:center;justify-content:space-between;height:100%;width:100%;">
+                      <div style="display:flex;align-items:center;gap:16px;min-width:250px;">
+                        <div style="width:56px;height:56px;border-radius:8px;background:#353438;display:flex;align-items:center;justify-content:center;">
+                          <ha-icon icon="mdi:music" style="color:var(--text-muted);--mdc-icon-size:24px;width:24px;height:24px;"></ha-icon>
+                        </div>
+                        <div>
+                          <p style="margin:0;font-size:16px;font-weight:700;color:var(--text-primary);">Midnight City</p>
+                          <p style="margin:0;font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:0.05em;">M83 • Office</p>
+                        </div>
+                      </div>
+                      
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;">
+                        <div style="display:flex;align-items:center;gap:24px;">
+                          <ha-icon icon="mdi:shuffle" style="color:var(--text-muted);--mdc-icon-size:24px;width:24px;height:24px;"></ha-icon>
+                          <ha-icon icon="mdi:skip-previous" style="color:var(--text-primary);--mdc-icon-size:32px;width:32px;height:32px;"></ha-icon>
+                          <div style="width:48px;height:48px;border-radius:50%;background:var(--text-primary);display:flex;align-items:center;justify-content:center;">
+                            <ha-icon icon="mdi:play" style="color:#000;--mdc-icon-size:28px;width:28px;height:28px;"></ha-icon>
+                          </div>
+                          <ha-icon icon="mdi:skip-next" style="color:var(--text-primary);--mdc-icon-size:32px;width:32px;height:32px;"></ha-icon>
+                          <ha-icon icon="mdi:repeat" style="color:var(--text-muted);--mdc-icon-size:24px;width:24px;height:24px;"></ha-icon>
+                        </div>
+                      </div>
+                      
+                      <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;min-width:250px;">
+                        <ha-icon icon="mdi:volume-high" style="color:var(--text-muted);--mdc-icon-size:24px;width:24px;height:24px;"></ha-icon>
+                        <div style="width:120px;height:4px;background:#353438;border-radius:2px;position:relative;">
+                          <div style="position:absolute;left:0;top:0;height:100%;width:65%;background:var(--primary-cyan);border-radius:2px;"></div>
+                          <div style="position:absolute;left:calc(65% - 6px);top:-4px;width:12px;height:12px;border-radius:50%;background:#fff;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                ]]]

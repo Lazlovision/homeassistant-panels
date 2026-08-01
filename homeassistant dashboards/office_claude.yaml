@@ -1,0 +1,727 @@
+##############################################################
+# OFFICE PANEL v5
+# Target: Crestron TSS-770-W @ 1280x800 landscape
+# Mode: Lovelace YAML, panel view, kiosk_mode via HACS
+# Required HACS: button-card, card-mod, kiosk-mode
+# Layout: vertical-stack root → top bar / content row / music bar
+#         Content row: horizontal-stack → left col / right col
+##############################################################
+
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+
+title: Office Panel
+path: office-panel
+
+views:
+  - title: Office
+    path: office-panel
+    type: panel
+    badges: []
+    cards:
+
+      ##########################################################
+      # ROOT — vertical-stack fills the full viewport
+      # card-mod targets ha-card directly on vertical-stack
+      ##########################################################
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host {
+              display: block !important;
+              height: 100vh !important;
+            }
+            ha-card {
+              background: #111 !important;
+              border: none !important;
+              box-shadow: none !important;
+              border-radius: 0 !important;
+              height: 100vh !important;
+              display: flex !important;
+              flex-direction: column !important;
+              padding: 16px 20px 12px 20px !important;
+              gap: 12px !important;
+              box-sizing: border-box !important;
+            }
+        cards:
+
+          ########################################################
+          # TOP BAR
+          # Single button-card, one custom_fields key "bar"
+          # Style for bar goes under styles.custom_fields.bar
+          ########################################################
+          - type: custom:button-card
+            entity: weather.forecast_home
+            show_name: false
+            show_icon: false
+            show_state: false
+            tap_action:
+              action: more-info
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+                - padding: "0"
+                - height: 48px
+                - min-height: 48px
+                - flex-shrink: "0"
+              custom_fields:
+                bar:
+                  - width: 100%
+                  - height: 48px
+                  - display: flex
+                  - align-items: center
+            grid:
+              grid-template-areas: "'bar'"
+              grid-template-columns: 1fr
+              grid-template-rows: 48px
+            custom_fields:
+              bar: |
+                [[[
+                  var w = states['weather.forecast_home'];
+                  var out = states['sensor.air_conditioner_office_outside_air_temp'];
+                  var iconMap = {
+                    sunny: '☀️', 'clear-night': '🌙', cloudy: '☁️',
+                    partlycloudy: '⛅', rainy: '🌧️', snowy: '❄️',
+                    windy: '💨', fog: '🌫️', hail: '🌨️', lightning: '⛈️'
+                  };
+                  var wIcon = w ? (iconMap[w.state] || '☁️') : '☁️';
+                  var outTemp = out ? Math.round(parseFloat(out.state)) + '°C' : '--°C';
+                  return `
+                    <div style="display:flex;justify-content:space-between;align-items:center;width:100%;height:48px;box-sizing:border-box;">
+                      <div style="font-size:22px;font-weight:600;color:#FFF;letter-spacing:-0.3px;line-height:1.1;">Office</div>
+                      <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+                        <span style="font-size:14px;line-height:1;">${wIcon}</span>
+                        <span style="color:#FFF;font-size:13px;font-weight:500;">${outTemp}</span>
+                      </div>
+                    </div>`;
+                ]]]
+
+          ########################################################
+          # CONTENT ROW — flex:1 to fill remaining height
+          # horizontal-stack → left col (scenes+lights) + right col (thermostat)
+          ########################################################
+          - type: horizontal-stack
+            card_mod:
+              style: |
+                :host {
+                  flex: 1 !important;
+                  min-height: 0 !important;
+                  display: block !important;
+                }
+                ha-card {
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                  padding: 0 !important;
+                  height: 100% !important;
+                  display: flex !important;
+                  flex-direction: row !important;
+                  gap: 16px !important;
+                  align-items: stretch !important;
+                }
+                #root {
+                  display: flex !important;
+                  flex-direction: row !important;
+                  gap: 16px !important;
+                  height: 100% !important;
+                  align-items: stretch !important;
+                }
+            cards:
+
+              ##################################################
+              # LEFT COLUMN — scenes + lights
+              ##################################################
+              - type: vertical-stack
+                card_mod:
+                  style: |
+                    :host {
+                      flex: 1.4 !important;
+                      min-width: 0 !important;
+                      display: block !important;
+                      height: 100% !important;
+                    }
+                    ha-card {
+                      background: transparent !important;
+                      border: none !important;
+                      box-shadow: none !important;
+                      padding: 0 !important;
+                      height: 100% !important;
+                      display: flex !important;
+                      flex-direction: column !important;
+                      gap: 10px !important;
+                    }
+                    #root {
+                      display: flex !important;
+                      flex-direction: column !important;
+                      gap: 10px !important;
+                      height: 100% !important;
+                    }
+                cards:
+
+                  # SCENES LABEL
+                  - type: custom:button-card
+                    show_name: true
+                    show_icon: false
+                    show_state: false
+                    name: SCENES
+                    styles:
+                      card:
+                        - background: transparent
+                        - border: none
+                        - box-shadow: none
+                        - padding: "0"
+                        - height: 18px
+                        - min-height: 18px
+                        - flex-shrink: "0"
+                        - justify-content: flex-start
+                      name:
+                        - color: "#666"
+                        - font-size: 10px
+                        - font-weight: 700
+                        - letter-spacing: 1.5px
+                        - text-transform: uppercase
+                        - text-align: left
+                        - padding-left: "2px"
+
+                  # SCENES ROW
+                  - type: horizontal-stack
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: transparent !important;
+                          border: none !important;
+                          box-shadow: none !important;
+                          padding: 0 !important;
+                          flex-shrink: 0 !important;
+                        }
+                        #root { gap: 10px !important; }
+                    cards:
+                      - type: custom:button-card
+                        entity: scene.office_daytime
+                        tap_action:
+                          action: call-service
+                          service: scene.turn_on
+                          service_data:
+                            entity_id: scene.office_daytime
+                        show_icon: false
+                        show_name: false
+                        show_state: false
+                        custom_fields:
+                          content: |
+                            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:4px;">
+                              <span style="font-size:22px;line-height:1;">🏠</span>
+                              <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#FFF;">ARRIVE</span>
+                            </div>
+                        grid:
+                          grid-template-areas: "'content'"
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 14px
+                            - height: 80px
+                            - box-sizing: border-box
+                          custom_fields:
+                            content:
+                              - justify-self: stretch
+                              - align-self: stretch
+
+                      - type: custom:button-card
+                        entity: scene.office_movie
+                        tap_action:
+                          action: call-service
+                          service: scene.turn_on
+                          service_data:
+                            entity_id: scene.office_movie
+                        show_icon: false
+                        show_name: false
+                        show_state: false
+                        custom_fields:
+                          content: |
+                            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:4px;">
+                              <span style="font-size:22px;line-height:1;">🎬</span>
+                              <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#FFF;">MOVIE</span>
+                            </div>
+                        grid:
+                          grid-template-areas: "'content'"
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 14px
+                            - height: 80px
+                            - box-sizing: border-box
+                          custom_fields:
+                            content:
+                              - justify-self: stretch
+                              - align-self: stretch
+
+                      - type: custom:button-card
+                        entity: scene.office_leave
+                        tap_action:
+                          action: call-service
+                          service: scene.turn_on
+                          service_data:
+                            entity_id: scene.office_leave
+                        show_icon: false
+                        show_name: false
+                        show_state: false
+                        custom_fields:
+                          content: |
+                            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:4px;">
+                              <span style="font-size:22px;line-height:1;">🚪</span>
+                              <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#FFF;">LEAVE</span>
+                            </div>
+                        grid:
+                          grid-template-areas: "'content'"
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 14px
+                            - height: 80px
+                            - box-sizing: border-box
+                          custom_fields:
+                            content:
+                              - justify-self: stretch
+                              - align-self: stretch
+
+                      - type: custom:button-card
+                        entity: scene.office_sleep
+                        tap_action:
+                          action: call-service
+                          service: scene.turn_on
+                          service_data:
+                            entity_id: scene.office_sleep
+                        show_icon: false
+                        show_name: false
+                        show_state: false
+                        custom_fields:
+                          content: |
+                            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:4px;">
+                              <span style="font-size:22px;line-height:1;">🌙</span>
+                              <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#FFF;">SLEEP</span>
+                            </div>
+                        grid:
+                          grid-template-areas: "'content'"
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 14px
+                            - height: 80px
+                            - box-sizing: border-box
+                          custom_fields:
+                            content:
+                              - justify-self: stretch
+                              - align-self: stretch
+
+                  # LIGHTS LABEL
+                  - type: custom:button-card
+                    show_name: true
+                    show_icon: false
+                    show_state: false
+                    name: LIGHTS
+                    styles:
+                      card:
+                        - background: transparent
+                        - border: none
+                        - box-shadow: none
+                        - padding: "0"
+                        - height: 18px
+                        - min-height: 18px
+                        - flex-shrink: "0"
+                        - justify-content: flex-start
+                      name:
+                        - color: "#666"
+                        - font-size: 10px
+                        - font-weight: 700
+                        - letter-spacing: 1.5px
+                        - text-transform: uppercase
+                        - text-align: left
+                        - padding-left: "2px"
+
+                  # LIGHTS GRID — 2 columns, flex:1 to fill remaining height
+                  - type: grid
+                    square: false
+                    columns: 2
+                    card_mod:
+                      style: |
+                        :host {
+                          flex: 1 !important;
+                          min-height: 0 !important;
+                        }
+                        ha-card {
+                          background: transparent !important;
+                          border: none !important;
+                          box-shadow: none !important;
+                          padding: 0 !important;
+                          height: 100% !important;
+                        }
+                        #root {
+                          gap: 10px !important;
+                          height: 100% !important;
+                          align-items: stretch !important;
+                        }
+                    cards:
+
+                      # Ceiling Lights
+                      - type: custom:button-card
+                        entity: light.office_main_lights
+                        tap_action:
+                          action: toggle
+                        hold_action:
+                          action: more-info
+                        show_name: false
+                        show_icon: false
+                        show_state: false
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 16px
+                            - padding: "16px"
+                            - box-sizing: border-box
+                            - display: flex
+                            - flex-direction: column
+                            - justify-content: space-between
+                            - height: 100%
+                          custom_fields:
+                            header:
+                              - width: 100%
+                            track:
+                              - width: 100%
+                        grid:
+                          grid-template-areas: "'header' 'track'"
+                          grid-template-columns: 1fr
+                          grid-template-rows: 1fr auto
+                        custom_fields:
+                          header: |
+                            [[[
+                              var s = states['light.office_main_lights'];
+                              var on = s && s.state === 'on';
+                              var bri = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+                              var sub = on ? bri + '%' : 'OFF';
+                              return `
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+                                  <div style="display:flex;align-items:center;gap:10px;">
+                                    <span style="font-size:20px;line-height:1;color:${on ? '#FFD60A' : '#444'};">💡</span>
+                                    <div>
+                                      <div style="font-size:14px;font-weight:600;color:${on ? '#FFF' : '#666'};">Ceiling Lights</div>
+                                      <div style="font-size:11px;color:#666;margin-top:1px;">${sub}</div>
+                                    </div>
+                                  </div>
+                                  <div style="width:42px;height:24px;border-radius:12px;background:${on ? 'rgba(0,229,255,0.2)' : 'rgba(255,255,255,0.08)'};border:1px solid ${on ? 'rgba(0,229,255,0.4)' : 'rgba(255,255,255,0.1)'};position:relative;flex-shrink:0;margin-top:2px;">
+                                    <div style="width:18px;height:18px;border-radius:50%;background:${on ? '#00E5FF' : '#555'};position:absolute;top:2px;left:${on ? '20px' : '2px'};transition:left 0.2s;"></div>
+                                  </div>
+                                </div>`;
+                            ]]]
+                          track: |
+                            [[[
+                              var s = states['light.office_main_lights'];
+                              var on = s && s.state === 'on';
+                              var pct = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+                              return `
+                                <div style="width:100%;margin-top:14px;">
+                                  <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                                    <div style="width:${pct}%;height:100%;background:#00E5FF;border-radius:2px;"></div>
+                                    <div style="width:13px;height:13px;background:#FFF;border-radius:50%;position:absolute;top:-4.5px;left:calc(${pct}% - 6.5px);box-shadow:0 1px 4px rgba(0,0,0,0.5);"></div>
+                                  </div>
+                                </div>`;
+                            ]]]
+
+                      # Floor Lights
+                      - type: custom:button-card
+                        entity: light.nanoleaf_light_panels_51_c8_ca_2
+                        tap_action:
+                          action: toggle
+                        hold_action:
+                          action: more-info
+                        show_name: false
+                        show_icon: false
+                        show_state: false
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 16px
+                            - padding: "16px"
+                            - box-sizing: border-box
+                            - display: flex
+                            - flex-direction: column
+                            - justify-content: space-between
+                            - height: 100%
+                          custom_fields:
+                            header:
+                              - width: 100%
+                            track:
+                              - width: 100%
+                        grid:
+                          grid-template-areas: "'header' 'track'"
+                          grid-template-columns: 1fr
+                          grid-template-rows: 1fr auto
+                        custom_fields:
+                          header: |
+                            [[[
+                              var s = states['light.nanoleaf_light_panels_51_c8_ca_2'];
+                              var on = s && s.state === 'on';
+                              var pct = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+                              var sub = on ? pct + '%' : 'OFF';
+                              return `
+                                <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+                                  <div style="display:flex;align-items:center;gap:10px;">
+                                    <span style="font-size:20px;line-height:1;opacity:${on ? '1' : '0.3'};">💡</span>
+                                    <div>
+                                      <div style="font-size:14px;font-weight:600;color:${on ? '#FFF' : '#666'};">Floor Lights</div>
+                                      <div style="font-size:11px;color:#666;margin-top:1px;">${sub}</div>
+                                    </div>
+                                  </div>
+                                  <div style="width:42px;height:24px;border-radius:12px;background:${on ? 'rgba(0,229,255,0.2)' : 'rgba(255,255,255,0.08)'};border:1px solid ${on ? 'rgba(0,229,255,0.4)' : 'rgba(255,255,255,0.1)'};position:relative;flex-shrink:0;margin-top:2px;">
+                                    <div style="width:18px;height:18px;border-radius:50%;background:${on ? '#00E5FF' : '#555'};position:absolute;top:2px;left:${on ? '20px' : '2px'};transition:left 0.2s;"></div>
+                                  </div>
+                                </div>`;
+                            ]]]
+                          track: |
+                            [[[
+                              var s = states['light.nanoleaf_light_panels_51_c8_ca_2'];
+                              var on = s && s.state === 'on';
+                              var pct = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+                              return `
+                                <div style="width:100%;margin-top:14px;">
+                                  <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                                    <div style="width:${pct}%;height:100%;background:#00E5FF;border-radius:2px;"></div>
+                                    <div style="width:13px;height:13px;background:#FFF;border-radius:50%;position:absolute;top:-4.5px;left:calc(${pct}% - 6.5px);box-shadow:0 1px 4px rgba(0,0,0,0.5);"></div>
+                                  </div>
+                                </div>`;
+                            ]]]
+
+                      # Chandelier (placeholder)
+                      - type: custom:button-card
+                        show_name: false
+                        show_icon: false
+                        show_state: false
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 16px
+                            - padding: "16px"
+                            - box-sizing: border-box
+                            - display: flex
+                            - flex-direction: column
+                            - justify-content: space-between
+                            - height: 100%
+                          custom_fields:
+                            header:
+                              - width: 100%
+                            track:
+                              - width: 100%
+                        grid:
+                          grid-template-areas: "'header' 'track'"
+                          grid-template-columns: 1fr
+                          grid-template-rows: 1fr auto
+                        custom_fields:
+                          header: |
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+                              <div style="display:flex;align-items:center;gap:10px;">
+                                <span style="font-size:20px;line-height:1;color:#444;">💡</span>
+                                <div>
+                                  <div style="font-size:14px;font-weight:600;color:#666;">Chandelier</div>
+                                  <div style="font-size:11px;color:#666;margin-top:1px;">OFF</div>
+                                </div>
+                              </div>
+                              <div style="width:42px;height:24px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);position:relative;flex-shrink:0;margin-top:2px;">
+                                <div style="width:18px;height:18px;border-radius:50%;background:#555;position:absolute;top:2px;left:2px;"></div>
+                              </div>
+                            </div>
+                          track: |
+                            <div style="width:100%;margin-top:14px;">
+                              <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                                <div style="width:13px;height:13px;background:#555;border-radius:50%;position:absolute;top:-4.5px;left:-6.5px;"></div>
+                              </div>
+                            </div>
+
+                      # Accent Wall (placeholder)
+                      - type: custom:button-card
+                        show_name: false
+                        show_icon: false
+                        show_state: false
+                        styles:
+                          card:
+                            - background: "rgba(255,255,255,0.04)"
+                            - border: "1px solid rgba(255,255,255,0.07)"
+                            - border-radius: 16px
+                            - padding: "16px"
+                            - box-sizing: border-box
+                            - display: flex
+                            - flex-direction: column
+                            - justify-content: space-between
+                            - height: 100%
+                          custom_fields:
+                            header:
+                              - width: 100%
+                            track:
+                              - width: 100%
+                        grid:
+                          grid-template-areas: "'header' 'track'"
+                          grid-template-columns: 1fr
+                          grid-template-rows: 1fr auto
+                        custom_fields:
+                          header: |
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+                              <div style="display:flex;align-items:center;gap:10px;">
+                                <span style="font-size:20px;line-height:1;color:#444;">💡</span>
+                                <div>
+                                  <div style="font-size:14px;font-weight:600;color:#666;">Accent Wall</div>
+                                  <div style="font-size:11px;color:#666;margin-top:1px;">OFF</div>
+                                </div>
+                              </div>
+                              <div style="width:42px;height:24px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);position:relative;flex-shrink:0;margin-top:2px;">
+                                <div style="width:18px;height:18px;border-radius:50%;background:#555;position:absolute;top:2px;left:2px;"></div>
+                              </div>
+                            </div>
+                          track: |
+                            <div style="width:100%;margin-top:14px;">
+                              <div style="width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                                <div style="width:13px;height:13px;background:#555;border-radius:50%;position:absolute;top:-4.5px;left:-6.5px;"></div>
+                              </div>
+                            </div>
+
+              ##################################################
+              # RIGHT COLUMN — thermostat, full height
+              ##################################################
+              - type: vertical-stack
+                card_mod:
+                  style: |
+                    :host {
+                      flex: 0.8 !important;
+                      min-width: 0 !important;
+                      display: block !important;
+                      height: 100% !important;
+                    }
+                    ha-card {
+                      background: transparent !important;
+                      border: none !important;
+                      box-shadow: none !important;
+                      padding: 0 !important;
+                      height: 100% !important;
+                    }
+                    #root {
+                      height: 100% !important;
+                    }
+                cards:
+                  - type: thermostat
+                    entity: climate.air_conditioner_office_climate
+                    name: THERMOSTAT
+                    card_mod:
+                      style: |
+                        :host {
+                          height: 100% !important;
+                          display: block !important;
+                        }
+                        ha-card {
+                          background: rgba(255,255,255,0.04) !important;
+                          border: 1px solid rgba(255,255,255,0.07) !important;
+                          border-radius: 20px !important;
+                          height: 100% !important;
+                          box-sizing: border-box !important;
+                          --state-climate-cool-color: #00E5FF !important;
+                          --state-climate-heat-color: #FF453A !important;
+                          --state-climate-dry-color: #FF9F0A !important;
+                          --state-climate-fan_only-color: #30D158 !important;
+                          --state-climate-auto-color: #A855F7 !important;
+                          --primary-text-color: #FFF !important;
+                          --secondary-text-color: #666 !important;
+                          --ha-card-header-color: #666 !important;
+                          --ha-card-header-font-size: 11px !important;
+                        }
+                        .title {
+                          font-size: 10px !important;
+                          font-weight: 700 !important;
+                          letter-spacing: 1.5px !important;
+                          text-transform: uppercase !important;
+                          color: #666 !important;
+                        }
+
+          ########################################################
+          # MUSIC BAR — live bound to media_player.the_moon
+          # flex-shrink:0 keeps it pinned to the bottom
+          ########################################################
+          - type: custom:button-card
+            entity: media_player.the_moon
+            show_name: false
+            show_icon: false
+            show_state: false
+            tap_action:
+              action: none
+            styles:
+              card:
+                - background: "rgba(255,255,255,0.04)"
+                - border: "1px solid rgba(255,255,255,0.07)"
+                - border-radius: 14px
+                - padding: "0"
+                - flex-shrink: "0"
+                - height: 64px
+                - box-sizing: border-box
+                - overflow: hidden
+              custom_fields:
+                bar:
+                  - width: 100%
+                  - height: 64px
+                  - display: flex
+                  - align-items: center
+            grid:
+              grid-template-areas: "'bar'"
+              grid-template-columns: 1fr
+              grid-template-rows: 64px
+            custom_fields:
+              bar: |
+                [[[
+                  var mp = states['media_player.the_moon'];
+                  var isPlaying = mp && mp.state === 'playing';
+                  var isPaused  = mp && mp.state === 'paused';
+                  var isActive  = isPlaying || isPaused;
+                  var title  = isActive && mp.attributes.media_title  ? mp.attributes.media_title  : 'Nothing Playing';
+                  var artist = isActive && mp.attributes.media_artist ? mp.attributes.media_artist : '—';
+                  var album  = isActive && mp.attributes.entity_picture ? mp.attributes.entity_picture : null;
+                  var vol    = mp && mp.attributes.volume_level != null ? Math.round(mp.attributes.volume_level * 100) : 0;
+                  var isMuted = mp && mp.attributes.is_volume_muted;
+                  var isShuffle = mp && mp.attributes.shuffle;
+                  var repeat  = mp && mp.attributes.repeat ? mp.attributes.repeat : 'off';
+                  var artBlock = album
+                    ? `<img src="${album}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;" />`
+                    : `<div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#1c1c2e,#2d1b69);flex-shrink:0;display:flex;align-items:center;justify-content:center;"><span style="font-size:16px;">🎵</span></div>`;
+                  var playIcon = isPlaying ? '⏸' : '▶';
+                  var shuffleColor = isShuffle ? '#00E5FF' : '#555';
+                  var repeatColor  = repeat !== 'off' ? '#00E5FF' : '#555';
+                  var volIcon = isMuted || vol === 0 ? '🔇' : vol < 40 ? '🔉' : '🔊';
+                  return `
+                    <div style="display:flex;align-items:center;gap:12px;padding:0 16px;width:100%;box-sizing:border-box;height:64px;">
+                      ${artBlock}
+                      <div style="min-width:0;flex:0.8;">
+                        <div style="font-size:13px;font-weight:600;color:#FFF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
+                        <div style="font-size:11px;color:#666;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${artist}</div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:18px;flex:1;justify-content:center;">
+                        <span style="font-size:15px;color:${shuffleColor};cursor:pointer;">⇄</span>
+                        <span style="font-size:20px;color:#CCC;cursor:pointer;">⏮</span>
+                        <div style="width:36px;height:36px;border-radius:50%;background:#FFF;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                          <span style="color:#000;font-size:${isPlaying ? '14px' : '16px'};line-height:1;">${playIcon}</span>
+                        </div>
+                        <span style="font-size:20px;color:#CCC;cursor:pointer;">⏭</span>
+                        <span style="font-size:15px;color:${repeatColor};cursor:pointer;">↺</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;flex:0.6;justify-content:flex-end;">
+                        <span style="font-size:14px;color:#666;">${volIcon}</span>
+                        <div style="width:80px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                          <div style="width:${vol}%;height:100%;background:#00E5FF;border-radius:2px;"></div>
+                          <div style="width:11px;height:11px;background:#FFF;border-radius:50%;position:absolute;top:-3.5px;left:calc(${vol}% - 5.5px);box-shadow:0 1px 3px rgba(0,0,0,0.5);"></div>
+                        </div>
+                        <span style="font-size:14px;color:#666;">🔊</span>
+                      </div>
+                    </div>`;
+                ]]]

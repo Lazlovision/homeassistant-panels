@@ -1,0 +1,272 @@
+# Button-card templates for office dashboard
+# Deploy to: /config/button_card_templates.yaml
+
+light_card:
+  custom_fields:
+    icon: |
+      [[[
+        const entity = states[variables.entity || entity_id];
+        const on = entity?.state === 'on';
+        const icons = {
+          'light.office_main_lights': on ? 'mdi:lightbulb' : 'mdi:lightbulb-off-outline',
+          'light.office_nanol': on ? 'mdi:led-strip-variant' : 'mdi:led-strip-variant-off',
+          'default': on ? 'mdi:lightbulb' : 'mdi:lightbulb-off-outline'
+        };
+        return `<ha-icon icon="${icons[entity_id] || icons.default}" style="width:24px;height:24px;--mdc-icon-size:24px;color:${on ? '#00B0DF' : '#8A8A93'};"></ha-icon>`;
+      ]]]
+    status: |
+      [[[
+        const entity = states[variables.entity || entity_id];
+        const on = entity?.state === 'on';
+        const brightness = entity?.attributes?.brightness || 0;
+        const pct = Math.round(brightness / 255 * 100);
+        const color = on ? '#E4E1E6' : '#8A8A93';
+        return `<div style="font-size:11px;color:${color};">${on ? pct + '%' : 'OFF'}</div>`;
+      ]]]
+    toggle: |
+      [[[
+        const entity = states[variables.entity || entity_id];
+        const on = entity?.state === 'on';
+        return `<div style="width:40px;height:22px;border-radius:11px;background:${on ? 'rgba(0,176,223,0.4)' : 'rgba(255,255,255,0.1)'};position:relative;cursor:pointer;" onclick="event.stopPropagation();">
+          <div style="width:18px;height:18px;border-radius:50%;background:${on ? '#00B0DF' : '#8A8A93'};position:absolute;top:2px;left:${on ? '20px' : '2px'};transition:left 0.2s;"></div>
+        </div>`;
+      ]]]
+    slider: |
+      [[[
+        const entity = states[variables.entity || entity_id];
+        const on = entity?.state === 'on';
+        const brightness = entity?.attributes?.brightness || 0;
+        const pct = Math.round(brightness / 255 * 100);
+        return `<input type="range" min="0" max="100" value="${pct}" style="width:100%;height:4px;-webkit-appearance:none;appearance:none;background:${on ? `linear-gradient(to right, #00B0DF ${pct}%, rgba(255,255,255,0.1) ${pct}%)` : 'rgba(255,255,255,0.1)'};border-radius:2px;outline:none;cursor:pointer;" oninput="event.stopPropagation();" onchange="event.stopPropagation();">`;
+      ]]]
+  layout: vertical
+  show_state: false
+  show_icon: false
+  styles:
+    card:
+      - display: flex
+      - flex-direction: column
+      - justify-content: space-between
+      - gap: 8px
+    custom_fields:
+      icon_row:
+        - display: flex
+        - align-items: center
+        - justify-content: space-between
+      icon:
+        - --paper-card-secondary-color: '#8A8A93'
+      name_row:
+        - display: flex
+        - flex-direction: column
+        - gap: 2px
+      slider:
+        - margin-top: 'auto'
+  custom_fields:
+    icon_row: |
+      <[[[
+        return `<div style="display:flex;align-items:center;justify-content:space-between;">
+          [[[ return this.getRootNode().host.custom_fields.icon; ]]]
+          [[[ return this.getRootNode().host.custom_fields.toggle; ]]]
+        </div>`;
+      ]]]
+    name_row: |
+      <[[[
+        return `<div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="font-size:13px;font-weight:600;color:#E4E1E6;">[[[ return this.config.name; ]]]</span>
+          [[[ return this.getRootNode().host.custom_fields.status; ]]]
+        </div>`;
+      ]]]
+
+thermostat_card:
+  custom_fields:
+    label: |
+      <span style="font-size:10px;font-weight:700;color:#8A8A93;letter-spacing:0.15em;">THERMOSTAT</span>
+    dial_wrapper: |
+      [[[
+        const s = states[entity_id];
+        const target = parseFloat(s?.attributes?.temperature) || 22;
+        const st = s?.state || 'off';
+        const cur = s?.attributes?.current_temperature ?? '--';
+        let glow;
+        if (st==='heat'||st==='heating') glow='#FF4D4D';
+        else if (st==='cool'||st==='cooling'||st==='auto') glow='#64D3FF';
+        else if (st==='dry'||st==='drying') glow='#8ADB52';
+        else glow='rgba(161,161,166,0.3)';
+        const frac = Math.max(0, Math.min(1, (target-15)/16));
+        const circumference = Math.PI * 2 * 45;
+        const offset = circumference * (1 - frac);
+        return `<svg viewBox="0 0 120 120" style="width:160px;height:160px;">
+          <defs>
+            <linearGradient id="dialGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#FF4D4D"/>
+              <stop offset="100%" style="stop-color:#64D3FF"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+          <circle cx="60" cy="60" r="45" fill="none" stroke="url(#dialGrad)" stroke-width="6"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+            stroke-linecap="round" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 0.5s;"/>
+          <text x="60" y="52" text-anchor="middle" fill="#E4E1E6" font-size="28" font-weight="700">${cur}°</text>
+          <text x="60" y="72" text-anchor="middle" fill="#8A8A93" font-size="11" font-weight="500">SET ${target}°</text>
+        </svg>`;
+      ]]]
+    status_pill: |
+      [[[
+        const s = states[entity_id];
+        const st = s?.state || 'off';
+        if (st === 'off') return '';
+        let color, icon, text;
+        if (st==='heat'||st==='heating') { color='#FF4D4D'; icon='mdi:fire'; text='Heating Active'; }
+        else if (st==='cool'||st==='cooling') { color='#64D3FF'; icon='mdi:snowflake'; text='Cooling Active'; }
+        else if (st==='dry'||st==='drying') { color='#8ADB52'; icon='mdi:water'; text='Dry Active'; }
+        else if (st==='fan_only') { color='#A1A1A6'; icon='mdi:fan'; text='Fan Only'; }
+        else { color='#64D3FF'; icon='mdi:auto-mode'; text='Auto'; }
+        return `<div style="display:inline-flex;align-items:center;gap:4px;background:${color}22;padding:4px 10px;border-radius:12px;">
+          <ha-icon icon="${icon}" style="width:12px;height:12px;--mdc-icon-size:12px;color:${color};"></ha-icon>
+          <span style="font-size:10px;font-weight:600;color:${color};">${text}</span>
+        </div>`;
+      ]]]
+    btn_up: |
+      <ha-icon icon="mdi:plus" style="width:36px;height:36px;--mdc-icon-size:36px;color:#E4E1E6;background:rgba(255,255,255,0.08);border-radius:50%;cursor:pointer;" onclick="event.stopPropagation();"></ha-icon>
+    btn_down: |
+      <ha-icon icon="mdi:minus" style="width:36px;height:36px;--mdc-icon-size:36px;color:#E4E1E6;background:rgba(255,255,255,0.08);border-radius:50%;cursor:pointer;" onclick="event.stopPropagation();"></ha-icon>
+    setpoint: |
+      [[[
+        const s = states[entity_id];
+        const target = parseFloat(s?.attributes?.temperature) || 22;
+        return `<span style="font-size:28px;font-weight:700;color:#E4E1E6;">${target}°</span>`;
+      ]]]
+    fan_row: |
+      [[[
+        const s = states[entity_id];
+        const fan = s?.attributes?.fan_mode || 'auto';
+        return `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#8A8A93;">
+          <ha-icon icon="mdi:fan" style="width:14px;height:14px;--mdc-icon-size:14px;"></ha-icon>
+          <span>${fan}</span>
+        </div>`;
+      ]]]
+    outside: |
+      [[[
+        const s = states['sensor.air_conditioner_office_outside_air_temp'];
+        const temp = s?.state || '--';
+        return `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#8A8A93;">
+          <ha-icon icon="mdi:thermometer-outline" style="width:14px;height:14px;--mdc-icon-size:14px;"></ha-icon>
+          <span>${temp}° OUTSIDE</span>
+        </div>`;
+      ]]]
+  layout: vertical
+  show_state: false
+  show_icon: false
+  styles:
+    card:
+      - display: flex
+      - flex-direction: column
+      - align-items: center
+      - justify-content: center
+      - gap: 12px
+      - background: 'rgba(255,255,255,0.04) !important'
+      - border-radius: '20px !important'
+      - padding: '20px !important'
+      - height: '100% !important'
+    custom_fields:
+      label:
+        - align-self: flex-start
+      dial_wrapper:
+        - margin: '0 auto'
+      status_pill:
+        - align_self: center
+      setpoint_row:
+        - display: flex
+        - align_items: center
+        - gap: 16px
+        - align_self: center
+      info_row:
+        - display: flex
+        - gap: 16px
+        - align_items: center
+  custom_fields:
+    setpoint_row: |
+      <[[[
+        return `<div style="display:flex;align-items:center;gap:16px;">
+          [[[ return this.getRootNode().host.custom_fields.btn_down; ]]]
+          [[[ return this.getRootNode().host.custom_fields.setpoint; ]]]
+          [[[ return this.getRootNode().host.custom_fields.btn_up; ]]]
+        </div>`;
+      ]]]
+    info_row: |
+      <[[[
+        return `<div style="display:flex;gap:16px;align-items:center;">
+          [[[ return this.getRootNode().host.custom_fields.fan_row; ]]]
+          [[[ return this.getRootNode().host.custom_fields.outside; ]]]
+        </div>`;
+      ]]]
+
+music_bar:
+  custom_fields:
+    album_art: |
+      [[[
+        const s = states[entity_id];
+        const art = s?.attributes?.entity_picture;
+        if (art) return `<img src="${art}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">`;
+        return `<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;">
+          <ha-icon icon="mdi:music-note" style="width:20px;height:20px;--mdc-icon-size:20px;color:#8A8A93;"></ha-icon>
+        </div>`;
+      ]]]
+    song_info: |
+      [[[
+        const s = states[entity_id];
+        const title = s?.attributes?.media_title || 'No Media';
+        const artist = s?.attributes?.media_artist || '';
+        return `<div style="overflow:hidden;">
+          <div style="font-size:13px;font-weight:600;color:#E4E1E6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
+          <div style="font-size:11px;color:#8A8A93;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${artist}</div>
+        </div>`;
+      ]]]
+    controls: |
+      [[[
+        const s = states[entity_id];
+        const playing = s?.state === 'playing';
+        return `<div style="display:flex;align-items:center;gap:12px;">
+          <ha-icon icon="mdi:skip-previous" style="width:20px;height:20px;--mdc-icon-size:20px;color:#8A8A93;cursor:pointer;"></ha-icon>
+          <ha-icon icon="${playing ? 'mdi:pause' : 'mdi:play'}" style="width:28px;height:28px;--mdc-icon-size:28px;color:#E4E1E6;background:rgba(255,255,255,0.1);border-radius:50%;cursor:pointer;"></ha-icon>
+          <ha-icon icon="mdi:skip-next" style="width:20px;height:20px;--mdc-icon-size:20px;color:#8A8A93;cursor:pointer;"></ha-icon>
+        </div>`;
+      ]]]
+    volume: |
+      [[[
+        const s = states[entity_id];
+        const vol = Math.round((s?.attributes?.volume_level || 0.5) * 100);
+        return `<div style="display:flex;align-items:center;gap:6px;">
+          <ha-icon icon="mdi:volume-high" style="width:16px;height:16px;--mdc-icon-size:16px;color:#8A8A93;"></ha-icon>
+          <input type="range" min="0" max="100" value="${vol}" style="width:80px;height:3px;-webkit-appearance:none;appearance:none;background:linear-gradient(to right, #64D3FF ${vol}%, rgba(255,255,255,0.1) ${vol}%);border-radius:2px;outline:none;cursor:pointer;">
+        </div>`;
+      ]]]
+  show_state: false
+  show_icon: false
+  styles:
+    card:
+      - display: flex
+      - align-items: center
+      - gap: 14px
+      - padding: '12px 16px !important'
+      - background: 'rgba(255,255,255,0.06) !important'
+      - border-radius: '16px !important'
+    custom_fields:
+      album_art:
+        - flex: '0 0 44px'
+      song_info:
+        - flex: 1
+        - min_width: 0
+      controls:
+        - flex: '0 0 auto'
+      volume:
+        - flex: '0 0 110px'
+
+top_bar:
+  show_state: false
+  show_icon: false
+  styles:
+    card:
+      - background: 'transparent !important'
+      - border: 'none !important'
+      - box-shadow: 'none !important'

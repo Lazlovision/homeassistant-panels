@@ -1,0 +1,320 @@
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+path: office-panel
+title: Office Panel
+views:
+- title: Office
+  path: office-panel
+  type: panel
+  badges: []
+  cards:
+  # ===================================================================
+  # ROOT — single horizontal-stack wraps everything, sets layout
+  # ===================================================================
+  - type: horizontal-stack
+    card_mod:
+      style: |
+        :host {
+          --bg-color: #000;
+          --text-primary: #E4E1E6;
+          --text-muted: #A1A1A6;
+          --card-bg: rgba(255,255,255,0.05);
+          --card-border: rgba(255,255,255,0.08);
+          --primary: #64D3FF;
+          --primary-dim: rgba(100,211,255,0.15);
+          --tertiary: #FFB86F;
+          --secondary: #8ADB52;
+          --error: #FF4D4D;
+          --track-bg: #353438;
+        }
+        #root {
+          background: var(--bg-color) !important;
+          width: 100%;
+          height: 100vh;
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 16px 24px !important;
+          box-sizing: border-box;
+          overflow: hidden;
+          font-family: 'Outfit', sans-serif;
+          gap: 10px !important;
+        }
+    cards:
+    # ───────────────────────────────────────────────────────────────
+    # ROW 1: TOP BAR — room name + weather pill
+    # ───────────────────────────────────────────────────────────────
+    - type: custom:button-card
+      entity: weather.forecast_home
+      show_name: false
+      show_icon: false
+      tap_action: { action: more-info }
+      styles:
+        card:
+        - background: transparent
+        - border: none
+        - box-shadow: none
+        - padding: 0
+      custom_fields:
+        bar: |
+          [[[
+            const w = states['weather.forecast_home'];
+            const out = states['sensor.air_conditioner_office_outside_air_temp'];
+            const temp = out ? parseFloat(out.state).toFixed(1) : '--';
+            const icons = {
+              sunny:'☀️','clear-night':'🌙',cloudy:'☁️',
+              partlycloudy:'⛅',rainy:'🌧',snowy:'❄️',
+              windy:'💨',fog:'🌫'
+            };
+            return `<div style="display:flex;justify-content:space-between;align-items:center;">
+              <h1 style="font-size:24px;font-weight:500;color:var(--text-primary);margin:0;">Office</h1>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:var(--card-bg);border:1px solid var(--card-border);">
+                <span style="font-size:18px;">${icons[w?.state]||'🌡'}</span>
+                <span style="color:var(--text-primary);font-size:17px;font-weight:600;">${temp}°C</span>
+              </div>
+            </div>`;
+          ]]]
+
+    # ───────────────────────────────────────────────────────────────
+    # ROW 2: SCENES — 4 icon buttons
+    # ───────────────────────────────────────────────────────────────
+    - type: horizontal-stack
+      card_mod:
+        style: |
+          :host { display: grid !important; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      cards:
+      - type: custom:button-card
+        entity: scene.office_daytime
+        show_name: false
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          data: { entity_id: scene.office_daytime }
+        icon: mdi:weather-sunny
+        styles:
+          card:
+          - background: var(--card-bg)
+          - border: 1px solid var(--card-border)
+          - border-radius: 12px
+          - height: 76px
+          - display: flex
+          - align-items: center
+          - justify-content: center
+          icon:
+          - color: var(--primary)
+          - width: 32px
+          - height: 32px
+        card_mod:
+          style: |
+            ha-card { min-height: 76px !important; }
+
+      - type: custom:button-card
+        entity: scene.office_movie
+        show_name: false
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          data: { entity_id: scene.office_movie }
+        icon: mdi:movie-open
+        styles:
+          card:
+          - background: var(--card-bg)
+          - border: 1px solid var(--card-border)
+          - border-radius: 12px
+          - height: 76px
+          - display: flex
+          - align-items: center
+          - justify-content: center
+          icon:
+          - color: var(--tertiary)
+          - width: 32px
+          - height: 32px
+        card_mod:
+          style: |
+            ha-card { min-height: 76px !important; }
+
+      - type: custom:button-card
+        entity: scene.office_leave
+        show_name: false
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          data: { entity_id: scene.office_leave }
+        icon: mdi:exit-run
+        styles:
+          card:
+          - background: var(--card-bg)
+          - border: 1px solid var(--card-border)
+          - border-radius: 12px
+          - height: 76px
+          - display: flex
+          - align-items: center
+          - justify-content: center
+          icon:
+          - color: var(--error)
+          - width: 32px
+          - height: 32px
+        card_mod:
+          style: |
+            ha-card { min-height: 76px !important; }
+
+      - type: custom:button-card
+        entity: scene.office_sleep
+        show_name: false
+        tap_action:
+          action: call-service
+          service: scene.turn_on
+          data: { entity_id: scene.office_sleep }
+        icon: mdi:moon-waning-crescent
+        styles:
+          card:
+          - background: var(--card-bg)
+          - border: 1px solid var(--card-border)
+          - border-radius: 12px
+          - height: 76px
+          - display: flex
+          - align-items: center
+          - justify-content: center
+          icon:
+          - color: var(--secondary)
+          - width: 32px
+          - height: 32px
+        card_mod:
+          style: |
+            ha-card { min-height: 76px !important; }
+
+    # ───────────────────────────────────────────────────────────────
+    # ROW 3: CONTENT — Lights (left) + HVAC (right)
+    # ───────────────────────────────────────────────────────────────
+    - type: horizontal-stack
+      card_mod:
+        style: |
+          :host { flex: 1 !important; min-height: 0 !important; display: grid !important; grid-template-columns: 1.5fr 1fr; gap: 12px; }
+          #root { display: grid !important; grid-template-columns: 1.5fr 1fr; gap: 12px !important; min-height: 0 !important; }
+      cards:
+      # ── LEFT: Lights section ──
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host { flex: 1.5; min-width: 0; }
+            #root { gap: 8px !important; }
+        cards:
+        # Header — using button-card since markdown rendering is broken in HA 2026.4.4
+        - type: custom:button-card
+          show_name: true
+          show_icon: false
+          show_state: false
+          name: LIGHTS
+          styles:
+            card:
+            - background: transparent
+            - border: none
+            - box-shadow: none
+            - padding: 0
+            name:
+            - color: var(--text-muted)
+            - font-size: 11px
+            - font-weight: 700
+            - letter-spacing: 0.15em
+
+        # Main Lights card
+        - type: custom:button-card
+          entity: light.office_main_lights
+          show_name: false
+          show_icon: false
+          tap_action: { action: toggle }
+          hold_action: { action: more-info }
+          styles:
+            card:
+            - background: var(--card-bg)
+            - border: 1px solid var(--card-border)
+            - border-radius: 12px
+            - padding: 14px
+            grid:
+            - grid-template-areas: "'top' 'track'"
+            - grid-template-columns: 1fr
+          custom_fields:
+            top: |
+              [[[
+                const s = states['light.office_main_lights'];
+                const on = s?.state === 'on';
+                const pct = on ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                const c = on ? 'var(--primary)' : 'rgba(255,255,255,0.3)';
+                return `<div style="display:flex;justify-content:space-between;align-items:center;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <ha-icon icon="mdi:lightbulb" style="color:${c};--mdc-icon-size:24px;"></ha-icon>
+                    <div>
+                      <p style="margin:0;color:var(--text-primary);font-size:14px;font-weight:500;">Main Lights</p>
+                      <p style="margin:1px 0 0;color:var(--text-muted);font-size:11px;">${on?pct+'%':'OFF'}</p>
+                    </div>
+                  </div>
+                  <div style="width:38px;height:20px;border-radius:10px;background:${on?'var(--primary-dim)':'var(--track-bg)'};border:1px solid ${on?'var(--primary)':'var(--card-border)'};display:flex;align-items:center;padding:2px;">
+                    <div style="width:14px;height:14px;border-radius:50%;background:${on?'var(--primary)':'rgba(255,255,255,0.4)'};margin-left:${on?'18px':'0'};"></div>
+                  </div>
+                </div>`;
+              ]]]
+            track: |
+              [[[
+                const s = states['light.office_main_lights'];
+                const pct = s?.state === 'on' ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                return `<div style="width:100%;height:4px;background:var(--track-bg);border-radius:2px;position:relative;">
+                  <div style="position:absolute;top:0;left:0;width:${pct}%;height:100%;background:var(--primary);border-radius:2px;"></div>
+                </div>`;
+              ]]]
+
+      # ── RIGHT: HVAC tall card ──
+      - type: vertical-stack
+        card_mod:
+          style: |
+            :host { flex: 1; min-width: 0; }
+            #root { gap: 8px !important; }
+        cards:
+        # Native thermostat card — themed via CSS
+        # Native thermostat card — themed via CSS, fills remaining height
+        - type: thermostat
+          entity: climate.air_conditioner_office_climate
+          name: Thermostat
+          card_mod:
+            style: |
+              ha-card {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
+                border-radius: 12px !important;
+                padding: 16px 12px !important;
+                flex-grow: 1 !important;
+                min-height: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                --state-climate-cool-color: var(--primary);
+                --state-climate-heat-color: var(--error);
+                --state-climate-dry-color: var(--tertiary);
+                --state-climate-fan_only-color: var(--secondary);
+                --primary-text-color: var(--text-primary);
+                --secondary-text-color: var(--text-muted);
+              }
+
+        # Footer: outside temp + current mode
+        - type: custom:button-card
+          entity: climate.air_conditioner_office_climate
+          show_name: false
+          show_icon: false
+          show_state: true
+          styles:
+            card:
+            - background: var(--card-bg)
+            - border: 1px solid var(--card-border)
+            - border-radius: 12px
+            - padding: 12px 14px
+            state:
+            - color: var(--text-muted)
+            - font-size: 11px
+          state_label: |
+            [[[
+              const s = states['climate.air_conditioner_office_climate'];
+              const out = states['sensor.air_conditioner_office_outside_air_temp'];
+              const mode = (s?.state || '').toUpperCase();
+              const outT = out ? parseFloat(out.state).toFixed(1) + '°C' : '--°C';
+              return mode + ' · ' + outT + ' outside';
+            ]]]
+

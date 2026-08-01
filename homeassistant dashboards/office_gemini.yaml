@@ -1,0 +1,502 @@
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+path: office-panel
+title: Office Panel
+views:
+- title: Office
+  path: office-panel
+  type: panel
+  badges: []
+  cards:
+  # ROOT horizontal-stack - Fills viewport, establishes Obsidian theme
+  - type: horizontal-stack
+    card_mod:
+      style: |
+        :host {
+          --bg-color: #050507;
+          --text-primary: #FFFFFF;
+          --text-muted: #8A8A93;
+          --card-bg: rgba(25, 25, 30, 0.4);
+          --primary-cool: #00E5FF;
+          --primary-heat: #FF3366;
+        }
+        ha-card { 
+          background: var(--bg-color) !important; 
+          border: none !important; 
+          box-shadow: none !important; 
+          padding: 24px;
+        }
+    cards:
+    # LEFT COLUMN - Weather, Scenes, and Main Light
+    - type: vertical-stack
+      card_mod:
+        style: |
+          :host { flex: 1 !important; min-height: 0; display: flex; }
+          #root { display: flex !important; flex-direction: column !important; gap: 16px !important; min-height: 0; }
+      cards:
+      # --- TOP BAR: Weather + Outside Temp ---
+      - type: custom:button-card
+        entity: weather.forecast_home
+        show_name: false
+        show_icon: false
+        show_state: false
+        custom_fields:
+          content: |
+            [[[
+              var w = states['weather.forecast_home'];
+              var out = states['sensor.air_conditioner_office_outside_air_temp'];
+              var icon = {clear_night:'☀️',sunny:'☀️',cloudy:'⛅',partlycloudy:'⛅',rainy:'🌧️',snowy:'❄️',windy:'💨'}[w?.state] || '⛅';
+              var outT = out ? parseFloat(out.state) + '°C' : '--°C';
+              return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 8px;">' +
+                '<span style="color:var(--text-primary);font-size:28px;font-weight:600;letter-spacing:-0.5px;">Office</span>' +
+                '<div style="display:flex;align-items:center;gap:12px;color:var(--text-muted);font-size:16px;background:var(--card-bg);padding:8px 16px;border-radius:24px;backdrop-filter:blur(24px);">' +
+                '<span>' + icon + '</span><span style="font-weight:500;color:var(--text-primary);">' + outT + ' Outside</span></div></div>';
+            ]]]
+        styles:
+          card:
+          - background: "transparent"
+          - border: "none"
+          - box-shadow: "none"
+          - padding: "0"
+          - height: "60px"
+          custom_fields:
+            content:
+            - width: "100%"
+
+      # --- SCENES ROW ---
+      - type: horizontal-stack
+        cards:
+        - type: custom:button-card
+          entity: scene.office_daytime
+          name: ARRIVE
+          icon: mdi:home-variant-outline
+          tap_action:
+            action: call-service
+            service: scene.turn_on
+            data:
+              entity_id: scene.office_daytime
+          styles:
+            card:
+            - background: "var(--card-bg)"
+            - backdrop-filter: "blur(24px)"
+            - border-radius: "20px"
+            - height: "100px"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            icon:
+            - color: "#00E5FF"
+            - width: "32px"
+            - margin-bottom: "8px"
+            name:
+            - color: "var(--text-primary)"
+            - font-size: "12px"
+            - font-weight: "600"
+            - letter-spacing: "1px"
+        - type: custom:button-card
+          entity: scene.office_movie
+          name: MOVIE
+          icon: mdi:filmstrip
+          tap_action:
+            action: call-service
+            service: scene.turn_on
+            data:
+              entity_id: scene.office_movie
+          styles:
+            card:
+            - background: "var(--card-bg)"
+            - backdrop-filter: "blur(24px)"
+            - border-radius: "20px"
+            - height: "100px"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            icon:
+            - color: "#FF9F0A"
+            - width: "32px"
+            - margin-bottom: "8px"
+            name:
+            - color: "var(--text-primary)"
+            - font-size: "12px"
+            - font-weight: "600"
+            - letter-spacing: "1px"
+        - type: custom:button-card
+          entity: scene.office_leave
+          name: LEAVE
+          icon: mdi:door-open
+          tap_action:
+            action: call-service
+            service: scene.turn_on
+            data:
+              entity_id: scene.office_leave
+          styles:
+            card:
+            - background: "var(--card-bg)"
+            - backdrop-filter: "blur(24px)"
+            - border-radius: "20px"
+            - height: "100px"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            icon:
+            - color: "#FF3366"
+            - width: "32px"
+            - margin-bottom: "8px"
+            name:
+            - color: "var(--text-primary)"
+            - font-size: "12px"
+            - font-weight: "600"
+            - letter-spacing: "1px"
+        - type: custom:button-card
+          entity: scene.office_sleep
+          name: SLEEP
+          icon: mdi:moon-waning-crescent
+          tap_action:
+            action: call-service
+            service: scene.turn_on
+            data:
+              entity_id: scene.office_sleep
+          styles:
+            card:
+            - background: "var(--card-bg)"
+            - backdrop-filter: "blur(24px)"
+            - border-radius: "20px"
+            - height: "100px"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            icon:
+            - color: "#30D158"
+            - width: "32px"
+            - margin-bottom: "8px"
+            name:
+            - color: "var(--text-primary)"
+            - font-size: "12px"
+            - font-weight: "600"
+            - letter-spacing: "1px"
+
+      # --- LIGHT CARD ---
+      - type: custom:button-card
+        entity: light.office_main_lights
+        show_name: false
+        show_icon: false
+        tap_action:
+          action: call-service
+          service: light.toggle
+          data:
+            entity_id: light.office_main_lights
+        styles:
+          card:
+          - background: "var(--card-bg)"
+          - backdrop-filter: "blur(24px)"
+          - border-radius: "24px"
+          - border: "1px solid rgba(255, 255, 255, 0.05)"
+        custom_fields:
+          card_content: |
+            [[[
+              var s = states['light.office_main_lights'];
+              var on = s && s.state === 'on';
+              var pct = on ? Math.round((s.attributes.brightness || 255) / 255 * 100) : 0;
+              return '<div style="display:flex;flex-direction:column;padding:20px;">' +
+                '<div style="display:flex;align-items:center;margin-bottom:16px;">' +
+                  '<ha-icon icon="mdi:lightbulb" style="color:' + (on ? 'var(--primary-cool)' : 'var(--text-muted)') + ';--mdc-icon-size:28px;margin-right:16px;"></ha-icon>' +
+                  '<div style="flex:1;"><p style="margin:0;color:var(--text-primary);font-size:16px;font-weight:600;">Main Lights</p>' +
+                    '<p style="margin:4px 0 0;color:var(--text-muted);font-size:13px;">' + (on ? pct + '%' : 'OFF') + '</p></div>' +
+                  '<div style="width:48px;height:28px;border-radius:14px;background:' +
+                    (on ? 'rgba(0,229,255,0.2)' : 'rgba(255,255,255,0.1)') + ';' +
+                    'display:flex;align-items:center;padding:' +
+                    (on ? '2px 2px 2px 22px' : '2px 22px 2px 2px') + ';transition:all 0.3s;">' +
+                    '<div style="width:24px;height:24px;border-radius:50%;background:' +
+                    (on ? 'var(--primary-cool)' : '#8A8A93') + ';"></div></div></div>' +
+                '<div style="position:relative;width:100%;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;">' +
+                  '<div style="position:absolute;top:0;left:0;width:' + pct + '%;height:100%;background:var(--primary-cool);border-radius:4px;"></div>' +
+                '</div></div>';
+            ]]]
+        card_mod:
+          style: |
+            :host { flex: 1 !important; min-height: 0; }
+
+    # RIGHT COLUMN - Thermostat & Custom Mode/Fan Blocks
+    - type: vertical-stack
+      card_mod:
+        style: |
+          :host { flex: 0.8 !important; min-height: 0; display: flex; }
+          #root { display: flex !important; flex-direction: column !important; gap: 16px !important; min-height: 0; }
+      cards:
+      # --- THERMOSTAT VISUAL ---
+      - type: thermostat
+        entity: climate.air_conditioner_office_climate
+        name: THERMOSTAT
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--card-bg) !important;
+              backdrop-filter: blur(24px);
+              border: 1px solid rgba(255,255,255,0.05) !important;
+              border-radius: 24px !important;
+              padding: 24px 16px !important;
+            }
+            ha-card {
+              --state-climate-cool-color: var(--primary-cool);
+              --state-climate-heat-color: var(--primary-heat);
+              --state-climate-dry-color: #FF9F0A;
+              --state-climate-fan_only-color: #30D158;
+              --ha-card-header-color: var(--text-muted);
+              --primary-text-color: var(--text-primary);
+              --secondary-text-color: var(--text-muted);
+            }
+
+      # --- CUSTOM SYSTEM & FAN CONTROLS ---
+      - type: horizontal-stack
+        cards:
+        # SYSTEM MODE CONTAINER
+        - type: custom:button-card
+          name: SYSTEM MODE
+          styles:
+            card:
+            - background: "rgba(25, 25, 30, 0.4)"
+            - backdrop-filter: "blur(24px)"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            - border-radius: "16px"
+            - padding: "16px"
+            name:
+            - color: "#8A8A93"
+            - font-size: "11px"
+            - font-weight: "700"
+            - letter-spacing: "1px"
+            - padding-bottom: "16px"
+            grid:
+            - grid-template-areas: '"n n" "cool heat" "auto dry" "fan off"'
+            - grid-template-columns: "1fr 1fr"
+            - grid-gap: "8px"
+          custom_fields:
+            cool:
+              card:
+                type: custom:button-card
+                name: COOL
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "cool"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'cool' ? '#00E5FF' : 'rgba(255,255,255,0.05)' ]]]
+                  - box-shadow: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'cool' ? '0 0 15px rgba(0, 229, 255, 0.3)' : 'none' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'cool' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            heat:
+              card:
+                type: custom:button-card
+                name: HEAT
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "heat"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'heat' ? '#FF3366' : 'rgba(255,255,255,0.05)' ]]]
+                  - box-shadow: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'heat' ? '0 0 15px rgba(255, 51, 102, 0.3)' : 'none' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'heat' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            auto:
+              card:
+                type: custom:button-card
+                name: AUTO
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "auto"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'auto' ? '#FFFFFF' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'auto' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            dry:
+              card:
+                type: custom:button-card
+                name: DRY
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "dry"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'dry' ? '#FF9F0A' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'dry' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            fan:
+              card:
+                type: custom:button-card
+                name: FAN
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "fan_only"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'fan_only' ? '#30D158' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'fan_only' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            off:
+              card:
+                type: custom:button-card
+                name: OFF
+                tap_action:
+                  action: call-service
+                  service: climate.set_hvac_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    hvac_mode: "off"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'off' ? '#8A8A93' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].state === 'off' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+
+        # FAN SPEED CONTAINER
+        - type: custom:button-card
+          name: FAN SPEED
+          styles:
+            card:
+            - background: "rgba(25, 25, 30, 0.4)"
+            - backdrop-filter: "blur(24px)"
+            - border: "1px solid rgba(255, 255, 255, 0.05)"
+            - border-radius: "16px"
+            - padding: "16px"
+            name:
+            - color: "#8A8A93"
+            - font-size: "11px"
+            - font-weight: "700"
+            - letter-spacing: "1px"
+            - padding-bottom: "16px"
+            grid:
+            - grid-template-areas: '"n n" "auto low" "medium high"'
+            - grid-template-columns: "1fr 1fr"
+            - grid-gap: "8px"
+          custom_fields:
+            auto:
+              card:
+                type: custom:button-card
+                name: AUTO
+                tap_action:
+                  action: call-service
+                  service: climate.set_fan_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    fan_mode: "auto"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'auto' ? '#FFFFFF' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'auto' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            low:
+              card:
+                type: custom:button-card
+                name: LOW
+                tap_action:
+                  action: call-service
+                  service: climate.set_fan_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    fan_mode: "low"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'low' ? '#FFFFFF' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'low' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            medium:
+              card:
+                type: custom:button-card
+                name: MEDIUM
+                tap_action:
+                  action: call-service
+                  service: climate.set_fan_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    fan_mode: "medium"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'medium' ? '#FFFFFF' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'medium' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"
+            high:
+              card:
+                type: custom:button-card
+                name: HIGH
+                tap_action:
+                  action: call-service
+                  service: climate.set_fan_mode
+                  data:
+                    entity_id: climate.air_conditioner_office_climate
+                    fan_mode: "high"
+                styles:
+                  card:
+                  - background: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'high' ? '#FFFFFF' : 'rgba(255,255,255,0.05)' ]]]
+                  - border-radius: "8px"
+                  - height: "44px"
+                  name:
+                  - color: >
+                      [[[ return states['climate.air_conditioner_office_climate'].attributes.fan_mode === 'high' ? '#050507' : '#FFFFFF' ]]]
+                  - font-size: "12px"
+                  - font-weight: "700"

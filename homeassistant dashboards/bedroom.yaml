@@ -1,0 +1,532 @@
+# ============================================================================
+# Bedroom Dashboard — Crestron TSS-770-W-S (1280×800, 7" panel)
+# Layout: Top bar → Scenes row → Lights grid + HVAC column
+# ============================================================================
+# Entity IDs:
+#   HVAC:       climate.air_conditioner_bedroom_climate
+#   Outdoor:    sensor.air_conditioner_bedroom_outside_air_temp
+#   Weather:    weather.home
+#   Lights:     light.bedroom_main, light.bedroom_accent
+#   Scenes:     scene.bedroom_arrive, scene.bedroom_movie,
+#               scene.bedroom_leave, scene.bedroom_sleep
+# ============================================================================
+kiosk_mode:
+  kiosk: true
+  admin_settings:
+    kiosk: false
+title: Bedroom
+path: bedroom
+icon: mdi:bed-outline
+
+views:
+  - title: Bedroom
+    path: bedroom
+    type: panel
+    badges: []
+    cards:
+      # ===================================================================
+      # ROOT — single horizontal stack fills viewport, sets CSS variables
+      # ===================================================================
+      - type: horizontal-stack
+        card_mod:
+          style: |
+            :host {
+              --bg-color: #000;
+              --text-primary: #E4E1E6;
+              --text-muted: #A1A1A6;
+              --card-bg: rgba(255,255,255,0.05);
+              --card-border: rgba(255,255,255,0.08);
+              --primary: #64D3FF;
+              --primary-dim: rgba(100,211,255,0.15);
+              --tertiary: #FFB86F;
+              --secondary: #8ADB52;
+              --error: #FF4D4D;
+              --track-bg: #353438;
+            }
+            #root {
+              background: var(--bg-color) !important;
+              width: 100%;
+              height: 100vh;
+              display: flex !important;
+              flex-direction: column !important;
+              padding: 16px 24px !important;
+              box-sizing: border-box;
+              overflow: hidden;
+              font-family: 'Outfit', sans-serif;
+              gap: 10px !important;
+            }
+        cards:
+          # =============================================================
+          # TOP BAR — room name + weather pill
+          # =============================================================
+          - type: custom:button-card
+            entity: weather.home
+            show_name: false
+            show_icon: false
+            tap_action: { action: more-info }
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+                - padding: '0'
+            custom_fields:
+              bar: |
+                [[[
+                  const w = states['weather.home'];
+                  const temp = w?.attributes?.temperature || '--';
+                  const icons = {
+                    sunny:'☀️','clear-night':'🌙',cloudy:'☁️',
+                    partlycloudy:'⛅',rainy:'🌧',snowy:'❄️',
+                    windy:'💨',fog:'🌫'
+                  };
+                  return `<div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h1 style="font-size:24px;font-weight:500;color:var(--text-primary);margin:0;">Bedroom</h1>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:var(--card-bg);border:1px solid var(--card-border);">
+                      <span style="font-size:18px;">${icons[w?.state]||'🌡'}</span>
+                      <span style="color:var(--text-primary);font-size:17px;font-weight:600;">${temp}°C</span>
+                    </div>
+                  </div>`;
+                ]]]
+
+          # =============================================================
+          # SCENES ROW — 4 buttons
+          # =============================================================
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: scene.bedroom_arrive
+                show_name: false
+                tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.bedroom_arrive } }
+                styles:
+                  card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { height: '76px' }, { display: 'flex !important' }, { align_items: 'center' }, { justify_content: 'center' } ]
+                  grid: [ { place_items: 'center' } ]
+                custom_fields: {}
+                name: ''
+                icon: mdi:home
+                state:
+                  - value: 'on'
+                    styles: { icon: [ { color: 'var(--primary)' } ] }
+                card_mod:
+                  style: |
+                    ha-card { min-height: 76px !important; }
+
+              - type: custom:button-card
+                entity: scene.bedroom_movie
+                show_name: false
+                tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.bedroom_movie } }
+                styles:
+                  card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { height: '76px' }, { display: 'flex !important' }, { align_items: 'center' }, { justify_content: 'center' } ]
+                  grid: [ { place_items: 'center' } ]
+                name: ''
+                icon: mdi:movie-open
+                card_mod:
+                  style: |
+                    ha-card { min-height: 76px !important; }
+
+              - type: custom:button-card
+                entity: scene.bedroom_leave
+                show_name: false
+                tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.bedroom_leave } }
+                styles:
+                  card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { height: '76px' }, { display: 'flex !important' }, { align_items: 'center' }, { justify_content: 'center' } ]
+                  grid: [ { place_items: 'center' } ]
+                name: ''
+                icon: mdi:exit-run
+                card_mod:
+                  style: |
+                    ha-card { min-height: 76px !important; }
+
+              - type: custom:button-card
+                entity: scene.bedroom_sleep
+                show_name: false
+                tap_action: { action: call-service, service: scene.turn_on, data: { entity_id: scene.bedroom_sleep } }
+                styles:
+                  card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { height: '76px' }, { display: 'flex !important' }, { align_items: 'center' }, { justify_content: 'center' } ]
+                  grid: [ { place_items: 'center' } ]
+                name: ''
+                icon: mdi:sleep
+                card_mod:
+                  style: |
+                    ha-card { min-height: 76px !important; }
+
+          # =============================================================
+          # CONTENT ROW — Lights (left) + HVAC (right)
+          # Wrapped in a horizontal-stack with custom layout
+          # =============================================================
+          - type: horizontal-stack
+            card_mod:
+              style: |
+                :host { flex: 1 !important; min-height: 0 !important; }
+                #root {
+                  display: flex !important;
+                  flex-direction: row !important;
+                  gap: 12px !important;
+                  height: auto !important;
+                  min-height: 0 !important;
+                  flex-grow: 1 !important;
+                }
+            cards:
+              # ── LEFT: Lights section ──
+              - type: vertical-stack
+                card_mod:
+                  style: |
+                    :host { flex: 2; min-width: 0; }
+                    #root { gap: 8px !important; }
+                cards:
+                  - type: markdown
+                    content: "LIGHTS"
+                    card_mod:
+                      style: |
+                        ha-card { display:none !important; }
+                        $: |
+                          .markdown-text { color: var(--text-muted) !important; font-size: 11px !important; font-weight: 700 !important; letter-spacing: 0.15em !important; padding: 0 4px 0 0 !important; }
+
+                  # Light cards grid
+                  - type: horizontal-stack
+                    card_mod:
+                      style: |
+                        #root { gap: 10px !important; flex-wrap: nowrap !important; }
+                    cards:
+                      # ── Bedroom Main ──
+                      - type: custom:button-card
+                        entity: light.bedroom_main
+                        show_name: false
+                        show_icon: false
+                        tap_action: { action: toggle }
+                        hold_action: { action: more-info }
+                        styles:
+                          card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { padding: '14px' }, { flex_grow: '1' } ]
+                          grid: [ { grid_template_areas: "'top' 'track'" }, { grid_template_columns: '1fr' } ]
+                          custom_fields:
+                            btn_brighter: [ { position: 'absolute' }, { top: '0' }, { right: '0' }, { width: '50%' }, { height: '100%' }, { z_index: '10' } ]
+                            btn_dimmer: [ { position: 'absolute' }, { top: '0' }, { left: '0' }, { width: '50%' }, { height: '100%' }, { z_index: '10' } ]
+                        custom_fields:
+                          top: |
+                            [[[
+                              const s = states['light.bedroom_main'];
+                              const on = s?.state === 'on';
+                              const pct = on ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                              const c = on ? 'var(--primary)' : 'rgba(255,255,255,0.3)';
+                              return `<div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                  <span style="font-size:24px;color:${c};">${on?'☀️':'🌙'}</span>
+                                  <div>
+                                    <p style="margin:0;color:var(--text-primary);font-size:14px;font-weight:500;">Main Light</p>
+                                    <p style="margin:1px 0 0;color:var(--text-muted);font-size:11px;">${on?pct+'%':'OFF'}</p>
+                                  </div>
+                                </div>
+                                <div style="width:38px;height:20px;border-radius:10px;background:${on?'var(--primary-dim)':'var(--track-bg)'};border:1px solid ${on?'var(--primary)':'var(--card-border)'};display:flex;align-items:center;padding:2px;">
+                                  <div style="width:14px;height:14px;border-radius:50%;background:${on?'var(--primary)':'rgba(255,255,255,0.4)'};margin-left:${on?'18px':'0'};"></div>
+                                </div>
+                              </div>`;
+                            ]]]
+                          track: |
+                            [[[
+                              const s = states['light.bedroom_main'];
+                              const pct = s?.state === 'on' ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                              return `<div style="width:100%;height:4px;background:var(--track-bg);border-radius:2px;position:relative;">
+                                <div style="position:absolute;top:0;left:0;width:${pct}%;height:100%;background:var(--primary);border-radius:2px;"></div>
+                              </div>`;
+                            ]]]
+                          btn_brighter:
+                            card:
+                              type: custom:button-card
+                              entity: light.bedroom_main
+                              show_name: false
+                              show_icon: false
+                              tap_action:
+                                action: call-service
+                                service: light.turn_on
+                                data:
+                                  entity_id: light.bedroom_main
+                                  brightness_pct: >-
+                                    [[[ return Math.min(100, ((states['light.bedroom_main']?.attributes?.brightness||255)/255*100) + 10); ]]]
+                              styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                          btn_dimmer:
+                            card:
+                              type: custom:button-card
+                              entity: light.bedroom_main
+                              show_name: false
+                              show_icon: false
+                              tap_action:
+                                action: call-service
+                                service: light.turn_on
+                                data:
+                                  entity_id: light.bedroom_main
+                                  brightness_pct: >-
+                                    [[[ return Math.max(1, ((states['light.bedroom_main']?.attributes?.brightness||255)/255*100) - 10); ]]]
+                              styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+
+                      # ── Bedroom Accent ──
+                      - type: custom:button-card
+                        entity: light.bedroom_accent
+                        show_name: false
+                        show_icon: false
+                        tap_action: { action: toggle }
+                        hold_action: { action: more-info }
+                        styles:
+                          card: [ { background: 'var(--card-bg)' }, { border: '1px solid var(--card-border)' }, { border_radius: '12px' }, { padding: '14px' }, { flex_grow: '1' } ]
+                          grid: [ { grid_template_areas: "'top' 'track'" }, { grid_template_columns: '1fr' } ]
+                          custom_fields:
+                            btn_brighter: [ { position: 'absolute' }, { top: '0' }, { right: '0' }, { width: '50%' }, { height: '100%' }, { z_index: '10' } ]
+                            btn_dimmer: [ { position: 'absolute' }, { top: '0' }, { left: '0' }, { width: '50%' }, { height: '100%' }, { z_index: '10' } ]
+                        custom_fields:
+                          top: |
+                            [[[
+                              const s = states['light.bedroom_accent'];
+                              const on = s?.state === 'on';
+                              const pct = on ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                              const c = on ? 'var(--secondary)' : 'rgba(255,255,255,0.3)';
+                              return `<div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                  <span style="font-size:24px;color:${c};">${on?'✨':'🌙'}</span>
+                                  <div>
+                                    <p style="margin:0;color:var(--text-primary);font-size:14px;font-weight:500;">Accent Light</p>
+                                    <p style="margin:1px 0 0;color:var(--text-muted);font-size:11px;">${on?pct+'%':'OFF'}</p>
+                                  </div>
+                                </div>
+                                <div style="width:38px;height:20px;border-radius:10px;background:${on?'rgba(138,219,82,0.15)':'var(--track-bg)'};border:1px solid ${on?'var(--secondary)':'var(--card-border)'};display:flex;align-items:center;padding:2px;">
+                                  <div style="width:14px;height:14px;border-radius:50%;background:${on?'var(--secondary)':'rgba(255,255,255,0.4)'};margin-left:${on?'18px':'0'};"></div>
+                                </div>
+                              </div>`;
+                            ]]]
+                          track: |
+                            [[[
+                              const s = states['light.bedroom_accent'];
+                              const pct = s?.state === 'on' ? Math.round((s.attributes.brightness||255)/255*100) : 0;
+                              return `<div style="width:100%;height:4px;background:var(--track-bg);border-radius:2px;position:relative;">
+                                <div style="position:absolute;top:0;left:0;width:${pct}%;height:100%;background:var(--secondary);border-radius:2px;"></div>
+                              </div>`;
+                            ]]]
+                          btn_brighter:
+                            card:
+                              type: custom:button-card
+                              entity: light.bedroom_accent
+                              show_name: false
+                              show_icon: false
+                              tap_action:
+                                action: call-service
+                                service: light.turn_on
+                                data:
+                                  entity_id: light.bedroom_accent
+                                  brightness_pct: >-
+                                    [[[ return Math.min(100, ((states['light.bedroom_accent']?.attributes?.brightness||255)/255*100) + 10); ]]]
+                              styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                          btn_dimmer:
+                            card:
+                              type: custom:button-card
+                              entity: light.bedroom_accent
+                              show_name: false
+                              show_icon: false
+                              tap_action:
+                                action: call-service
+                                service: light.turn_on
+                                data:
+                                  entity_id: light.bedroom_accent
+                                  brightness_pct: >-
+                                    [[[ return Math.max(1, ((states['light.bedroom_accent']?.attributes?.brightness||255)/255*100) - 10); ]]]
+                              styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+
+              # ── RIGHT: HVAC Card ──
+              - type: custom:button-card
+                entity: climate.air_conditioner_bedroom_climate
+                show_name: false
+                show_icon: false
+                card_mod:
+                  style: |
+                    :host { flex: 1; }
+                styles:
+                  card:
+                    - background: var(--card-bg)
+                    - border: 1px solid var(--card-border)
+                    - border_radius: 16px
+                    - padding: '16px'
+                  grid:
+                    - grid_template_areas: |
+                        "label"
+                        "dial_wrapper"
+                        "setpoint_row"
+                        "modes_row"
+                        "footer"
+                      grid_template_rows: min-content 1fr min-content min-content min-content
+                  custom_fields:
+                    dial_wrapper: [ { position: 'relative' }, { display: 'flex' }, { align_items: 'center' }, { justify_content: 'center' } ]
+                    btn_up: [ { position: 'absolute' }, { right: '-20px' }, { top: '50%' }, { transform: 'translateY(-50%)' }, { z_index: '10' }, { width: '48px' }, { height: '48px' } ]
+                    btn_down: [ { position: 'absolute' }, { left: '-20px' }, { top: '50%' }, { transform: 'translateY(-50%)' }, { z_index: '10' }, { width: '48px' }, { height: '48px' } ]
+                    btn_heat: [ { position: 'absolute' }, { bottom: '0' }, { left: '0%' }, { width: '16.66%' }, { height: '48px' }, { z_index: '20' } ]
+                    btn_cool: [ { position: 'absolute' }, { bottom: '0' }, { left: '16.66%' }, { width: '16.66%' }, { height: '48px' }, { z_index: '20' } ]
+                    btn_auto: [ { position: 'absolute' }, { bottom: '0' }, { left: '33.33%' }, { width: '16.66%' }, { height: '48px' }, { z_index: '20' } ]
+                    btn_dry: [ { position: 'absolute' }, { bottom: '0' }, { left: '50%' }, { width: '16.66%' }, { height: '48px' }, { z_index: '20' } ]
+                    btn_fan: [ { position: 'absolute' }, { bottom: '0' }, { left: '66.66%' }, { width: '16.66%' }, { height: '48px' }, { z_index: '20' } ]
+                    btn_off: [ { position: 'absolute' }, { bottom: '0' }, { left: '83.33%' }, { width: '16.67%' }, { height: '48px' }, { z_index: '20' } ]
+                custom_fields:
+                  label: |
+                    <span style="color:var(--text-muted);font-size:11px;font-weight:700;letter-spacing:0.15em;">THERMOSTAT 1</span>
+
+                  dial_wrapper: |
+                    [[[
+                      const s = states['climate.air_conditioner_bedroom_climate'];
+                      const target = parseFloat(s?.attributes?.temperature) || 22;
+                      const st = s?.state || 'off';
+                      const cur = s?.attributes?.current_temperature ?? '--';
+
+                      let glow;
+                      if (st==='heat'||st==='heating') glow='#FF4D4D';
+                      else if (st==='cool'||st==='cooling'||st==='auto') glow='#64D3FF';
+                      else if (st==='dry'||st==='drying') glow='#8ADB52';
+                      else glow='rgba(161,161,166,0.3)';
+
+                      const frac = Math.max(0, Math.min(1, (target-16)/14));
+                      const off = 289 - frac*289;
+
+                      return `
+                        <div style="width:100%;aspect-ratio:1;max-width:240px;position:relative;display:flex;align-items:center;justify-content:center;">
+                          <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="5"/>
+                            <circle cx="50" cy="50" r="46" fill="none" stroke="${glow}" stroke-width="5" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="${off}"/>
+                          </svg>
+                          <div style="position:absolute;text-align:center;pointer-events:none;">
+                            <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
+                              <span style="color:var(--text-primary);font-size:64px;font-weight:600;line-height:1;">${cur}</span>
+                              <span style="color:var(--text-muted);font-size:22px;font-weight:500;">°</span>
+                            </div>
+                          </div>
+                        </div>`;
+                    ]]]
+
+                  # ± buttons rendered as button-cards beside the dial
+                  btn_up:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action:
+                        action: call-service
+                        service: climate.set_temperature
+                        data:
+                          entity_id: climate.air_conditioner_bedroom_climate
+                          temperature: >-
+                            [[[ return (parseFloat(states['climate.air_conditioner_bedroom_climate']?.attributes?.temperature)||20)+1; ]]]
+                      styles:
+                        card:
+                          - background: var(--card-bg)
+                          - border: 1px solid var(--card-border)
+                          - border_radius: 50%
+                          - display: 'flex'
+                          - align_items: center
+                          - justify_content: center
+                      custom_fields: {}
+                      name: ''
+                      icon: mdi:plus
+
+                  btn_down:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action:
+                        action: call-service
+                        service: climate.set_temperature
+                        data:
+                          entity_id: climate.air_conditioner_bedroom_climate
+                          temperature: >-
+                            [[[ return (parseFloat(states['climate.air_conditioner_bedroom_climate']?.attributes?.temperature)||20)-1; ]]]
+                      styles:
+                        card:
+                          - background: var(--card-bg)
+                          - border: 1px solid var(--card-border)
+                          - border_radius: 50%
+                          - display: 'flex'
+                          - align_items: center
+                          - justify_content: center
+                      name: ''
+                      icon: mdi:minus
+
+                  # Set point readout
+                  setpoint_row: |
+                    [[[
+                      const s = states['climate.air_conditioner_bedroom_climate'];
+                      const t = parseFloat(s?.attributes?.temperature) || 22;
+                      return `<div style="text-align:center;">
+                        <span style="color:var(--text-primary);font-size:24px;font-weight:600;">${t}°</span>
+                        <div style="color:var(--text-muted);font-size:10px;font-weight:700;letter-spacing:0.15em;margin-top:2px;">SET POINT</div>
+                      </div>`;
+                    ]]]
+
+                  # Mode pills (6 modes) — visual layer
+                  modes_row: |
+                    [[[
+                      const s = states['climate.air_conditioner_bedroom_climate'];
+                      const st = s?.state || 'off';
+                      const map = { heating:'heat', cooling:'cool', drying:'dry' };
+                      const active = (map[st]||st).toLowerCase();
+
+                      const modes = [
+                        { k:'heat',  e:'🔥' }, { k:'cool',  e:'❄️' },
+                        { k:'auto',  e:'🔄' }, { k:'dry',   e:'💧' },
+                        { k:'fan',   e:'🌀' }, { k:'off',   e:'⭘' }
+                      ];
+
+                      let h = '<div style="display:flex;gap:4px;width:100%;background:rgba(255,255,255,0.03);border-radius:99px;padding:3px;border:1px solid var(--card-border);">';
+                      modes.forEach(m => {
+                        const a = active === m.k;
+                        const bg = a ? 'background:var(--primary-dim);' : '';
+                        h += `<div style="flex:1;text-align:center;padding:8px 0;font-size:15px;border-radius:99px;${bg}color:${a?'var(--primary)':'var(--text-muted)'}">${m.e}</div>`;
+                      });
+                      return h + '</div>';
+                    ]]]
+
+                  # Footer: fan + outdoor temp
+                  footer: |
+                    [[[
+                      const hvac = states['climate.air_conditioner_bedroom_climate'];
+                      const outside = states['sensor.air_conditioner_bedroom_outside_air_temp'];
+                      const fan = (hvac?.attributes?.fan_mode||'AUTO').toUpperCase();
+                      const outT = parseFloat(outside?.state) || '--';
+                      return `<p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:6px;">FAN ${fan} • ${outT}°C OUTSIDE</p>`;
+                    ]]]
+
+                  # Mode tap targets (invisible overlays on modes_row)
+                  btn_heat:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: heat } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                  btn_cool:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: cool } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                  btn_auto:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: auto } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                  btn_dry:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: dry } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                  btn_fan:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: fan_only } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }
+                  btn_off:
+                    card:
+                      type: custom:button-card
+                      show_name: false
+                      show_icon: false
+                      tap_action: { action: call-service, service: climate.set_hvac_mode, data: { entity_id: climate.air_conditioner_bedroom_climate, hvac_mode: 'off' } }
+                      styles: { card: [ { background: 'transparent' }, { border: 'none' }, { box_shadow: 'none' } ] }

@@ -1,0 +1,26 @@
+# Local Untracked Secrets
+secrets.json
+secrets.env
+*.env
+.env
+
+# Dependencies & Temp Profiles
+node_modules/
+npm-debug.log
+chrome_dash_snap_*
+
+# Temporary Scratch Scripts & Dump Files
+scratch/
+homeassistant dashboards/scratch/
+*.json
+!package.json
+!package-lock.json
+
+# Temporary Snapshots & Previews
+dash_snap.png
+*.png
+!homeassistant dashboards/mockup.png
+
+# System & OS Files
+.DS_Store
+Thumbs.db
