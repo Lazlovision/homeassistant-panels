@@ -1,6 +1,16 @@
 # AGENTS.md — Home Assistant Crestron Panel Project
 
-> **Read this file at the start of every session.** It contains the project conventions, tooling, and workflows required to work on this codebase.
+## ⚠️ MANDATORY PRE-FLIGHT (Run Before Any Work)
+
+1. **Read this entire file** — you are here
+2. **Read `crestron_viewport_guide.md`** — viewport specs, shadow DOM architecture, pinning pattern
+3. **Read `LOVELACE_REFERENCE.md`** — CSS/typography standards
+4. **Check `scratch/` for existing scripts** — NEVER write new push or screenshot code
+5. **Check `office_v6.yaml` for existing patterns** — reuse existing JS/CSS patterns before writing new ones
+
+**Golden rule: Read existing code and docs before writing anything new.**
+
+> This file MUST be read at the start of every session and after every context compaction.
 
 ---
 
@@ -186,7 +196,9 @@ The push script reads this file automatically. Never hardcode credentials.
 
 | Anti-Pattern | Correct Approach |
 |---|---|
-| Writing new WebSocket push code | Use `scratch/push_clean_v6.py` |
+| Writing new WebSocket push code | Use `scratch/push_clean_v6.py` — check `scratch/` first |
+| Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` — check root `F:/Homeassistant/` first |
+| Solving a problem from scratch | Check existing code and docs first — the solution likely already exists |
 | Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` |
 | Editing `office.yaml` directly | Edit `office_v6.yaml` (lead file) |
 | Using `onclick` + `ontouchend` together | Use `ontouchend` only |
