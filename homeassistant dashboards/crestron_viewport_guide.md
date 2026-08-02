@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > **CRITICAL REFERENCE DOCUMENT**
-> This document details the exact viewport specifications, headless snapshot rendering pipeline, image caching rules, and CSS layout parameters required for the Crestron TSS-770 and TS-1070 panels.
+> This document details the exact viewport specifications, headless snapshot rendering pipeline, image caching rules, browser engine characteristics, and empirical calibration test results for Crestron TSS-770 and TS-1070 panels.
 
 ---
 
@@ -69,7 +69,7 @@ ws.send(JSON.stringify({ id: 5, method: 'Page.captureScreenshot', params: { form
 ```css
 /* Must prevent horizontal overflow on 1280px width */
 .header-pill {
-  padding: 8px 14px !important;
+  padding: 6px 12px !important;
   gap: 8px !important;
   border-radius: 24px !important;
 }
@@ -79,7 +79,7 @@ ws.send(JSON.stringify({ id: 5, method: 'Page.captureScreenshot', params: { form
 }
 ```
 
-### Right Thermostat Card
+### Right Thermostat Card & Flex Column Stretching
 ```css
 /* Enforces full column height stretching and bottom anchoring */
 :host {
@@ -101,3 +101,71 @@ ha-card {
   height: 100% !important;
 }
 ```
+
+---
+
+## 5. Chromium vs Embedded Crestron WebView Architecture
+
+> [!WARNING]
+> **Headless Desktop Chrome screenshots verify logic & structure — physical photo is ground truth for layout.**
+> Crestron 70-Series panels (TS-1070, TSS-770) run **Android OS 8.1** with an embedded **Chromium System WebView** wrapped in Crestron's CH5 application container.
+
+### 5.1 Subpixel & Border-Radius Rendering
+* Android WebView subpixel antialiasing differs from Windows DirectWrite rasterization.
+* **Impact**: Rounded corners and gradients may show slight curvature or color boundary variations between Windows Chrome and the Crestron panel.
+
+### 5.2 Flexbox Layout & Bottom Anchoring
+* `margin-top: auto` and `flex: 1` height stretching require explicit `display: flex; flex-direction: column; height: 100%` on **all ancestor elements** (`hui-card`, `:host`, `ha-card`).
+* **Impact**: If any parent container defaults to `display: block` or `height: auto`, internal elements (like `FAN SPEED` buttons) won't anchor to the bottom.
+
+### 5.3 Shadow DOM Specificity & `card_mod`
+* `card_mod` injects CSS into LitElement shadow roots (`#shadow-root`) asynchronously.
+* **Best Practice**: Prefer native `styles:` blocks inside `custom:button-card` over external `card_mod` where possible. Use `card_mod` primarily for parent element overrides (`:host`, `#root`, `hui-card`).
+
+### 5.4 Font Rendering & FreeType Kerning
+* Bold Google Fonts (Hanken Grotesk / Inter) render ~5% wider under Android FreeType than Windows Chrome.
+* **Impact**: Text like `PM2.5 0 AUTO` takes ~240px in Windows Chrome but ~255px on the Crestron panel.
+* **Mitigation**: Compact top pill paddings (`6px 12px` and `gap: 8px`) ensure content fits within `1220px` without edge clipping.
+
+### 5.5 JavaScript Execution & ES5 Compatibility
+* Embedded webviews can throw syntax errors on optional chaining (`?.`) or nullish coalescing (`??`) inside JS template strings.
+* **Rule**: Always write explicit standard ES5 null checks (`(states['x'] ? states['x'].state : 'off')`).
+
+---
+
+## 6. Empirical Calibration Test Results (TSS-770 Panel vs Chrome Headless)
+
+Physical TSS-770 panel photos were systematically compared against Chrome headless screenshots across two test patterns:
+
+### 6.1 Raw CSS/HTML (White Calibration Pattern)
+
+| Test Metric | Chrome Headless | TSS-770 Panel Photo | Calibration Result |
+| :--- | :--- | :--- | :--- |
+| **Overscan** | `1280x800` | All 4 red corner brackets visible at exact edges | **0% Overscan (1:1 Fit)** |
+| **Resolution** | `1280x800` | Grid lines align pixel-perfect | **1280x800 Confirmed** |
+| **1px Lines** | Rendered sharp | Rendered sharp | **Identical** |
+| **Font Sizing (10–28px)** | Baseline | Matches Chrome | **Identical** |
+| **Border Radius** | Smooth | Smooth | **Identical** |
+
+### 6.2 Button-Card Shadow DOM & Layout Deltas
+
+| Layout Pattern | Chrome Behavior | TSS-770 Panel Behavior | Key Finding |
+| :--- | :--- | :--- | :--- |
+| **`margin-top: auto` Anchoring** | Anchors to bottom | Stacks directly below top content | **Fails inside button-card shadow DOM unless parent has explicit flex height** |
+| **Pill Text Width** | Baseline | ~3–5% wider | **Android FreeType font kerning is slightly wider** |
+| **CSS Grid Columns** | Equal width | Equal width | **100% Supported** |
+| **Flex Gap (`gap: 14px`)** | 14px gap | Matches Chrome | **Supported** |
+
+### 6.3 Critical Mitigations & Best Practices
+
+1. **Bottom Anchoring**: Use `justify-content: space-between` on parent flex containers paired with `height: 100% !important` on all ancestor `:host` and `ha-card` elements instead of relying solely on `margin-top: auto`.
+2. **Font Width Safety**: Keep top header pill padding compact (`6px 12px`) with `gap: 8px` to absorb the 3-5% Android font kerning increase on 1280px panels.
+3. **Color Accuracy**: Camera backlight bloom and white balance shift photos towards blue. Trust physical human eye verification for color tuning rather than camera photos.
+
+---
+
+## 7. Verification & Workflow Rules
+
+1. **Chrome Screenshots (`take_snap.js`)**: Use for rapid validation of card structure, entity states, YAML syntax, and HA service calls.
+2. **Physical Panel Photos**: Use for final verification of spacing, vertical column stretching, and edge alignment.
+3. **Version Control**: Maintain all clean dashboard definitions committed to GitHub: [https://github.com/Lazlovision/homeassistant-panels](https://github.com/Lazlovision/homeassistant-panels).
