@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785654351
+  id: office_view_v6_clean_v6_88_1785697088
   badges: []
   type: panel
   cards:
@@ -227,6 +227,207 @@ views:
                     });
                   }
                 })();
+
+                // Screensaver: CSS injection into document head
+                (function() {
+                  if (document.getElementById('screensaver_styles')) return;
+                  var style = document.createElement('style');
+                  style.id = 'screensaver_styles';
+                  style.textContent =
+                    '#screensaver_overlay {' +
+                    '  position: fixed !important; top: 0 !important; left: 0 !important;' +
+                    '  width: 100vw !important; height: 100vh !important;' +
+                    '  z-index: 100000 !important; display: flex !important;' +
+                    '  align-items: center !important; justify-content: center !important;' +
+                    '  flex-direction: column !important; opacity: 0 !important;' +
+                    '  transition: opacity 0.3s ease !important; cursor: pointer !important;' +
+                    '  touch-action: manipulation !important; pointer-events: auto !important;' +
+                    '}' +
+                    '#screensaver_content {' +
+                    '  text-align: center !important;' +
+                    "  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;" +
+                    '  user-select: none !important; -webkit-user-select: none !important;' +
+                    '}' +
+                    '#screensaver_time {' +
+                    '  font-size: 120px !important; font-weight: 200 !important;' +
+                    '  letter-spacing: -0.03em !important; line-height: 1 !important;' +
+                    '  margin-bottom: 20px !important;' +
+                    '}' +
+                    '#screensaver_temp {' +
+                    '  font-size: 48px !important; font-weight: 300 !important;' +
+                    '  letter-spacing: -0.02em !important; margin-bottom: 16px !important;' +
+                    '}' +
+                    '#screensaver_weather {' +
+                    '  display: flex !important; align-items: center !important;' +
+                    '  justify-content: center !important; gap: 10px !important;' +
+                    '  font-size: 24px !important; font-weight: 300 !important;' +
+                    '}' +
+                    '[data-screensaver-theme="night"] #screensaver_overlay {' +
+                    '  background: rgba(9, 9, 12, 0.88) !important;' +
+                    '  backdrop-filter: blur(20px) !important;' +
+                    '  -webkit-backdrop-filter: blur(20px) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="night"] #screensaver_time {' +
+                    '  color: rgba(255, 255, 255, 0.28) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="night"] #screensaver_temp {' +
+                    '  color: rgba(255, 255, 255, 0.22) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="night"] #screensaver_weather {' +
+                    '  color: rgba(255, 255, 255, 0.18) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="night"] #screensaver_weather ha-icon {' +
+                    '  color: rgba(255, 255, 255, 0.22) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="day"] #screensaver_overlay {' +
+                    '  background: rgba(242, 242, 247, 0.92) !important;' +
+                    '  backdrop-filter: blur(20px) !important;' +
+                    '  -webkit-backdrop-filter: blur(20px) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="day"] #screensaver_time {' +
+                    '  color: rgba(28, 28, 30, 0.35) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="day"] #screensaver_temp {' +
+                    '  color: rgba(28, 28, 30, 0.28) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="day"] #screensaver_weather {' +
+                    '  color: rgba(28, 28, 30, 0.25) !important;' +
+                    '}' +
+                    '[data-screensaver-theme="day"] #screensaver_weather ha-icon {' +
+                    '  color: rgba(28, 28, 30, 0.28) !important;' +
+                    '}';
+                  document.head.appendChild(style);
+                })();
+
+                // Screensaver: idle detection and show/hide functions (guarded init)
+                if (!window._screensaverInitialized) {
+                  window._screensaverInitialized = true;
+                  window._screensaverIdle = 0;
+                  window._screensaverVisible = false;
+
+                  window._resetScreensaverIdle = function() {
+                    window._screensaverIdle = 0;
+                    if (window._screensaverVisible) {
+                      window._hideScreensaver();
+                    }
+                  };
+
+                  window._showScreensaver = function() {
+                    if (window._screensaverVisible) return;
+                    window._screensaverVisible = true;
+                    var overlay = document.getElementById('screensaver_overlay');
+                    if (!overlay) return;
+                    overlay.style.display = 'flex';
+                    void overlay.offsetWidth;
+                    overlay.style.opacity = '1';
+                  };
+
+                  window._hideScreensaver = function() {
+                    if (!window._screensaverVisible) return;
+                    var overlay = document.getElementById('screensaver_overlay');
+                    if (!overlay) return;
+                    overlay.style.opacity = '0';
+                    setTimeout(function() {
+                      overlay.style.display = 'none';
+                      window._screensaverVisible = false;
+                    }, 300);
+                  };
+
+                  // Create overlay in document.body (not shadow DOM)
+                  if (!document.getElementById('screensaver_overlay')) {
+                    var overlay = document.createElement('div');
+                    overlay.id = 'screensaver_overlay';
+                    overlay.style.display = 'none';
+                    overlay.innerHTML =
+                      '<div id="screensaver_content">' +
+                      '  <div id="screensaver_time">--:--</div>' +
+                      '  <div id="screensaver_temp">--\u00B0C</div>' +
+                      '  <div id="screensaver_weather">' +
+                      '    <ha-icon id="screensaver_weather_icon" icon="mdi:weather-partly-cloudy" style="width:28px; height:28px; --mdc-icon-size:28px;"></ha-icon>' +
+                      '    <span id="screensaver_weather_text">--\u00B0C outside</span>' +
+                      '  </div>' +
+                      '</div>';
+                    overlay.ontouchstart = function(ev) { ev.stopPropagation(); };
+                    overlay.ontouchend = function(ev) { ev.stopPropagation(); window._hideScreensaver(); };
+                    overlay.onclick = function() { window._hideScreensaver(); };
+                    document.body.appendChild(overlay);
+                  }
+
+                  // Set initial theme
+                  (function() {
+                    var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+                    document.documentElement.setAttribute('data-screensaver-theme', isNight ? 'night' : 'day');
+
+                    document.addEventListener('touchstart', function(ev) {
+                      if (ev.target && ev.target.closest && ev.target.closest('#screensaver_overlay')) return;
+                      window._resetScreensaverIdle();
+                    }, true);
+                    document.addEventListener('mousedown', function(ev) {
+                      if (ev.target && ev.target.closest && ev.target.closest('#screensaver_overlay')) return;
+                      window._resetScreensaverIdle();
+                    }, true);
+
+                    if (window._screensaverInterval) clearInterval(window._screensaverInterval);
+                    window._screensaverInterval = setInterval(function() {
+                      window._screensaverIdle++;
+                      if (window._screensaverIdle >= 5 && !window._screensaverVisible) {
+                        window._showScreensaver();
+                      }
+
+                      // Get live hass state (not stale template closure)
+                      var ha = document.querySelector('home-assistant');
+                      var hCur = window.hass || (ha && ha.hass);
+                      var s = hCur ? hCur.states : states;
+
+                      var timeEl = document.getElementById('screensaver_time');
+                      var tempEl = document.getElementById('screensaver_temp');
+                      var weatherEl = document.getElementById('screensaver_weather_text');
+                      var weatherIcon = document.getElementById('screensaver_weather_icon');
+
+                      if (timeEl) {
+                        var now = new Date();
+                        timeEl.innerText = now.getHours().toString().padStart(2, '0') + ':' +
+                                           now.getMinutes().toString().padStart(2, '0');
+                      }
+
+                      if (tempEl) {
+                        var climate = s['climate.air_conditioner_office_climate'];
+                        var curTemp = (climate && climate.attributes && climate.attributes.current_temperature)
+                          ? Math.round(parseFloat(climate.attributes.current_temperature)) + '\u00B0C'
+                          : '--\u00B0C';
+                        tempEl.innerText = curTemp;
+                      }
+
+                      if (weatherEl && weatherIcon) {
+                        var w = s['weather.forecast_home'];
+                        var st = (w && w.state) || 'partlycloudy';
+                        var wTemp = (w && w.attributes && w.attributes.temperature)
+                          ? Math.round(w.attributes.temperature) + '\u00B0C outside'
+                          : '--\u00B0C outside';
+                        weatherEl.innerText = wTemp;
+
+                        var iconMap = {
+                          'sunny': 'mdi:weather-sunny',
+                          'clear-night': 'mdi:weather-night',
+                          'partlycloudy': 'mdi:weather-partly-cloudy',
+                          'cloudy': 'mdi:weather-cloudy',
+                          'rainy': 'mdi:weather-rainy',
+                          'snowy': 'mdi:weather-snowy',
+                          'windy': 'mdi:weather-windy',
+                          'fog': 'mdi:weather-fog'
+                        };
+                        weatherIcon.setAttribute('icon', iconMap[st] || 'mdi:weather-partly-cloudy');
+                      }
+
+                      // Re-check sun state every 60s for theme switching
+                      if (window._screensaverIdle % 60 === 0) {
+                        var sun = s['sun.sun'];
+                        var isN = sun ? sun.state === 'below_horizon' : false;
+                        document.documentElement.setAttribute('data-screensaver-theme', isN ? 'night' : 'day');
+                      }
+                    }, 1000);
+                  })();
+                }
 
                 // Custom Detailed Mitsubishi AC Popup Overlay Handler
                 window.openMitsubishiPopup = function(e) {
@@ -875,7 +1076,7 @@ views:
                         </div>
                       </div>
                     </div>
-                  </div>
+                </div>
                 `;
               ]]]
           styles:
@@ -1597,9 +1798,9 @@ views:
 
             if (!mainTitle) mainTitle = rawTitle || appName || friendlyName;
             if (!mainSubtitle) mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : friendlyName;
-
             var rawArt = (s&&s.attributes&&s.attributes.entity_picture);
-            var art = rawArt ? rawArt.replace('https://YOUR_HA_IP:32400', 'http://YOUR_HA_IP:32400') : null;
+            var art = rawArt ? rawArt.replace('https://10.10.10.100:32400', 'http://10.10.10.100:32400') : null;
+
 
             var vol = ((s&&s.attributes&&s.attributes.volume_level) !== undefined) ? Math.round(s.attributes.volume_level * 100) : 50;
             var isMuted = (s&&s.attributes&&s.attributes.is_volume_muted) || false;
@@ -1615,6 +1816,10 @@ views:
             }
             var posStr = fmtTime(position);
             var durStr = fmtTime(duration);
+            var artHtml = '<ha-icon icon="mdi:television-play" style="width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>';
+            if (art) {
+              artHtml = '<img src="' + art + '" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<ha-icon icon=\\\'mdi:television-play\\\' style=\\\'width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF;\\\'></ha-icon>\';" style="width:100%; height:100%; object-fit:cover;">';
+            }
 
             return `
               <style>
@@ -1643,7 +1848,6 @@ views:
                 }
                 .res-seek-slider {
                   -webkit-appearance: none;
-                  appearance: none;
                   width: 100%;
                   height: 6px;
                   background: ${sliderBg};
@@ -1669,7 +1873,7 @@ views:
                 
                 <div style="display:flex; align-items:center; gap:14px; flex:1.3; min-width:0; text-align:left;">
                   <div style="width:54px; height:54px; border-radius:12px; background:${isNight ? '#1A1A22' : '#E5E5EA'}; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid ${isNight ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};">
-                    ${art ? `<img src="${art}" onerror="this.style.display='none'; this.parentElement.innerHTML='<ha-icon icon=\'mdi:television-play\' style=\'width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;\'></ha-icon>';" style="width:100%; height:100%; object-fit:cover;">` : '<ha-icon icon="mdi:television-play" style="width:28px; height:28px; --mdc-icon-size:28px; color:#00B0DF; display:flex; align-items:center; justify-content:center;"></ha-icon>'}
+                    ${artHtml}
                   </div>
                   <div style="overflow:hidden; min-width:0; text-align:left; display:flex; flex-direction:column; justify-content:center;">
                     <div id="restored_media_title" style="font-size:20px; font-weight:800; color:${titleColor}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; width:100%; letter-spacing:-0.01em; line-height:1.2;">${mainTitle}</div>
