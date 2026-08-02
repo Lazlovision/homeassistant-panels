@@ -1,0 +1,767 @@
+[
+  {
+    "entity_id": "script.office_toggle_mode",
+    "state": "off",
+    "attributes": {
+      "last_triggered": "2026-06-16T06:34:20.159892+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "office_toggle_mode"
+    }
+  },
+  {
+    "entity_id": "script.office_toggle_fan",
+    "state": "off",
+    "attributes": {
+      "last_triggered": "2026-06-16T05:36:42.700111+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "office_toggle_fan"
+    }
+  },
+  {
+    "entity_id": "script.office_toggle_vent",
+    "state": "off",
+    "attributes": {
+      "last_triggered": "2026-06-16T05:36:35.002838+00:00",
+      "mode": "single",
+      "current": 0,
+      "friendly_name": "office_toggle_vent"
+    }
+  },
+  {
+    "entity_id": "script.office_ac_vent_double_fire",
+    "state": "off",
+    "attributes": {
+      "last_triggered": "2026-05-08T21:10:16.755332+00:00",
+      "mode": "parallel",
+      "current": 0,
+      "max": 10,
+      "friendly_name": "Office AC Vent Double-Fire"
+    }
+  },
+  {
+    "entity_id": "person.office_opanel",
+    "state": "unknown",
+    "attributes": {
+      "editable": true,
+      "id": "office_opanel",
+      "device_trackers": [],
+      "in_zones": [],
+      "user_id": "d8a8542f8352416f89d025e478cdce92",
+      "friendly_name": "office_panel"
+    }
+  },
+  {
+    "entity_id": "input_boolean.office_mode_expanded",
+    "state": "on",
+    "attributes": {
+      "editable": true,
+      "friendly_name": "office_mode_expanded"
+    }
+  },
+  {
+    "entity_id": "input_boolean.office_fan_expanded",
+    "state": "off",
+    "attributes": {
+      "editable": true,
+      "friendly_name": "office_fan_expanded"
+    }
+  },
+  {
+    "entity_id": "input_boolean.office_temp_expanded",
+    "state": "off",
+    "attributes": {
+      "editable": true,
+      "friendly_name": "office_temp_expanded"
+    }
+  },
+  {
+    "entity_id": "event.air_conditioner_notification",
+    "state": "unavailable",
+    "attributes": {
+      "event_types": [
+        "water_is_full"
+      ],
+      "friendly_name": "Air Conditioner Notification"
+    }
+  },
+  {
+    "entity_id": "number.air_conditioner_schedule_turn_on",
+    "state": "unavailable",
+    "attributes": {
+      "min": 0.0,
+      "max": 100.0,
+      "step": 1.0,
+      "mode": "box",
+      "unit_of_measurement": "h",
+      "friendly_name": "Air Conditioner Schedule turn-on"
+    }
+  },
+  {
+    "entity_id": "number.air_conditioner_schedule_turn_off",
+    "state": "unavailable",
+    "attributes": {
+      "min": 0.0,
+      "max": 100.0,
+      "step": 1.0,
+      "mode": "box",
+      "unit_of_measurement": "h",
+      "friendly_name": "Air Conditioner Schedule turn-off"
+    }
+  },
+  {
+    "entity_id": "number.air_conditioner_sleep_timer",
+    "state": "unavailable",
+    "attributes": {
+      "min": 0.0,
+      "max": 100.0,
+      "step": 1.0,
+      "mode": "box",
+      "unit_of_measurement": "h",
+      "friendly_name": "Air Conditioner Sleep timer"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_filter_remaining",
+    "state": "unavailable",
+    "attributes": {
+      "unit_of_measurement": "h",
+      "friendly_name": "Air Conditioner Filter remaining"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_schedule_turn_on",
+    "state": "unavailable",
+    "attributes": {
+      "unit_of_measurement": "min",
+      "device_class": "duration",
+      "friendly_name": "Air Conditioner Schedule turn-on"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_schedule_turn_off",
+    "state": "unavailable",
+    "attributes": {
+      "unit_of_measurement": "min",
+      "device_class": "duration",
+      "friendly_name": "Air Conditioner Schedule turn-off"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_sleep_timer",
+    "state": "unavailable",
+    "attributes": {
+      "unit_of_measurement": "min",
+      "device_class": "duration",
+      "friendly_name": "Air Conditioner Sleep timer"
+    }
+  },
+  {
+    "entity_id": "switch.air_conditioner_power",
+    "state": "unavailable",
+    "attributes": {
+      "device_class": "switch",
+      "friendly_name": "Air Conditioner Power"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_input_power",
+    "state": "11.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "W",
+      "device_class": "power",
+      "friendly_name": "Air Conditioner Office Input Power"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_energy_consumed",
+    "state": "24.0",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "kWh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Office Energy Consumed"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_outside_air_temp",
+    "state": "22.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Office Outside Air Temp"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_signal_db",
+    "state": "-75.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "dBm",
+      "device_class": "signal_strength",
+      "friendly_name": "Air Conditioner Office Signal dB"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_uptime",
+    "state": "9.54162216186523",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "days",
+      "device_class": "duration",
+      "icon": "mdi:timer-outline",
+      "friendly_name": "Air Conditioner Office Uptime"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_internal_esp_temperature",
+    "state": "33.0999984741211",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Office Internal ESP Temperature"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_ssid",
+    "state": "Cactaur",
+    "attributes": {
+      "icon": "mdi:wifi",
+      "friendly_name": "Air Conditioner Office SSID"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_ip",
+    "state": "10.10.20.233",
+    "attributes": {
+      "icon": "mdi:ip",
+      "friendly_name": "Air Conditioner Office IP"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_office_version",
+    "state": "2026.4.3 (config hash 0xa21b7204)",
+    "attributes": {
+      "icon": "mdi:new-box",
+      "friendly_name": "Air Conditioner Office Version"
+    }
+  },
+  {
+    "entity_id": "select.air_conditioner_office_vertical_vane",
+    "state": "\u2191\u2191",
+    "attributes": {
+      "options": [
+        "AUTO",
+        "\u2191\u2191",
+        "\u2191",
+        "\u2014",
+        "\u2193",
+        "\u2193\u2193",
+        "SWING"
+      ],
+      "friendly_name": "Air Conditioner Office Vertical Vane"
+    }
+  },
+  {
+    "entity_id": "binary_sensor.air_conditioner_office_i_see_sensor",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Office i-See Sensor"
+    }
+  },
+  {
+    "entity_id": "switch.air_conditioner_office_night_mode",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Office Night Mode"
+    }
+  },
+  {
+    "entity_id": "climate.air_conditioner_office_climate",
+    "state": "cool",
+    "attributes": {
+      "hvac_modes": [
+        "off",
+        "cool",
+        "heat",
+        "fan_only",
+        "dry",
+        "auto"
+      ],
+      "min_temp": 15.0,
+      "max_temp": 31.0,
+      "target_temp_step": 0.5,
+      "fan_modes": [
+        "auto",
+        "low",
+        "medium",
+        "high"
+      ],
+      "swing_modes": [
+        "off",
+        "vertical"
+      ],
+      "current_temperature": 22.5,
+      "temperature": 22.5,
+      "fan_mode": "auto",
+      "hvac_action": "cooling",
+      "swing_mode": "off",
+      "icon": "mdi:hvac",
+      "friendly_name": "Air Conditioner Office Climate",
+      "supported_features": 425
+    }
+  },
+  {
+    "entity_id": "button.air_conditioner_office_esp_restart",
+    "state": "unknown",
+    "attributes": {
+      "device_class": "restart",
+      "icon": "mdi:restart",
+      "friendly_name": "Air Conditioner Office ESP Restart"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_input_power",
+    "state": "223.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "W",
+      "device_class": "power",
+      "friendly_name": "Air Conditioner Living Room Input Power"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_energy_consumed",
+    "state": "661.299987792969",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "kWh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Living Room Energy Consumed"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_outside_air_temp",
+    "state": "22.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Living Room Outside Air Temp"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_signal_db",
+    "state": "-64.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "dBm",
+      "device_class": "signal_strength",
+      "friendly_name": "Air Conditioner Living Room Signal dB"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_uptime",
+    "state": "9.54162788391113",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "days",
+      "device_class": "duration",
+      "icon": "mdi:timer-outline",
+      "friendly_name": "Air Conditioner Living Room Uptime"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_internal_esp_temperature",
+    "state": "31.8999996185303",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Living Room Internal ESP Temperature"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_ssid",
+    "state": "Cactaur",
+    "attributes": {
+      "icon": "mdi:wifi",
+      "friendly_name": "Air Conditioner Living Room SSID"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_ip",
+    "state": "10.10.20.183",
+    "attributes": {
+      "icon": "mdi:ip",
+      "friendly_name": "Air Conditioner Living Room IP"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_living_room_version",
+    "state": "2026.4.3 (config hash 0xc2c5c78e)",
+    "attributes": {
+      "icon": "mdi:new-box",
+      "friendly_name": "Air Conditioner Living Room Version"
+    }
+  },
+  {
+    "entity_id": "select.air_conditioner_living_room_vertical_vane",
+    "state": "\u2191\u2191",
+    "attributes": {
+      "options": [
+        "AUTO",
+        "\u2191\u2191",
+        "\u2191",
+        "\u2014",
+        "\u2193",
+        "\u2193\u2193",
+        "SWING"
+      ],
+      "friendly_name": "Air Conditioner Living Room Vertical Vane"
+    }
+  },
+  {
+    "entity_id": "binary_sensor.air_conditioner_living_room_i_see_sensor",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Living Room i-See Sensor"
+    }
+  },
+  {
+    "entity_id": "switch.air_conditioner_living_room_night_mode",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Living Room Night Mode"
+    }
+  },
+  {
+    "entity_id": "climate.air_conditioner_living_room_climate",
+    "state": "cool",
+    "attributes": {
+      "hvac_modes": [
+        "off",
+        "cool",
+        "heat",
+        "fan_only",
+        "dry",
+        "auto"
+      ],
+      "min_temp": 15.0,
+      "max_temp": 31.0,
+      "target_temp_step": 0.5,
+      "fan_modes": [
+        "auto",
+        "low",
+        "medium",
+        "high"
+      ],
+      "swing_modes": [
+        "off",
+        "vertical"
+      ],
+      "current_temperature": 20.0,
+      "temperature": 20.0,
+      "fan_mode": "auto",
+      "hvac_action": "cooling",
+      "swing_mode": "off",
+      "icon": "mdi:hvac",
+      "friendly_name": "Air Conditioner Living Room Climate",
+      "supported_features": 425
+    }
+  },
+  {
+    "entity_id": "button.air_conditioner_living_room_esp_restart",
+    "state": "2026-04-29T00:39:10.845645+00:00",
+    "attributes": {
+      "device_class": "restart",
+      "icon": "mdi:restart",
+      "friendly_name": "Air Conditioner Living Room ESP Restart"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_input_power",
+    "state": "11.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "W",
+      "device_class": "power",
+      "friendly_name": "Air Conditioner Bedroom Input Power"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_energy_consumed",
+    "state": "25.5",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "kWh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Bedroom Energy Consumed"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_outside_air_temp",
+    "state": "22.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Bedroom Outside Air Temp"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_signal_db",
+    "state": "-68.0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "dBm",
+      "device_class": "signal_strength",
+      "friendly_name": "Air Conditioner Bedroom Signal dB"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_uptime",
+    "state": "9.54164695739746",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "days",
+      "device_class": "duration",
+      "icon": "mdi:timer-outline",
+      "friendly_name": "Air Conditioner Bedroom Uptime"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_internal_esp_temperature",
+    "state": "33.7000007629395",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u00b0C",
+      "device_class": "temperature",
+      "friendly_name": "Air Conditioner Bedroom Internal ESP Temperature"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_ssid",
+    "state": "Cactaur",
+    "attributes": {
+      "icon": "mdi:wifi",
+      "friendly_name": "Air Conditioner Bedroom SSID"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_ip",
+    "state": "10.10.20.168",
+    "attributes": {
+      "icon": "mdi:ip",
+      "friendly_name": "Air Conditioner Bedroom IP"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_bedroom_version",
+    "state": "2026.4.3 (config hash 0xf9dd8f62)",
+    "attributes": {
+      "icon": "mdi:new-box",
+      "friendly_name": "Air Conditioner Bedroom Version"
+    }
+  },
+  {
+    "entity_id": "select.air_conditioner_bedroom_vertical_vane",
+    "state": "\u2191\u2191",
+    "attributes": {
+      "options": [
+        "AUTO",
+        "\u2191\u2191",
+        "\u2191",
+        "\u2014",
+        "\u2193",
+        "\u2193\u2193",
+        "SWING"
+      ],
+      "friendly_name": "Air Conditioner Bedroom Vertical Vane"
+    }
+  },
+  {
+    "entity_id": "binary_sensor.air_conditioner_bedroom_i_see_sensor",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Bedroom i-See Sensor"
+    }
+  },
+  {
+    "entity_id": "switch.air_conditioner_bedroom_night_mode",
+    "state": "off",
+    "attributes": {
+      "friendly_name": "Air Conditioner Bedroom Night Mode"
+    }
+  },
+  {
+    "entity_id": "climate.air_conditioner_bedroom_climate",
+    "state": "cool",
+    "attributes": {
+      "hvac_modes": [
+        "off",
+        "cool",
+        "heat",
+        "fan_only",
+        "dry",
+        "auto"
+      ],
+      "min_temp": 15.0,
+      "max_temp": 31.0,
+      "target_temp_step": 0.5,
+      "fan_modes": [
+        "auto",
+        "low",
+        "medium",
+        "high"
+      ],
+      "swing_modes": [
+        "off",
+        "vertical"
+      ],
+      "current_temperature": 21.5,
+      "temperature": 21.5,
+      "fan_mode": "auto",
+      "hvac_action": "idle",
+      "swing_mode": "off",
+      "icon": "mdi:hvac",
+      "friendly_name": "Air Conditioner Bedroom Climate",
+      "supported_features": 425
+    }
+  },
+  {
+    "entity_id": "button.air_conditioner_bedroom_esp_restart",
+    "state": "unknown",
+    "attributes": {
+      "device_class": "restart",
+      "icon": "mdi:restart",
+      "friendly_name": "Air Conditioner Bedroom ESP Restart"
+    }
+  },
+  {
+    "entity_id": "light.office_main_lights",
+    "state": "off",
+    "attributes": {
+      "supported_color_modes": [
+        "brightness"
+      ],
+      "color_mode": null,
+      "brightness": null,
+      "device_id": "8",
+      "zone_id": "6",
+      "friendly_name": "Office Main Lights",
+      "supported_features": 32
+    }
+  },
+  {
+    "entity_id": "sensor.bedroom_air_conditioner_energy_today",
+    "state": "0.0",
+    "attributes": {
+      "state_class": "total",
+      "last_reset": "2026-07-31T00:00:00-07:00",
+      "unit_of_measurement": "Wh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Energy today"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_energy_yesterday",
+    "state": "0.0",
+    "attributes": {
+      "state_class": "total",
+      "unit_of_measurement": "Wh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Energy yesterday"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_energy_this_month",
+    "state": "0.0",
+    "attributes": {
+      "state_class": "total_increasing",
+      "unit_of_measurement": "Wh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Energy this month"
+    }
+  },
+  {
+    "entity_id": "sensor.air_conditioner_energy_last_month",
+    "state": "0.0",
+    "attributes": {
+      "state_class": "total",
+      "unit_of_measurement": "Wh",
+      "device_class": "energy",
+      "friendly_name": "Air Conditioner Energy last month"
+    }
+  },
+  {
+    "entity_id": "binary_sensor.office_air_purifier_online",
+    "state": "on",
+    "attributes": {
+      "device_class": "connectivity",
+      "icon": "mdi:wifi-check",
+      "friendly_name": "Office Air Purifier  Online"
+    }
+  },
+  {
+    "entity_id": "fan.office_air_purifier_fan",
+    "state": "on",
+    "attributes": {
+      "preset_modes": [
+        "auto",
+        "night"
+      ],
+      "percentage": null,
+      "percentage_step": 1.098901098901099,
+      "preset_mode": "night",
+      "friendly_name": "Office Air Purifier  Fan",
+      "supported_features": 57
+    }
+  },
+  {
+    "entity_id": "light.office_air_purifier_led_light",
+    "state": "on",
+    "attributes": {
+      "supported_color_modes": [
+        "brightness"
+      ],
+      "color_mode": "brightness",
+      "brightness": 128.0,
+      "last_brightness": 128.0,
+      "friendly_name": "Office Air Purifier  LED Light",
+      "supported_features": 0
+    }
+  },
+  {
+    "entity_id": "sensor.office_air_purifier_pm_2_5",
+    "state": "0",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "\u03bcg/m\u00b3",
+      "device_class": "pm25",
+      "friendly_name": "Office Air Purifier  PM 2.5"
+    }
+  },
+  {
+    "entity_id": "sensor.office_air_purifier_filter_life",
+    "state": "24",
+    "attributes": {
+      "state_class": "measurement",
+      "unit_of_measurement": "%",
+      "icon": "mdi:air-filter",
+      "friendly_name": "Office Air Purifier  Filter Life"
+    }
+  },
+  {
+    "entity_id": "switch.office_air_purifier_child_lock",
+    "state": "off",
+    "attributes": {
+      "device_class": "switch",
+      "friendly_name": "Office Air Purifier  Child Lock"
+    }
+  }
+]

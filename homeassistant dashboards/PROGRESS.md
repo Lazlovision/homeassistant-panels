@@ -23,7 +23,7 @@ Rebuild the Office dashboard to match the user's mockup design. Dark theme, scen
 | Purpose | Method | Value |
 |---------|--------|-------|
 | **API pushes** (WebSocket config save, REST) | Long-lived access token | `YOUR_HA_LONG_LIVED_TOKEN` |
-| **Visual verification** (browser login) | Username / password | `office_panel` / `office123` |
+| **Visual verification** (browser login) | Username / password | `office_panel` / `***REDACTED***` |
 
 **Auth policy:** Use the API token for all config pushes and data queries. Use the username/password only when opening the dashboard in a browser to screenshot or visually verify. Never loop on login — if the browser session expires, re-login once and move on.
 ---
@@ -245,7 +245,7 @@ print(json.loads(await ws.recv()))
 
 1. **WebSocket API is the deployment method** — use the long-lived access token from Credentials section. No browser token extraction needed.
 2. **Current live config on HA is Gemini's version (v9)** — local `office.yaml` synced from HA via WebSocket pull
-3. **Dedicated login for visual verification**: `office_panel` / `office123` — use only when you need to open the dashboard in a browser to screenshot or check rendering
+3. **Dedicated login for visual verification**: `office_panel` / `***REDACTED***` — use only when you need to open the dashboard in a browser to screenshot or check rendering
 4. **NEVER loop on login**. If the browser session expires, log in once and move on. Use API token for everything else.
 5. **Dashboard auto-updates on WebSocket save** — no refresh or restart needed
 6. **Use bedroom.yaml as structural reference** — it's the proven working pattern

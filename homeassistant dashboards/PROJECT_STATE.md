@@ -27,7 +27,7 @@ See `Design/DESIGN.md` for full design spec.
 | HA Version | 2026.4.4 |
 | Dashboard | `office-panel` (storage mode, `lovelace.office_panel`) |
 | Deploy | WebSocket `lovelace/config/save` with access token |
-| Browser login | `office_panel` / `office123` (shadow DOM walk + coordinate click) |
+| Browser login | `office_panel` / `***REDACTED***` (shadow DOM walk + coordinate click) |
 | Access token | `YOUR_HA_LONG_LIVED_TOKEN` |
 | HA config dir | `\\obelisk\docker\homeassistant` |
 | Local mirror | `F:/Homeassistant/homeassistant dashboards/` |

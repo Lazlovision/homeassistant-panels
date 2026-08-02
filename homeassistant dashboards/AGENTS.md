@@ -28,9 +28,8 @@ homeassistant dashboards/
 ├── AGENTS.md               ← This file
 │
 ├── scratch/                ← Active utility scripts
-│   ├── push_clean_v6.py    ← USE THIS to deploy to panel
-│   ├── build_clean_v6_yaml.py
-│   └── build_perfect_v6_stretch.py
+│   ├── push_clean_v6.py    ← USE THIS to deploy to panel (auth validation, error handling, UTF-8, non-destructive)
+│   └── office_ac_entities.json
 │
 ├── archive/                ← Old files (do not edit, do not reference)
 │   ├── dashboards/         ← Stale YAML versions
@@ -106,7 +105,7 @@ Both scripts:
 - Navigate to `/office-panel`
 - Wait for layout to settle
 - Capture PNG screenshot
-
+- Use portable temp paths (`os.tmpdir()`), 30s timeout, and auto-cleanup
 ---
 
 ## 5. Git Conventions

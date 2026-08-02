@@ -1,5 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 function loadSecrets() {
   const p = 'f:/Homeassistant/secrets.json';
@@ -22,8 +24,8 @@ async function run() {
   const panelPass = secrets.PANEL_PASS || 'YOUR_PASSWORD';
 
   const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-  const tmpDir = 'C:\\Users\\lazlo\\AppData\\Local\\Temp\\chrome_dash_snap_' + Date.now();
-  
+  const tmpDir = path.join(os.tmpdir(), 'chrome_dash_snap_' + Date.now());
+
   const chrome = spawn(chromePath, [
     '--headless=new',
     '--remote-debugging-port=9222',
@@ -34,42 +36,68 @@ async function run() {
     '--user-data-dir=' + tmpDir,
     `http://${haIp}:8123/office-panel`
   ]);
-  
+
+  // Chrome process cleanup on any exit
+  let chromeKilled = false;
+  process.on('exit', () => {
+    if (!chromeKilled) {
+      chrome.kill();
+      chromeKilled = true;
+    }
+  });
+
+  // Screenshot timeout (30s)
+  const timeout = setTimeout(() => {
+    console.error('ERROR: Screenshot timeout after 30s');
+    chrome.kill();
+    chromeKilled = true;
+    process.exit(1);
+  }, 30000);
+
   await new Promise(r => setTimeout(r, 4000));
-  
+
   const resp = await fetch('http://127.0.0.1:9222/json');
   const tabs = await resp.json();
   const pageTab = tabs.find(t => t.type === 'page');
-  
+
   if (!pageTab) {
     console.error("Could not find Home Assistant page tab");
     chrome.kill();
+    chromeKilled = true;
     process.exit(1);
   }
-  
+
+  // Import WebSocket (ws package)
+  const WebSocket = (await import('ws')).default;
   const ws = new WebSocket(pageTab.webSocketDebuggerUrl);
-  await new Promise(r => ws.onopen = r);
-  
+
+  // WebSocket connect timeout (10s)
+  await Promise.race([
+    new Promise(r => ws.onopen = r),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('WebSocket connect timeout')), 10000))
+  ]);
+
   ws.onmessage = (msg) => {
     try {
       const data = JSON.parse(msg.data);
       if (data.id === 5 && data.result && data.result.data) {
         const buf = Buffer.from(data.result.data, 'base64');
-        const artDir = 'C:/Users/lazlo/.gemini/antigravity/brain/c5438730-2d4e-4815-b655-c7fa21d5af6e';
-        
         fs.writeFileSync('f:/Homeassistant/dash_snap.png', buf);
-        fs.writeFileSync(`${artDir}/verified_snap.png`, buf);
-        fs.writeFileSync(`${artDir}/live_dashboard_preview.png`, buf);
-        
-        console.log('SNAPSHOT_SAVED_SUCCESSFULLY to', `${artDir}/verified_snap.png`);
+        console.log('SNAPSHOT_SAVED_SUCCESSFULLY to f:/Homeassistant/dash_snap.png');
+        clearTimeout(timeout);
         chrome.kill();
+        chromeKilled = true;
+        // Clean up temp directory
+        if (fs.existsSync(tmpDir)) {
+          fs.rmSync(tmpDir, { recursive: true, force: true });
+        }
         process.exit(0);
       }
     } catch(e) {
       console.error(e);
     }
   };
-  
+
   const fillJs = `
     (function() {
       function setFieldValues(root) {
@@ -77,10 +105,10 @@ async function run() {
         const els = root.querySelectorAll ? Array.from(root.querySelectorAll('*')) : [];
         for (const el of els) {
           if (el.tagName === 'HA-TEXTFIELD' || el.tagName === 'MWC-TEXTFIELD' || el.tagName === 'PAPER-INPUT') {
-            if (el.name === 'username' || el.type === 'text' || el.label?.toLowerCase().includes('user')) {
+            if (el.name === 'username' || el.type === 'text' || (el.label && el.label.toLowerCase().includes('user'))) {
               el.value = '${panelUser}';
             }
-            if (el.name === 'password' || el.type === 'password' || el.label?.toLowerCase().includes('pass')) {
+            if (el.name === 'password' || el.type === 'password' || (el.label && el.label.toLowerCase().includes('pass'))) {
               el.value = '${panelPass}';
             }
           }
@@ -123,13 +151,13 @@ async function run() {
       window.dispatchEvent(new Event('resize'));
     })();
   `;
-  
+
   ws.send(JSON.stringify({ id: 1, method: 'Runtime.evaluate', params: { expression: fillJs, returnByValue: true } }));
   await new Promise(r => setTimeout(r, 600));
   ws.send(JSON.stringify({ id: 2, method: 'Runtime.evaluate', params: { expression: submitJs, returnByValue: true } }));
-  
+
   await new Promise(r => setTimeout(r, 8000));
-  
+
   ws.send(JSON.stringify({ id: 3, method: 'Runtime.evaluate', params: { expression: fixLayoutJs, returnByValue: true } }));
   await new Promise(r => setTimeout(r, 1200));
 

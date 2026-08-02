@@ -12,6 +12,8 @@ chrome_dash_snap_*
 # Temporary Scratch Scripts & Dump Files
 scratch/
 homeassistant dashboards/scratch/
+!homeassistant dashboards/scratch/push_clean_v6.py
+!homeassistant dashboards/scratch/office_ac_entities.json
 *.json
 !package.json
 !package-lock.json
