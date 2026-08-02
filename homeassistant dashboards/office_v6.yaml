@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785712885
+  id: office_view_v6_clean_v6_88_1785713026
   badges: []
   type: panel
   cards:
@@ -319,7 +319,6 @@ views:
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
                   var IDLE_MS = 10000;
                   document.addEventListener('touchstart', function() {
-                    clearTimeout(idleTimer);
                     if (isVisible) {
                       isDismissing = true;
                       overlay.style.opacity = '0';
@@ -327,6 +326,9 @@ views:
                       clearTimeout(updateTimer);
                       updateTimer = null;
                       setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
+                    } else if (!isDismissing) {
+                      clearTimeout(idleTimer);
+                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }
                   }, { passive: true });
                   window._ssShow = function() {
