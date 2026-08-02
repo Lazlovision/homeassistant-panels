@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785652147
+  id: office_view_v6_clean_v6_88_1785652353
   badges: []
   type: panel
   cards:
@@ -308,7 +308,7 @@ views:
                       var isSelected = activePos === opt;
                       var label = opt === 'AUTO' ? 'AUTO' : (opt === 'SWING' ? 'SWING' : opt);
                       html += `
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('select','select_option',{entity_id:'select.air_conditioner_office_vertical_vane', option:'${opt}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'select','select_option',{entity_id:'select.air_conditioner_office_vertical_vane', option:'${opt}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px 6px; border-radius:14px; border:${isSelected ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSelected ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSelected ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${label}</button>
                       `;
                     });
@@ -328,7 +328,7 @@ views:
                     modes.forEach(function(m) {
                       var isSel = activeState === m.id;
                       html += `
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'${m.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'${m.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px; border-radius:14px; border:${isSel ? ('1.5px solid ' + m.color) : ('1px solid ' + borderColor)}; background:${isSel ? (m.color + '25') : cardBg}; color:${isSel ? m.color : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${m.name}</button>
                       `;
                     });
@@ -346,7 +346,7 @@ views:
                     speeds.forEach(function(sp) {
                       var isSel = activeSpeed === sp.id;
                       html += `
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'${sp.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'${sp.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px; border-radius:14px; border:${isSel ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSel ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSel ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${sp.name}</button>
                       `;
                     });
@@ -422,7 +422,7 @@ views:
                           </div>
                         </div>
 
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:14px; border-radius:16px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:weather-night" style="width:22px; height:22px; --mdc-icon-size:22px; color:${d.nightState ? '#FF9F0A' : subColor};"></ha-icon>
                           Night Mode: ${d.nightState ? 'ON' : 'OFF'}
@@ -763,36 +763,36 @@ views:
                         </div>
                         
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'auto'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'auto'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${preset==='auto'?'1.5px solid #30D158':('1px solid '+borderColor)}; background:${preset==='auto'?'rgba(48,209,88,0.2)':cardBg}; color:${preset==='auto'?'#30D158':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">AUTO MODE</button>
                           
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'night'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'night'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${preset==='night'?'1.5px solid #00B0DF':('1px solid '+borderColor)}; background:${preset==='night'?'rgba(0,176,223,0.2)':cardBg}; color:${preset==='night'?'#00B0DF':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">NIGHT MODE</button>
                           
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','turn_off',{entity_id:'fan.office_air_purifier_fan'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','turn_off',{entity_id:'fan.office_air_purifier_fan'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${fanState==='off'?'1.5px solid #FF4D4D':('1px solid '+borderColor)}; background:${fanState==='off'?'rgba(255,77,77,0.2)':cardBg}; color:${fanState==='off'?'#FF4D4D':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">FAN OFF</button>
                         </div>
 
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:33}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:33}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 1 (LOW)</button>
                           
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:66}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:66}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 2 (MED)</button>
 
-                          <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:100}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:100}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 3 (HIGH)</button>
                         </div>
                       </div>
 
                       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('light','toggle',{entity_id:'light.office_air_purifier_led_light'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'light','toggle',{entity_id:'light.office_air_purifier_led_light'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
                                 style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:led-on" style="width:18px; height:18px; --mdc-icon-size:18px; color:${ledLight?'#FF9F0A':subColor};"></ha-icon>
                           LED Display: ${ledLight?'ON':'OFF'}
                         </button>
 
-                        <button ontouchend="(function(h){return h&&h.callService})(window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass))('switch','toggle',{entity_id:'switch.office_air_purifier_child_lock'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                        <button ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()'switch','toggle',{entity_id:'switch.office_air_purifier_child_lock'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
                                 style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:lock" style="width:18px; height:18px; --mdc-icon-size:18px; color:${childLock?'#FF4D4D':subColor};"></ha-icon>
                           Child Lock: ${childLock?'ON':'OFF'}
@@ -1404,8 +1404,8 @@ views:
                 { id: 'high', name: 'HIGH' }
               ];
 
-              var callMinus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextMinusTemp + "}); }";
-              var callPlus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextPlusTemp + "}); }";
+              var callMinus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextMinusTemp + "}); }";
+              var callPlus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextPlusTemp + "}); }";
 
               var modesRow1Html = '';
               modesList.slice(0, 3).forEach(function(m) {
@@ -1414,7 +1414,7 @@ views:
                 var border = isSel ? ('1px solid ' + m.color) : btnBorder;
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
-                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
                 modesRow1Html += '<button ontouchend="event.stopPropagation(); ' + callMode + '"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
@@ -1426,7 +1426,7 @@ views:
                 var border = isSel ? ('1px solid ' + m.color) : btnBorder;
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
-                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
                 modesRow2Html += '<button ontouchend="event.stopPropagation(); ' + callMode + '"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
@@ -1437,7 +1437,7 @@ views:
                 var bg = isSel ? (isNight ? 'rgba(255,255,255,0.22)' : '#1C1C1E') : btnBg;
                 var border = isSel ? (isNight ? '1px solid #FFFFFF' : '1px solid #1C1C1E') : btnBorder;
                 var txtColor = isSel ? '#FFFFFF' : (isNight ? '#9E9EA8' : '#6E6E73');
-                var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
+                var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
                 fanRowHtml += '<button ontouchend="event.stopPropagation(); ' + callFan + '"' +
                               ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
               });
@@ -1668,17 +1668,17 @@ views:
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
                   <div style="display:flex; align-items:center; gap:20px;">
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchend="event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
+                         ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                     
                     <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
-                         ontouchend="event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
+                         ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; ${isPlaying ? '' : 'margin-left:3px;'}"></ha-icon>
                     </div>
                     
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchend="event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
+                         ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                   </div>
@@ -1696,7 +1696,7 @@ views:
                 
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
                   <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:12px; pointer-events:auto;"
-                       ontouchend="event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},400); var h=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
+                       ontouchstart="this.style.opacity='0.6';" ontouchend="this.style.opacity='1';event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
                     <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                   </div>
                   
