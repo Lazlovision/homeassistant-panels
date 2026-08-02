@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785715057
+  id: office_view_v6_clean_v6_88_1785715192
   badges: []
   type: panel
   cards:
@@ -312,7 +312,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout (Time Left, Climate Right)
                 (function() {
-                  if (window._ssInitialized) return;
+                  if (window._ssInitialized && window._ssVersion === 2) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherTemp, elWeatherCond;
@@ -448,6 +448,7 @@ views:
                   window._ssUpdateTheme();
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssInitialized = true;
+                  window._ssVersion = 2;
                 })();
 
 
