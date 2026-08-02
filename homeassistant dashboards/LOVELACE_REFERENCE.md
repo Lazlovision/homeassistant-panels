@@ -1,6 +1,8 @@
 # Home Assistant Lovelace Reference & Standards Manual
 **Baseline Version:** `v7.0` (Distance Legibility & Zero-Flash Optimizations — Locked 2026-07-31)
 
+> Cross-reference: See `AGENTS.md` §6 for critical knowledge and `crestron_viewport_guide.md` §7 for the full viewport pinning pattern.
+
 ---
 
 ## 1. Core Architecture & Crestron TSS-770 Design Standards
@@ -18,6 +20,8 @@ To prevent Crestron's embedded WebKit browser from shifting layouts upwards duri
      z-index: 1 !important;
      transform: translateZ(0) !important;
      ```
+   - Full three-pronged pattern (CSS injection + recursive shadow DOM + MutationObserver) is in `crestron_viewport_guide.md` §7.
+
 2. **SPA Soft Refresh**:
    - Page touch targets (such as tapping "Office") must execute `window.dispatchEvent(new CustomEvent('location-changed'))` instead of hard browser reloads (`window.location.reload(true)`).
 
@@ -57,3 +61,41 @@ Every element on the 1280x800 display follows strict font size floors for distan
    - Touch controls for rapid interaction (setpoint `+`/`-` buttons) immediately update the local DOM element (`document.getElementById('sp_val_disp').innerText = newTemp + '°'`) before calling Home Assistant services over WebSocket.
 3. **GPU Hardware Acceleration**:
    - Embedded WebKit layout repaints are offloaded to hardware GPU using `transform: translateZ(0) !important;` on host cards and sliders.
+
+---
+
+## 4. Day/Night Theme Switching
+
+All UI elements switch between day and night themes based on `sun.sun` state. This is done at two levels:
+
+### 4.1 Jinja-Level (YAML `card_mod`)
+```yaml
+card_mod:
+  style: |
+    :host {
+      background: {{ '#09090C' if is_state('sun.sun', 'below_horizon') else '#F2F2F7' }} !important;
+      --primary-text-color: {{ '#FFFFFF' if is_state('sun.sun', 'below_horizon') else '#1C1C1E' }} !important;
+    }
+```
+
+### 4.2 JavaScript-Level (button-card `[[[ ]]]` templates)
+```javascript
+var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+var bgColor = isNight ? 'rgba(26, 26, 36, 0.95)' : '#FFFFFF';
+var textColor = isNight ? '#FFFFFF' : '#1C1C1E';
+var subColor = isNight ? '#9E9EA8' : '#6E6E73';
+```
+
+### 4.3 Design Tokens
+
+| Token | Night Value | Day Value |
+| :--- | :--- | :--- |
+| Background | `#09090C` | `#F2F2F7` |
+| Card Background | `rgba(26, 26, 36, 0.95)` | `#FFFFFF` |
+| Primary Text | `#FFFFFF` | `#1C1C1E` |
+| Secondary Text | `#9E9EA8` | `#6E6E73` |
+| Card Border | `rgba(255, 255, 255, 0.06)` | `rgba(0, 0, 0, 0.08)` |
+| Box Shadow | `none` | `0 4px 14px rgba(0,0,0,0.05)` |
+| Pill Background | `rgba(255, 255, 255, 0.09)` | `#FFFFFF` |
+
+See `Design/DESIGN.md` for the full design system.

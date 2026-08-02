@@ -1,5 +1,7 @@
 # Dashboard Status Summary
 
+> Cross-reference: See `AGENTS.md` §10 (Troubleshooting) for links to this file.
+
 ## Date: 2026-08-02
 
 ## Current Issue

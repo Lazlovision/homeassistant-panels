@@ -1,3 +1,12 @@
+# PROGRESS.md — Historical Session Log
+
+> [!NOTE]
+> **This file is a historical record from early development sessions (June-August 2026).**
+> For current project state, see `PROJECT_STATE.md`.
+> For AI agent onboarding, see `AGENTS.md` (read first).
+
+---
+
 # Home Assistant Office Dashboard — Progress Log
 
 ## Session: 2026-06-26
