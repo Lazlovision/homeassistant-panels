@@ -7,8 +7,8 @@
 
 ## 1. Core Architecture & Crestron TSS-770 Design Standards
 
-### Viewport Pinning & WebKit Teardown Shielding
-To prevent Crestron's embedded WebKit browser from shifting layouts upwards during cold startups or page refreshes:
+### Viewport Pinning & WebView Layout Shielding
+To prevent Crestron's embedded Chromium-based WebView from shifting layouts upwards during cold startups or page refreshes:
 1. **Immune Root Container Locking**:
    - The root `:host` vertical-stack **MUST** specify:
      ```css
@@ -20,7 +20,7 @@ To prevent Crestron's embedded WebKit browser from shifting layouts upwards duri
      z-index: 1 !important;
      transform: translateZ(0) !important;
      ```
-   - Full three-pronged pattern (CSS injection + recursive shadow DOM + MutationObserver) is in `crestron_viewport_guide.md` §7.
+   - Full three-pronged pattern (CSS injection + recursive shadow DOM + MutationObserver) is in `crestron_viewport_guide.md` §8.
 
 2. **SPA Soft Refresh**:
    - Page touch targets (such as tapping "Office") must execute `window.dispatchEvent(new CustomEvent('location-changed'))` instead of hard browser reloads (`window.location.reload(true)`).
@@ -34,7 +34,7 @@ Every element on the 1280x800 display follows strict font size floors for distan
 | Interface Element | Font Size | Weight | Line Height / Letter Spacing |
 | :--- | :--- | :--- | :--- |
 | **Room Title ("Office")** | `38px` | `800` | `1.1` / `-0.02em` |
-| **Thermostat Room Temp** | `90px` | `700` | `1.0` / `-0.03em` |
+| **Thermostat Room Temp** | `74px` | `700` | `1.0` / `-0.03em` |
 | **Set Point Target Readout** | `48px` | `800` | `1.0` |
 | **Card / Light Titles** | `26px` | `800` | `-0.01em` |
 | **Header Outdoor Temp** | `22px` | `800` | `-0.01em` |
@@ -60,7 +60,7 @@ Every element on the 1280x800 display follows strict font size floors for distan
 2. **0ms Optimistic DOM Updates**:
    - Touch controls for rapid interaction (setpoint `+`/`-` buttons) immediately update the local DOM element (`document.getElementById('sp_val_disp').innerText = newTemp + '°'`) before calling Home Assistant services over WebSocket.
 3. **GPU Hardware Acceleration**:
-   - Embedded WebKit layout repaints are offloaded to hardware GPU using `transform: translateZ(0) !important;` on host cards and sliders.
+   - Embedded WebView layout repaints are offloaded to hardware GPU using `transform: translateZ(0) !important;` on host cards and sliders.
 
 ---
 
@@ -97,5 +97,6 @@ var subColor = isNight ? '#9E9EA8' : '#6E6E73';
 | Card Border | `rgba(255, 255, 255, 0.06)` | `rgba(0, 0, 0, 0.08)` |
 | Box Shadow | `none` | `0 4px 14px rgba(0,0,0,0.05)` |
 | Pill Background | `rgba(255, 255, 255, 0.09)` | `#FFFFFF` |
+| Slider Track | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` |
 
 See `Design/DESIGN.md` for the full design system.

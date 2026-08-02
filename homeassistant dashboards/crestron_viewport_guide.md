@@ -132,7 +132,7 @@ ha-card {
 
 > [!WARNING]
 > **Headless Desktop Chrome screenshots verify logic & structure — physical photo is ground truth for layout.**
-> Crestron 70-Series panels (TS-1070, TSS-770) run **Android OS 8.1** with an embedded **Chromium System WebView** wrapped in Crestron's CH5 application container.
+> Crestron 70-Series panels (TS-1070, TSS-770) run **Android OS 8.1** with an embedded **Chromium-based WebView** wrapped in Crestron's CH5 application container.
 
 ### 4.1 Subpixel & Border-Radius Rendering
 * Android WebView subpixel antialiasing differs from Windows DirectWrite rasterization.
@@ -284,8 +284,8 @@ Panel views (`type: panel`) use `hui-panel-view` instead of the default view:
 
 ## 8. Viewport Pinning Pattern (Critical — Read Before Any Layout Fix)
 
-> [!CRITICAL]
-> **DO NOT use `setTimeout` to pin viewport layout.** It produces 50/50 behavior on the Crestron panel.
+> [!CAUTION]
+> **DO NOT use `setTimeout` alone to pin viewport layout.** It produces 50/50 behavior on the Crestron panel.
 > Use the three-pronged pattern below. This is the only approach that achieves 100% deterministic layout pinning.
 
 ### The Three-Pronged Pattern
@@ -326,27 +326,23 @@ Then find cards with: `queryDeep('hui-vertical-stack-card')` and `queryDeep('hui
 **3. MutationObserver** — Instead of `setTimeout`, watch for DOM changes and re-apply pinning reactively:
 
 ```javascript
-// Observe hui-view (light DOM, no shadow root — observable)
-var view = queryDeep('hui-view');
-if (view) {
-  var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(m) {
-      if (m.addedNodes.length || m.removedNodes.length) {
-        pinViewport();
-      }
-    });
+// Observe document.body — catches all DOM mutations including shadow DOM host additions
+if (!window._crestronViewportObserverAttached) {
+  window._crestronViewportObserverAttached = true;
+  var observer = new MutationObserver(function() {
+    pinViewport();
   });
-  observer.observe(view, { childList: true, subtree: true });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 ```
 
 This re-applies pinning whenever HA adds/removes cards, making it deterministic regardless of timing.
 
-### Why Observing `hui-view` Is Better Than `document.body`
+### MutationObserver Target Selection
 
-- `hui-view` has no shadow DOM (`createRenderRoot returns this`), so its children are in light DOM and observable
-- It's where cards are added/removed — more targeted than `document.body`
-- Avoids catching irrelevant DOM changes elsewhere in the page
+The current implementation observes `document.body` with `{ childList: true, subtree: true }`. This is intentionally broad to catch all card additions across the HA DOM tree. A more targeted approach would observe `hui-view` (light DOM, no shadow root), but `document.body` has proven more reliable on the Crestron WebView because it catches mutations at every level including HA's own internal component swaps.
+
+**Note:** MutationObserver **cannot cross shadow boundaries**. It catches host element additions (e.g., when HA adds a new `hui-card` wrapper) but not changes inside existing shadow roots. The `pinViewport()` function then traverses shadow roots manually via `queryDeep`.
 
 ### Full Shadow DOM Hierarchy
 
@@ -392,15 +388,9 @@ HA sends `hass` property updates via WebSocket **every second** to all connected
 
 This is why `setTimeout` produces 50/50 behavior: your pinning fires at a fixed delay, but HA's re-render cycle can overwrite it before, during, or after. The `MutationObserver` pattern works because it re-applies pinning **reactively** whenever the DOM changes.
 
-### MutationObserver Entry Points
+### MutationObserver Limitations
 
-Observing `document.body` with `{ childList: true, subtree: true }` works but is broad. Better entry points:
-
-- **`hui-view`** — light DOM, no shadow root, contains all cards. Best balance of coverage and specificity.
-- **`hui-root`'s shadow `#view` container** — catches card additions/removals.
-- **`hui-panel-view`** — for panel-type views specifically.
-
-**Note:** MutationObserver **cannot cross shadow boundaries**. If you need to observe inside a shadow root, you must attach a separate observer to that shadow root.
+**MutationObserver cannot cross shadow boundaries.** It observes light DOM mutations only. When HA adds/removes card wrappers (`hui-card`), the observer fires and `pinViewport()` traverses into their shadow roots via `queryDeep`. This combination (observer for timing + queryDeep for depth) is what makes the pattern deterministic.
 
 ### Reference
 

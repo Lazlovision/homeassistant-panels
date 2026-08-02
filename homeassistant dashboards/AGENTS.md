@@ -22,12 +22,12 @@ Complete these steps **before writing any code**:
 
 ## 1. Project Overview
 
-This repository manages a **Home Assistant Lovelace dashboard** deployed to a **Crestron TSS-770** (7" touch panel, Android 8.1, Chromium WebView v87+, 1280x800 viewport). The dashboard controls office climate, lighting, scenes, and media playback.
+This repository manages a **Home Assistant Lovelace dashboard** deployed to a **Crestron TSS-770** (7" touch panel, Android 8.1, Chromium-based WebView, 1280x800 viewport). The dashboard controls office climate, lighting, scenes, and media playback.
 
 **Target device:** Crestron TSS-770 at `10.10.10.100`
 **HA instance:** `http://10.10.10.100:8123`
 **Panel URL:** `/office-panel`
-**HA version:** 2026.4.4
+**HA version:** 2026.7.3
 
 ---
 
@@ -178,9 +178,9 @@ s.attributes?.brightness ?? 0
 
 ### 6.3 Touch Event Handling
 
-**NEVER use both `onclick` AND `ontouchend` on the same element.** On the Crestron WebView, a single touch fires `ontouchend` first, then `onclick` ~200ms later, causing double-fire bugs.
+**NEVER use `ontouchstart` to fire service calls.** On the Crestron WebView, `ontouchstart` fires before the touch gesture completes, causing unintended triple-fire when combined with `onclick` and `ontouchend`. Use `ontouchend` for touch interactions (with `event.stopPropagation()`). If both `onclick` and `ontouchend` are used on the same element, always include a debounce guard (see §6.8).
 
-**Rule:** Use `ontouchend` only for touch-interactive elements. Always include `event.stopPropagation()` to prevent event bubbling to parent cards.
+**Rule:** Use `ontouchend` with debounce guards for touch-interactive elements. Always include `event.stopPropagation()` to prevent event bubbling to parent cards. The `ontouchstart` event should only be used for visual press feedback (e.g., `scale(0.85)`) — never for service calls.
 
 ### 6.4 State Access: `states` vs `window.hass`
 
@@ -240,7 +240,7 @@ Rapid touch controls use window-level debounce flags to prevent double service c
 ```javascript
 if (window._climDB) return;
 window._climDB = true;
-setTimeout(function() { window._climDB = false; }, 200);
+setTimeout(function() { window._climDB = false; }, 400);
 ```
 
 Different controls use different flag names (`_climDB`, `_modeDB`, `_fanDB`, `_ppDB`, etc.).
@@ -308,7 +308,7 @@ Never hardcode credentials. The push script reads `secrets.json` automatically.
 | Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` — check root `F:/Homeassistant/` first |
 | Solving a problem from scratch | Check existing code and docs first — the solution likely already exists |
 | Editing `office.yaml` directly | Edit `office_v6.yaml` (lead file) |
-| Using `onclick` + `ontouchend` together | Use `ontouchend` only, always with `event.stopPropagation()` |
+| Using `ontouchstart` for service calls | Use `ontouchend` with debounce guard; `ontouchstart` only for visual feedback |
 | Using `?.` or `??` in JS templates | Use explicit ES5 null checks: `(x && x.attr) ? x.attr : default` |
 | Using `const`/`let`/`async`/arrow fns in templates | Use `var`, `function()`, plain callbacks |
 | Trusting Chrome screenshots for layout | Verify on physical panel |
@@ -318,7 +318,7 @@ Never hardcode credentials. The push script reads `secrets.json` automatically.
 | Pinning layout via `setTimeout` at one shadow DOM depth | Use recursive `queryDeep`, global CSS injection, and `MutationObserver` (crestron_viewport_guide.md §8) |
 | Forgetting `triggers_update` for cross-entity reactivity | List all entities whose changes should trigger re-render |
 | Forgetting `event.stopPropagation()` on nested touch handlers | Always stop propagation to prevent parent card taps |
-| Using `onclick` on elements inside button-card `custom_fields` | Use `ontouchend` with `event.stopPropagation()` |
+| Using `ontouchstart` to fire service calls in button-card | Use `ontouchend` + debounce, `ontouchstart` only for press animation |
 | Calling `h.callService` without checking `h` exists | Always: `var h = window.hass || (document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass); if(h){...}` |
 | Creating popups without removing old ones | Always check and remove: `var old = document.getElementById(id); if(old) old.remove();` |
 
