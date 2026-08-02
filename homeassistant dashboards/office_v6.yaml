@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785712671
+  id: office_view_v6_clean_v6_88_1785712885
   badges: []
   type: panel
   cards:
@@ -381,12 +381,33 @@ views:
                     var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
                     document.documentElement.setAttribute('data-screensaver-theme', isN ? 'night' : 'day');
                   };
-                  overlay = document.getElementById('screensaver_overlay');
-                  if (!overlay) return;
-                  elTime = document.getElementById('screensaver_time');
-                  elDate = document.getElementById('screensaver_date');
-                  elTemp = document.getElementById('screensaver_temp');
-                  elWeather = document.getElementById('screensaver_weather');
+                  // Create overlay via DOM API (appended to document.body, not shadow DOM)
+                  var oldOverlay = document.getElementById('screensaver_overlay');
+                  if (oldOverlay) oldOverlay.remove();
+                  overlay = document.createElement('div');
+                  overlay.id = 'screensaver_overlay';
+                  overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:rgba(0,0,0,0.85); flex-direction:column; align-items:center; justify-content:center; gap:6px; will-change:opacity; transform:translateZ(0);';
+                  var timeDiv = document.createElement('div');
+                  timeDiv.id = 'screensaver_time';
+                  timeDiv.style.cssText = 'font-size:72px; font-weight:200; color:rgba(255,255,255,0.8); letter-spacing:0.04em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums;';
+                  var dateDiv = document.createElement('div');
+                  dateDiv.id = 'screensaver_date';
+                  dateDiv.style.cssText = 'font-size:16px; font-weight:600; color:rgba(255,255,255,0.45); letter-spacing:0.12em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  var tempDiv = document.createElement('div');
+                  tempDiv.id = 'screensaver_temp';
+                  tempDiv.style.cssText = 'font-size:28px; font-weight:300; color:rgba(255,255,255,0.55); margin-top:8px; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  var weatherDiv = document.createElement('div');
+                  weatherDiv.id = 'screensaver_weather';
+                  weatherDiv.style.cssText = 'font-size:20px; font-weight:400; color:rgba(255,255,255,0.4); font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  overlay.appendChild(timeDiv);
+                  overlay.appendChild(dateDiv);
+                  overlay.appendChild(tempDiv);
+                  overlay.appendChild(weatherDiv);
+                  document.body.appendChild(overlay);
+                  elTime = timeDiv;
+                  elDate = dateDiv;
+                  elTemp = tempDiv;
+                  elWeather = weatherDiv;
                   window._ssUpdateTheme();
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssInitialized = true;
@@ -1040,12 +1061,6 @@ views:
                         </div>
                       </div>
                     </div>
-                <div id="screensaver_overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:rgba(0,0,0,0.85); flex-direction:column; align-items:center; justify-content:center; gap:6px; will-change:opacity; transform:translateZ(0);">
-                  <div id="screensaver_time" style="font-size:72px; font-weight:200; color:rgba(255,255,255,0.8); letter-spacing:0.04em; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums;"></div>
-                  <div id="screensaver_date" style="font-size:16px; font-weight:600; color:rgba(255,255,255,0.45); letter-spacing:0.12em; text-transform:uppercase; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;"></div>
-                  <div id="screensaver_temp" style="font-size:28px; font-weight:300; color:rgba(255,255,255,0.55); margin-top:8px; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;"></div>
-                  <div id="screensaver_weather" style="font-size:20px; font-weight:400; color:rgba(255,255,255,0.4); font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;"></div>
-                </div>
                 </div>
                 `;
               ]]]
