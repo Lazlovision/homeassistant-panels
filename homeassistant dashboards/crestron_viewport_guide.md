@@ -348,6 +348,67 @@ This re-applies pinning whenever HA adds/removes cards, making it deterministic 
 - It's where cards are added/removed — more targeted than `document.body`
 - Avoids catching irrelevant DOM changes elsewhere in the page
 
+### Full Shadow DOM Hierarchy
+
+Traced from HA frontend source (`home-assistant/frontend` on GitHub):
+
+```
+document
+└── home-assistant (shadow DOM)
+    └── home-assistant-main (shadow DOM)
+        └── ha-drawer (shadow DOM)
+            └── partial-panel-resolver (NO shadow DOM — light DOM)
+                └── ha-panel-lovelace (shadow DOM)
+                    └── hui-root (shadow DOM)
+                        └── hui-view-container (shadow DOM)
+                            └── hui-view (NO shadow DOM — light DOM, createRenderRoot returns this)
+                                └── hui-panel-view (shadow DOM, for type: panel views)
+                                    └── hui-card (NO shadow DOM — light DOM, wrapper only)
+                                        └── hui-vertical-stack-card (shadow DOM)
+                                            └── #root (div, flex-direction: column)
+                                                ├── hui-card → hui-horizontal-stack-card (shadow DOM)
+                                                │   └── #root (div, display: contents on children)
+                                                │       ├── hui-card → hui-vertical-stack-card (left column)
+                                                │       └── hui-card → custom:button-card (right column / HVAC)
+                                                └── hui-card → custom:button-card (media bar, 80px)
+```
+
+**Key insight:** `hui-card`, `hui-view`, and `hui-section` are **light DOM** (no shadow root). Everything else is shadow DOM. This means `queryDeep` must traverse through shadow roots of intermediate elements but can use direct `querySelector` on light DOM elements.
+
+### card_mod v4 Mechanics
+
+`card_mod` (by thomasloven) patches HA element lifecycle methods (`connectedCallback`, `update`) to inject `<style>` tags into shadow roots. It uses `$` syntax for shadow boundary traversal (e.g., `$ ha-card` reaches into the card's shadow root).
+
+**Important:** `card_mod` supports `prepend: true` for cards that re-render after initial style injection. Without it, styles may be lost on re-render.
+
+### Re-render Triggers (Why setTimeout Fails)
+
+HA sends `hass` property updates via WebSocket **every second** to all connected cards. Each update triggers Lit's reactive update cycle:
+
+1. `hass` property setter fires → marks element dirty
+2. Lit's `update()` runs → calls `render()` → creates new template
+3. Template is diffed against existing DOM
+4. **Manual inline styles set via `style.cssText` are lost** if the element is re-rendered
+
+This is why `setTimeout` produces 50/50 behavior: your pinning fires at a fixed delay, but HA's re-render cycle can overwrite it before, during, or after. The `MutationObserver` pattern works because it re-applies pinning **reactively** whenever the DOM changes.
+
+### MutationObserver Entry Points
+
+Observing `document.body` with `{ childList: true, subtree: true }` works but is broad. Better entry points:
+
+- **`hui-view`** — light DOM, no shadow root, contains all cards. Best balance of coverage and specificity.
+- **`hui-root`'s shadow `#view` container** — catches card additions/removals.
+- **`hui-panel-view`** — for panel-type views specifically.
+
+**Note:** MutationObserver **cannot cross shadow boundaries**. If you need to observe inside a shadow root, you must attach a separate observer to that shadow root.
+
 ### Reference
 
 Working implementation is in `office_v6.yaml` in the header card's `custom_fields: header_row` JS template (search for "Viewport & Media Bar Pinning"). Use that code as the template — don't re-derive from scratch.
+
+**Source references:**
+- `ha-panel-lovelace.ts` — https://github.com/home-assistant/frontend/blob/dev/src/panels/lovelace/ha-panel-lovelace.ts
+- `hui-root.ts` — https://github.com/home-assistant/frontend/blob/dev/src/panels/lovelace/hui-root.ts
+- `hui-view.ts` — https://github.com/home-assistant/frontend/blob/dev/src/panels/lovelace/views/hui-view.ts
+- `hui-stack-card.ts` — https://github.com/home-assistant/frontend/blob/dev/src/panels/lovelace/cards/hui-stack-card.ts
+- `card-mod` — https://github.com/thomasloven/lovelace-card-mod
