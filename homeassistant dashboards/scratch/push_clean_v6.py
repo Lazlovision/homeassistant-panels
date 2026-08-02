@@ -80,7 +80,20 @@ async def push():
             if 'error' in resp:
                 print(f'ERROR: Save to office-panel failed: {resp["error"]}')
                 sys.exit(1)
-            print(f'Saved office-panel: OK')
+            print('Saved office-panel: OK')
+
+            # ── Save to main default dashboard (url_path: None) ──
+            await ws.send(json.dumps({
+                'id': 2,
+                'type': 'lovelace/config/save',
+                'url_path': None,
+                'config': config
+            }, ensure_ascii=False))
+            resp2 = json.loads(await ws.recv())
+            if 'error' in resp2:
+                print(f'WARNING: Save to default dashboard (url_path: None) failed: {resp2["error"]}')
+            else:
+                print('Saved main default dashboard (url_path: None): OK')
 
 
             # ── Fire update events ──

@@ -1,0 +1,6 @@
+error: unexpected argument 'homeassistant dashboards/office_v6.yaml' found
+
+Usage: fc [OPTIONS] [FIRST] [LAST]
+
+For more information, try '--help'.
+
