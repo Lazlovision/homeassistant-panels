@@ -92,6 +92,14 @@ async def push():
             }, ensure_ascii=False))
             await ws.recv()
 
+            await ws.send(json.dumps({
+                'id': 4,
+                'type': 'fire_event',
+                'event_type': 'lovelace_updated',
+                'event_data': {'url_path': None}
+            }, ensure_ascii=False))
+            await ws.recv()
+
 
             print('Lovelace update events fired.')
 
