@@ -66,16 +66,19 @@ Make changes directly to the file. The push script handles encoding and view ID 
 ```powershell
 cd "F:/Homeassistant/homeassistant dashboards/scratch"
 python push_clean_v6.py
-```
-
 This script:
 - Reads `office_v6.yaml` as the lead file
 - Rotates the view ID to force cache invalidation
 - Writes both `office_v6.yaml` and `office.yaml`
-- Pushes to HA via WebSocket (`lovelace/config/save`)
+- Pushes to **both** HA endpoints (`url_path: 'office-panel'` AND `url_path: None`)
 - Fires `lovelace_updated` events for the panel to refresh
 
+**CRITICAL:** HA serves dashboards from two endpoints. If only one is updated, the panel may continue serving stale cached config. The push script updates both to prevent this.
+
+
+**If the panel doesn't reload after push:** Power cycle the Crestron panel to clear WebView RAM cache. JavaScript timers and DOM elements persist in memory until the browser session ends.
 ### Step 3: Verify with Screenshot
+
 
 ```powershell
 cd "F:/Homeassistant"
@@ -187,10 +190,10 @@ The push script reads this file automatically. Never hardcode credentials.
 | Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` |
 | Editing `office.yaml` directly | Edit `office_v6.yaml` (lead file) |
 | Using `onclick` + `ontouchend` together | Use `ontouchend` only |
-| Using `?.` or `??` in JS templates | Use explicit `? :` null checks |
-| Using `margin-top: auto` in button-card | Use `justify-content: space-between` |
 | Trusting Chrome screenshots for layout | Verify on physical panel |
 | Editing files in `archive/` | Work only with active files |
+| Assuming push succeeded because script says OK | Verify HA view ID changed via WebSocket `lovelace/config` |
+| Injecting full-screen overlays with `setInterval` | Avoid global timers that persist in WebView RAM |
 
 ---
 
