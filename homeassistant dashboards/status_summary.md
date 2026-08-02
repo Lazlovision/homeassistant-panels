@@ -75,3 +75,25 @@ The push mechanism doesn't actually deploy changes to HA's filesystem. The panel
 - `office.yaml` - Mirror copy (push script writes both)
 - `scratch/push_clean_v6.py` - Push script (has YAML mode issue)
 - `dashboards-config-snippet.yaml` - HA configuration showing YAML mode
+
+
+## Resolution (2026-08-02)
+
+### Root Causes Identified
+
+1. **Screensaver overlay blocking touches** - `event.stopPropagation()` consumed all taps
+2. **Wrong HA endpoint** - push script was updating `office-panel` but HA was also serving from default endpoint
+3. **WebView RAM cache** - old JavaScript stayed running until power cycle
+
+### Fixes Applied
+
+1. **Removed screensaver code** - commit `6ed68b5`
+2. **Fixed push script** - added second save to `url_path: None` to update both HA endpoints
+3. **Power cycled panel** - cleared WebView RAM and forced fresh config fetch
+
+### Current State
+
+- ✅ Buttons clickable
+- ✅ No blue flash
+- ✅ HA serving view ID `1785702426` with no screensaver code
+- ✅ Push script updates both endpoints
