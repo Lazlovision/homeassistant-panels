@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > **CRITICAL REFERENCE DOCUMENT**
-> This document details the exact viewport specifications, headless snapshot rendering pipeline, image caching rules, browser engine characteristics, and empirical calibration test results for Crestron TSS-770 and TS-1070 panels.
+> This document details the exact viewport specifications, headless snapshot rendering pipeline, image caching rules, browser engine characteristics, empirical calibration test results, and HA shadow DOM architecture for Crestron TSS-770 and TS-1070 panels.
 
 ---
 
@@ -197,15 +197,96 @@ Physical TSS-770 panel photos were systematically compared against Chrome headle
 
 ---
 
-## 7. Viewport Pinning Pattern (Critical — Read Before Any Layout Fix)
+## 7. HA Shadow DOM Architecture
+
+> [!IMPORTANT]
+> Understanding HA's shadow DOM hierarchy is essential for viewport pinning, card_mod CSS injection, and any DOM manipulation.
+
+### 7.1 Full Element Chain (Panel View)
+
+```
+document
+└── home-assistant (LitElement, shadow DOM)
+    └── home-assistant-main (LitElement, shadow DOM)
+        └── ha-drawer (LitElement, shadow DOM)
+            └── partial-panel-resolver (NO shadow DOM — light DOM children)
+                └── ha-panel-lovelace (LitElement, shadow DOM)
+                    └── hui-root (LitElement, shadow DOM)
+                        └── hui-view-container (LitElement, shadow DOM — renders <slot>)
+                            └── hui-view (NO shadow DOM — createRenderRoot returns this)
+                                └── hui-panel-view (LitElement, shadow DOM) [for type: panel views]
+                                    └── hui-card (NO shadow DOM — wrapper)
+                                        └── hui-vertical-stack-card (LitElement, shadow DOM)
+                                            └── #root (div, inside shadow DOM)
+                                                └── children cards...
+                                                    └── custom:button-card (has its own shadow DOM)
+```
+
+### 7.2 Shadow DOM Boundaries
+
+| Element | Has Shadow DOM? | Notes |
+| :--- | :--- | :--- |
+| `home-assistant` | ✅ Yes | Root app element |
+| `home-assistant-main` | ✅ Yes | Contains ha-drawer |
+| `ha-drawer` | ✅ Yes | Sidebar + content |
+| `partial-panel-resolver` | ❌ No | Light DOM children only |
+| `ha-panel-lovelace` | ✅ Yes | Contains hui-root |
+| `hui-root` | ✅ Yes | Contains header + view container |
+| `hui-view-container` | ✅ Yes | Renders `<slot>` — very thin |
+| `hui-view` | ❌ No | `createRenderRoot returns this` — light DOM children |
+| `hui-panel-view` | ✅ Yes | Panel-type views only |
+| `hui-card` | ❌ No | Wrapper — no shadow DOM |
+| `hui-vertical-stack-card` | ✅ Yes | `#root` div inside shadow |
+| `hui-horizontal-stack-card` | ✅ Yes | `#root` div inside shadow |
+| `custom:button-card` | ✅ Yes | Custom card shadow DOM |
+
+### 7.3 What `#root` Inside Stack Cards Contains
+
+`#root` is a `<div id="root">` rendered inside `hui-stack-card`'s `render()` method:
+
+- **Vertical stack `#root`**: `display: flex; flex-direction: column; flex: 1; min-height: 0; gap: var(--vertical-stack-card-gap, 8px)`
+- **Horizontal stack `#root`**: `display: flex; flex: 1; min-height: 0; gap: var(--horizontal-stack-card-gap, 8px)`
+  - Also: `#root > hui-card { display: contents; }` and `#root > hui-card > * { flex: 1 1 0; min-width: 0; }`
+
+### 7.4 card_mod CSS Injection Mechanics
+
+card_mod v4 works by:
+
+1. **Patching HA elements** — Monkey-patches `connectedCallback` / `update` methods of HA's Lit elements
+2. **Finding shadow roots** — Traverses the element chain to find the appropriate shadow root
+3. **Injecting `<style>` tags** — Creates `<style>` elements and appends them to the shadow root
+
+**card_mod `$` selector syntax:**
+- `element$` — Enter shadow root of `element`
+- `element1 $ element2` — From element1's shadow root, find element2
+- Chain: `ha-markdown$ .content` — Enter ha-markdown's shadow root, then find `.content`
+
+### 7.5 What Triggers Card Re-renders
+
+Cards re-render when Lit's reactive properties change:
+
+1. **`hass` property change** — HA sends state updates every second via WebSocket. When `hass` object reference changes, all cards re-render.
+2. **`config` property change** — When dashboard config is pushed/updated
+3. **`preview` property change** — Edit mode toggle
+4. **`layout` property change** — Panel mode changes
+
+**Why `setTimeout` fails for layout pinning:**
+HA's `hass` property updates arrive on an unpredictable schedule. Each update triggers Lit's `update()` → `render()` cycle, which creates new shadow DOM content and destroys any manual inline styles. `setTimeout` fires at a fixed time, but HA may re-render before, during, or after — producing 50/50 behavior.
+
+### 7.6 Panel View Special Handling
+
+Panel views (`type: panel`) use `hui-panel-view` instead of the default view:
+- Only supports ONE card (shows warning if more)
+- Sets `card.layout = "panel"` which triggers `ispanel` attribute on stack cards
+- The `ispanel` attribute restores card styling (border-radius, shadow) normally hidden in panel mode
+
+---
+
+## 8. Viewport Pinning Pattern (Critical — Read Before Any Layout Fix)
 
 > [!CRITICAL]
 > **DO NOT use `setTimeout` to pin viewport layout.** It produces 50/50 behavior on the Crestron panel.
 > Use the three-pronged pattern below. This is the only approach that achieves 100% deterministic layout pinning.
-
-### Why `setTimeout` Fails
-
-Home Assistant's card layout system re-renders shadow DOM cards asynchronously and unpredictably after initial load. A `setTimeout` fires at a fixed delay, but HA may re-render before, during, or after that delay — overwriting any inline styles you set. This produces the classic 50/50 behavior where the layout is correct on some refreshes and broken on others.
 
 ### The Three-Pronged Pattern
 
@@ -245,18 +326,27 @@ Then find cards with: `queryDeep('hui-vertical-stack-card')` and `queryDeep('hui
 **3. MutationObserver** — Instead of `setTimeout`, watch for DOM changes and re-apply pinning reactively:
 
 ```javascript
-var observer = new MutationObserver(function() {
-  pinViewport();
-});
-observer.observe(document.body, { childList: true, subtree: true });
+// Observe hui-view (light DOM, no shadow root — observable)
+var view = queryDeep('hui-view');
+if (view) {
+  var observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.addedNodes.length || m.removedNodes.length) {
+        pinViewport();
+      }
+    });
+  });
+  observer.observe(view, { childList: true, subtree: true });
+}
 ```
 
-This re-applies pinning whenever HA re-renders any card, making it deterministic regardless of timing.
+This re-applies pinning whenever HA adds/removes cards, making it deterministic regardless of timing.
 
-### What Each Stack's `#root` Contains
+### Why Observing `hui-view` Is Better Than `document.body`
 
-- **Vertical stack `#root`**: `children[0]` = main content area (horizontal stack), `children[1]` = media bar (80px, pinned to bottom)
-- **Horizontal stack `#root`**: `children[0]` = left column, `children[1]` = right column
+- `hui-view` has no shadow DOM (`createRenderRoot returns this`), so its children are in light DOM and observable
+- It's where cards are added/removed — more targeted than `document.body`
+- Avoids catching irrelevant DOM changes elsewhere in the page
 
 ### Reference
 
