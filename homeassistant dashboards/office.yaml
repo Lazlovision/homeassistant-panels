@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785653684
+  id: office_view_v6_clean_v6_88_1785653850
   badges: []
   type: panel
   cards:
@@ -1324,6 +1324,8 @@ views:
             [[[
               window._btnPress = function(b){b.style.background='rgba(255,255,255,0.35)';b.style.transform='scale(0.95)';};
               window._btnRelease = function(b){b.style.background='';b.style.transform='';};
+              var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
+              var mainTempColor = isNight ? '#FFFFFF' : '#1C1C1E';
               var trackColor = isNight ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
               var btnBg = isNight ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
               var btnBorder = isNight ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)';
