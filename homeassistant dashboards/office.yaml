@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785713026
+  id: office_view_v6_clean_v6_88_1785715057
   badges: []
   type: panel
   cards:
@@ -310,12 +310,12 @@ views:
                   }
                 })();
 
-                // Screensaver Overlay - Lightweight, No Blur
+                // Screensaver Overlay - Two-Column Layout (Time Left, Climate Right)
                 (function() {
                   if (window._ssInitialized) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
-                  var overlay, elTime, elDate, elTemp, elWeather;
+                  var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherTemp, elWeatherCond;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
                   var IDLE_MS = 10000;
                   document.addEventListener('touchstart', function() {
@@ -335,24 +335,7 @@ views:
                     if (!overlay || popupOpen() || isDismissing) return;
                     var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
                     var st = h ? h.states : states;
-                    var now = new Date();
-                    var hours = now.getHours();
-                    var mins = now.getMinutes();
-                    var days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-                    var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-                    var timeStr = (hours < 10 ? '0' : '') + hours + ':' + (mins < 10 ? '0' : '') + mins;
-                    var dateStr = days[now.getDay()] + ',  ' + months[now.getMonth()] + ' ' + now.getDate();
-                    var cl = st['climate.air_conditioner_office_climate'];
-                    var tempStr = (cl && cl.attributes && cl.attributes.current_temperature) ? Math.round(parseFloat(cl.attributes.current_temperature)) + '\u00B0C' : '--\u00B0C';
-                    var w = st['weather.forecast_home'];
-                    var wStates = { 'sunny': '\u2600', 'clear': '\u2600', 'partlycloudy': '\u26C5', 'cloudy': '\u2601', 'fog': '\u2601', 'hazy': '\u2601', 'rainy': '\uD83C\uDF27\uFE0F', 'pouring': '\uD83C\uDF27\uFE0F', 'snowy': '\u2744\uFE0F', 'windy': '\uD83C\uDF2C\uFE0F', 'lightning': '\u26A1', 'lightning-rainy': '\u26A1' };
-                    var wState = (w && w.state) || 'partlycloudy';
-                    var wIcon = wStates[wState] || '\u2601';
-                    var wTemp = (w && w.attributes && w.attributes.temperature) ? Math.round(w.attributes.temperature) + '\u00B0C' : '--\u00B0C';
-                    if (elTime) elTime.textContent = timeStr;
-                    if (elDate) elDate.textContent = dateStr;
-                    if (elTemp) elTemp.textContent = tempStr;
-                    if (elWeather) elWeather.textContent = wIcon + ' ' + wTemp;
+                    window._ssRender(st);
                     overlay.style.display = 'flex';
                     overlay.style.opacity = '0';
                     overlay.style.transition = 'none';
@@ -365,51 +348,103 @@ views:
                       if (!isVisible) { clearInterval(updateTimer); return; }
                       var h2 = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
                       var st2 = h2 ? h2.states : states;
-                      var now2 = new Date();
-                      var hours2 = now2.getHours();
-                      var mins2 = now2.getMinutes();
-                      var timeStr2 = (hours2 < 10 ? '0' : '') + hours2 + ':' + (mins2 < 10 ? '0' : '') + mins2;
-                      var cl2 = st2['climate.air_conditioner_office_climate'];
-                      var tempStr2 = (cl2 && cl2.attributes && cl2.attributes.current_temperature) ? Math.round(parseFloat(cl2.attributes.current_temperature)) + '\u00B0C' : '--\u00B0C';
-                      var w2 = st2['weather.forecast_home'];
-                      var wTemp2 = (w2 && w2.attributes && w2.attributes.temperature) ? Math.round(w2.attributes.temperature) + '\u00B0C' : '--\u00B0C';
-                      if (elTime) elTime.textContent = timeStr2;
-                      if (elTemp) elTemp.textContent = tempStr2;
-                      if (elWeather) elWeather.textContent = (wStates[(w2 && w2.state) || 'partlycloudy'] || '\u2601') + ' ' + wTemp2;
+                      window._ssRender(st2);
                     }, 5000);
+                  };
+                  window._ssRender = function(st) {
+                    var now = new Date();
+                    var hours = now.getHours();
+                    var mins = now.getMinutes();
+                    var days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+                    var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+                    var timeStr = (hours < 10 ? '0' : '') + hours + ':' + (mins < 10 ? '0' : '') + mins;
+                    var dateStr = days[now.getDay()] + ',  ' + months[now.getMonth()] + ' ' + now.getDate();
+                    var cl = st['climate.air_conditioner_office_climate'];
+                    var curTemp = (cl && cl.attributes && cl.attributes.current_temperature) ? parseFloat(cl.attributes.current_temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
+                    var setpoint = (cl && cl.attributes && cl.attributes.temperature) ? parseFloat(cl.attributes.temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
+                    var w = st['weather.forecast_home'];
+                    var wStates = { 'sunny': '\u2600', 'clear': '\u2600', 'partlycloudy': '\u26C5', 'cloudy': '\u2601', 'fog': '\u2601', 'hazy': '\u2601', 'rainy': '\uD83C\uDF27\uFE0F', 'pouring': '\uD83C\uDF27\uFE0F', 'snowy': '\u2744\uFE0F', 'windy': '\uD83C\uDF2C\uFE0F', 'lightning': '\u26A1', 'lightning-rainy': '\u26A1' };
+                    var wState = (w && w.state) || 'partlycloudy';
+                    var wIcon = wStates[wState] || '\u2601';
+                    var wTemp = (w && w.attributes && w.attributes.temperature) ? Math.round(w.attributes.temperature) + '\u00B0C' : '--\u00B0C';
+                    var condText = wState.replace('-', ' ').toUpperCase();
+                    if (elTime) elTime.textContent = timeStr;
+                    if (elDate) elDate.textContent = dateStr;
+                    if (elCurTemp) elCurTemp.textContent = curTemp;
+                    if (elSetpoint) elSetpoint.textContent = setpoint;
+                    if (elWeatherTemp) elWeatherTemp.textContent = wIcon + ' ' + wTemp;
+                    if (elWeatherCond) elWeatherCond.textContent = condText;
                   };
                   window._ssUpdateTheme = function() {
                     if (!overlay) return;
                     var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
                     document.documentElement.setAttribute('data-screensaver-theme', isN ? 'night' : 'day');
                   };
-                  // Create overlay via DOM API (appended to document.body, not shadow DOM)
+                  // Create overlay via DOM API - two-column layout
                   var oldOverlay = document.getElementById('screensaver_overlay');
                   if (oldOverlay) oldOverlay.remove();
                   overlay = document.createElement('div');
                   overlay.id = 'screensaver_overlay';
-                  overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:rgba(0,0,0,0.85); flex-direction:column; align-items:center; justify-content:center; gap:6px; will-change:opacity; transform:translateZ(0);';
+                  overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:rgba(0,0,0,0.75); align-items:center; justify-content:center; will-change:opacity; transform:translateZ(0);';
+                  // Left column - time + date
+                  var leftCol = document.createElement('div');
+                  leftCol.style.cssText = 'position:absolute; left:60px; bottom:100px; display:flex; flex-direction:column; gap:8px;';
                   var timeDiv = document.createElement('div');
                   timeDiv.id = 'screensaver_time';
-                  timeDiv.style.cssText = 'font-size:72px; font-weight:200; color:rgba(255,255,255,0.8); letter-spacing:0.04em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums;';
+                  timeDiv.style.cssText = 'font-size:140px; font-weight:800; color:rgba(255,255,255,0.92); letter-spacing:-0.02em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
                   var dateDiv = document.createElement('div');
                   dateDiv.id = 'screensaver_date';
-                  dateDiv.style.cssText = 'font-size:16px; font-weight:600; color:rgba(255,255,255,0.45); letter-spacing:0.12em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  var tempDiv = document.createElement('div');
-                  tempDiv.id = 'screensaver_temp';
-                  tempDiv.style.cssText = 'font-size:28px; font-weight:300; color:rgba(255,255,255,0.55); margin-top:8px; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  var weatherDiv = document.createElement('div');
-                  weatherDiv.id = 'screensaver_weather';
-                  weatherDiv.style.cssText = 'font-size:20px; font-weight:400; color:rgba(255,255,255,0.4); font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  overlay.appendChild(timeDiv);
-                  overlay.appendChild(dateDiv);
-                  overlay.appendChild(tempDiv);
-                  overlay.appendChild(weatherDiv);
+                  dateDiv.style.cssText = 'font-size:22px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.15em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  leftCol.appendChild(timeDiv);
+                  leftCol.appendChild(dateDiv);
+                  overlay.appendChild(leftCol);
+                  // Right column - temp + setpoint + weather
+                  var rightCol = document.createElement('div');
+                  rightCol.style.cssText = 'position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:20px; align-items:flex-end;';
+                  // Current temp row
+                  var curTempRow = document.createElement('div');
+                  curTempRow.style.cssText = 'display:flex; align-items:center; gap:12px;';
+                  var curTempIcon = document.createElement('div');
+                  curTempIcon.style.cssText = 'font-size:36px; color:rgba(255,255,255,0.7);';
+                  curTempIcon.textContent = '\u1F321\uFE0F';
+                  var curTempDiv = document.createElement('div');
+                  curTempDiv.id = 'screensaver_cur_temp';
+                  curTempDiv.style.cssText = 'font-size:72px; font-weight:300; color:rgba(255,255,255,0.9); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  curTempRow.appendChild(curTempIcon);
+                  curTempRow.appendChild(curTempDiv);
+                  rightCol.appendChild(curTempRow);
+                  // Setpoint row
+                  var setpointRow = document.createElement('div');
+                  setpointRow.style.cssText = 'display:flex; align-items:center; gap:12px;';
+                  var setpointIcon = document.createElement('div');
+                  setpointIcon.style.cssText = 'font-size:28px; color:#00B0DF;';
+                  setpointIcon.textContent = '\u{1F3AF}';
+                  var setpointDiv = document.createElement('div');
+                  setpointDiv.id = 'screensaver_setpoint';
+                  setpointDiv.style.cssText = 'font-size:36px; font-weight:400; color:#00B0DF; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  setpointRow.appendChild(setpointIcon);
+                  setpointRow.appendChild(setpointDiv);
+                  rightCol.appendChild(setpointRow);
+                  // Weather row
+                  var weatherRow = document.createElement('div');
+                  weatherRow.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:2px;';
+                  var weatherTempDiv = document.createElement('div');
+                  weatherTempDiv.id = 'screensaver_weather_temp';
+                  weatherTempDiv.style.cssText = 'font-size:32px; font-weight:400; color:rgba(255,255,255,0.65); font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  var weatherCondDiv = document.createElement('div');
+                  weatherCondDiv.id = 'screensaver_weather_cond';
+                  weatherCondDiv.style.cssText = 'font-size:16px; font-weight:600; color:rgba(255,255,255,0.4); letter-spacing:0.1em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  weatherRow.appendChild(weatherTempDiv);
+                  weatherRow.appendChild(weatherCondDiv);
+                  rightCol.appendChild(weatherRow);
+                  overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
                   elTime = timeDiv;
                   elDate = dateDiv;
-                  elTemp = tempDiv;
-                  elWeather = weatherDiv;
+                  elCurTemp = curTempDiv;
+                  elSetpoint = setpointDiv;
+                  elWeatherTemp = weatherTempDiv;
+                  elWeatherCond = weatherCondDiv;
                   window._ssUpdateTheme();
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssInitialized = true;
