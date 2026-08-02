@@ -169,3 +169,69 @@ Physical TSS-770 panel photos were systematically compared against Chrome headle
 1. **Chrome Screenshots (`take_snap.js`)**: Use for rapid validation of card structure, entity states, YAML syntax, and HA service calls.
 2. **Physical Panel Photos**: Use for final verification of spacing, vertical column stretching, and edge alignment.
 3. **Version Control**: Maintain all clean dashboard definitions committed to GitHub: [https://github.com/Lazlovision/homeassistant-panels](https://github.com/Lazlovision/homeassistant-panels).
+
+
+---
+
+## 8. Viewport Pinning Pattern (Critical — Read Before Any Layout Fix)
+
+> [!CRITICAL]
+> **DO NOT use `setTimeout` to pin viewport layout.** It produces 50/50 behavior on the Crestron panel.
+> Use the three-pronged pattern below. This is the only approach that achieves 100% deterministic layout pinning.
+
+### Why `setTimeout` Fails
+
+Home Assistant's card layout system re-renders shadow DOM cards asynchronously and unpredictably after initial load. A `setTimeout` fires at a fixed delay, but HA may re-render before, during, or after that delay — overwriting any inline styles you set. This produces the classic 50/50 behavior where the layout is correct on some refreshes and broken on others.
+
+### The Three-Pronged Pattern
+
+**1. Global CSS Injection** — Inject a `<style>` element into `<head>` that constrains the entire element chain from root down:
+
+```css
+html, body, home-assistant, ha-panel-lovelace, ha-lovelace, ha-lovelace-main, hui-root, hui-panel-view, hui-view, hui-card {
+  margin: 0 !important; padding: 0 !important;
+  width: 100vw !important; height: 100vh !important;
+  max-height: 100vh !important; min-height: 100vh !important;
+  overflow: hidden !important; box-sizing: border-box !important;
+}
+```
+
+**2. Recursive Shadow DOM Traversal** — `#root` elements live inside `hui-vertical-stack-card` and `hui-horizontal-stack-card` shadow roots, nested multiple levels deep. You cannot reach them with a single `querySelector`. Use recursive traversal:
+
+```javascript
+function queryDeep(selector, root) {
+  root = root || document;
+  var results = [];
+  var found = root.querySelectorAll ? root.querySelectorAll(selector) : [];
+  for (var i = 0; i < found.length; i++) results.push(found[i]);
+  var children = root.querySelectorAll('*');
+  for (var i = 0; i < children.length; i++) {
+    var el = children[i];
+    if (el.shadowRoot) results = results.concat(queryDeep(selector, el.shadowRoot));
+    if (el.children) results = results.concat(queryDeep(selector, el));
+  }
+  return results;
+}
+```
+
+Then find cards with: `queryDeep('hui-vertical-stack-card', ha.shadowRoot)` and `queryDeep('hui-horizontal-stack-card', ha.shadowRoot)`.
+
+**3. MutationObserver** — Instead of `setTimeout`, watch for DOM changes and re-apply pinning reactively:
+
+```javascript
+var observer = new MutationObserver(function() {
+  setTimeout(applyPinning, 50);
+});
+observer.observe(document.body, { childList: true, subtree: true });
+```
+
+This re-applies pinning whenever HA re-renders any card, making it deterministic regardless of timing.
+
+### What Each Stack's `#root` Contains
+
+- **Vertical stack `#root`**: `children[0]` = main content area (horizontal stack), `children[1]` = media bar (80px, pinned to bottom)
+- **Horizontal stack `#root`**: `children[0]` = left column, `children[1]` = right column
+
+### Reference
+
+Working implementation is in `office_v6.yaml` starting at the "// Viewport & Media Bar Pinning" comment (commit `c415eb0`). Use that code as the template — don't re-derive from scratch.
