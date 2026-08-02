@@ -82,18 +82,6 @@ async def push():
                 sys.exit(1)
             print(f'Saved office-panel: OK')
 
-            # ── Also save to default dashboard ──
-            await ws.send(json.dumps({
-                'id': 2,
-                'type': 'lovelace/config/save',
-                'url_path': None,
-                'config': config
-            }, ensure_ascii=False))
-            resp = json.loads(await ws.recv())
-            if 'error' in resp:
-                print(f'ERROR: Save to default dashboard failed: {resp["error"]}')
-                sys.exit(1)
-            print(f'Saved default dashboard: OK')
 
             # ── Fire update events ──
             await ws.send(json.dumps({
@@ -104,13 +92,6 @@ async def push():
             }, ensure_ascii=False))
             await ws.recv()
 
-            await ws.send(json.dumps({
-                'id': 4,
-                'type': 'fire_event',
-                'event_type': 'lovelace_updated',
-                'event_data': {'url_path': None}
-            }, ensure_ascii=False))
-            await ws.recv()
 
             print('Lovelace update events fired.')
 
