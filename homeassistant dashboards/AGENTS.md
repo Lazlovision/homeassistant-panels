@@ -199,13 +199,13 @@ The push script reads this file automatically. Never hardcode credentials.
 | Writing new WebSocket push code | Use `scratch/push_clean_v6.py` — check `scratch/` first |
 | Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` — check root `F:/Homeassistant/` first |
 | Solving a problem from scratch | Check existing code and docs first — the solution likely already exists |
-| Writing new screenshot code | Use `take_snap.js` or `take_test_snap.js` |
 | Editing `office.yaml` directly | Edit `office_v6.yaml` (lead file) |
 | Using `onclick` + `ontouchend` together | Use `ontouchend` only |
 | Trusting Chrome screenshots for layout | Verify on physical panel |
 | Editing files in `archive/` | Work only with active files |
 | Assuming push succeeded because script says OK | Verify HA view ID changed via WebSocket `lovelace/config` |
 | Injecting full-screen overlays with `setInterval` | Avoid global timers that persist in WebView RAM |
+| Pinning layout via `setTimeout` at one shadow DOM depth | Use recursive `queryDeep`, global CSS injection, and `MutationObserver` (see crestron_viewport_guide.md §8) |
 
 ---
 
