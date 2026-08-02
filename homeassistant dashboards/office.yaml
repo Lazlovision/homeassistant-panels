@@ -838,12 +838,10 @@ views:
                 return `
                   <div style="display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; pointer-events:auto;">
                     <div style="font-size:38px; font-weight:800; color:${titleColor}; letter-spacing:-0.02em; line-height:1.1; text-align:left; cursor:pointer; touch-action:manipulation; padding:2px 8px 2px 2px; user-select:none; -webkit-user-select:none; pointer-events:auto;"
-                         onclick="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));"
                          ontouchend="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));">Office</div>
                     
                     <div style="display:flex; align-items:center; gap:8px; pointer-events:auto;">
                       <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
-                           onclick="window.openWeatherPopup(event);"
                            ontouchend="window.openWeatherPopup(event);">
                         <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
                           <ha-icon icon="${wIcon}" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A; display:flex; align-items:center; justify-content:center;"></ha-icon>
@@ -862,7 +860,6 @@ views:
                       </div>
 
                       <div style="display:flex; align-items:center; gap:6px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
-                           onclick="window.openBlueairPopup(event);"
                            ontouchend="window.openBlueairPopup(event);">
                         <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
                           <ha-icon icon="mdi:air-purifier" style="width:22px; height:22px; --mdc-icon-size:22px; color:${isFanOn ? '#30D158' : '#8A8A93'}; display:flex; align-items:center; justify-content:center;"></ha-icon>
@@ -945,7 +942,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', hvac_mode: 'cool', temperature: 21.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" onclick="window.runDayPreset(event);" ontouchend="window.runDayPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runDayPreset(event);"></div>`;
                 ]]]
 
           # Scene 2: NIGHT
@@ -995,7 +992,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 21.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" onclick="window.runNightPreset(event);" ontouchend="window.runNightPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runNightPreset(event);"></div>`;
                 ]]]
 
           # Scene 3: SLEEP
@@ -1045,7 +1042,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 22.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" onclick="window.runSleepPreset(event);" ontouchend="window.runSleepPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runSleepPreset(event);"></div>`;
                 ]]]
 
         # --- DYNAMICALLY STRETCHED LIGHT CARDS ---
@@ -1415,7 +1412,7 @@ views:
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow1Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '"' +
+                modesRow1Html += '<button ontouchend="event.stopPropagation(); ' + callMode + '"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
@@ -1427,7 +1424,7 @@ views:
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow2Html += '<button onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '"' +
+                modesRow2Html += '<button ontouchend="event.stopPropagation(); ' + callMode + '"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
@@ -1438,7 +1435,7 @@ views:
                 var border = isSel ? (isNight ? '1px solid #FFFFFF' : '1px solid #1C1C1E') : btnBorder;
                 var txtColor = isSel ? '#FFFFFF' : (isNight ? '#8A8A93' : '#6E6E73');
                 var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
-                fanRowHtml += '<button onclick="event.stopPropagation(); ' + callFan + '" ontouchend="event.stopPropagation(); ' + callFan + '"' +
+                fanRowHtml += '<button ontouchend="event.stopPropagation(); ' + callFan + '"' +
                               ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
               });
 
@@ -1446,7 +1443,7 @@ views:
 
               return '<div style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; box-sizing:border-box; pointer-events:auto;">' +
                      '<div style="display:flex; align-items:flex-start; justify-content:space-between; width:100%; height:275px; min-height:275px; max-height:275px; flex-shrink:0;">' +
-                     '<button onclick="event.stopPropagation(); ' + callMinus + '" ontouchend="event.stopPropagation(); ' + callMinus + '"' +
+                     '<button ontouchend="event.stopPropagation(); ' + callMinus + '"' +
                      ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
                      '<ha-icon icon="mdi:minus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
                      '<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; flex:1; height:275px; min-height:275px; max-height:275px; overflow:hidden;">' +
@@ -1455,7 +1452,7 @@ views:
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + trackColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="310 117" />' +
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + act.arcColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + activeLen + ' ' + gapLen + '" style="transition: stroke-dasharray 0.6s ease, stroke 0.4s ease;" />' +
                      pipSvg + '</svg>' +
-                     '<div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; padding:10px; border-radius:50%;" onclick="window.openMitsubishiPopup(event);" ontouchend="window.openMitsubishiPopup(event);">' +
+                     '<div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; padding:10px; border-radius:50%;" ontouchend="window.openMitsubishiPopup(event);">' +
                      '<div style="display:flex; align-items:flex-start; margin-left:6px; pointer-events:none;">' +
                      '<span style="font-size:74px; font-weight:700; color:' + mainTempColor + '; line-height:1; letter-spacing:-0.03em;">' + cur + '</span>' +
                      '<span style="font-size:24px; font-weight:600; color:' + mainTempColor + '; margin-top:4px;">°C</span></div>' +
@@ -1465,7 +1462,7 @@ views:
                      '<div style="height:62px; min-height:62px; max-height:62px; overflow:hidden; margin-top:4px; text-align:center; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
                      '<div style="height:44px; min-height:44px; max-height:44px; line-height:44px; font-size:' + setpointFontSize + '; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointMainTxt + '</div>' +
                      '<div style="height:16px; min-height:16px; max-height:16px; line-height:16px; font-size:12px; font-weight:800; color:#8A8A93; letter-spacing:0.12em; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointLabelTxt + '</div></div></div>' +
-                     '<button onclick="event.stopPropagation(); ' + callPlus + '" ontouchend="event.stopPropagation(); ' + callPlus + '"' +
+                     '<button ontouchend="event.stopPropagation(); ' + callPlus + '"' +
                      ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
                      '<ha-icon icon="mdi:plus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button></div>' +
                      '<div style="display:flex; flex-direction:column; gap:14px; width:100%; flex-shrink:0; margin-top:6px;">' +
@@ -1668,19 +1665,16 @@ views:
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
                   <div style="display:flex; align-items:center; gap:20px;">
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
-                         onclick="event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }"
                          ontouchend="event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                     
                     <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
-                         onclick="event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }"
                          ontouchend="event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; ${isPlaying ? '' : 'margin-left:3px;'}"></ha-icon>
                     </div>
                     
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:8px; pointer-events:auto;"
-                         onclick="event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }"
                          ontouchend="event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
@@ -1700,7 +1694,6 @@ views:
                 
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
                   <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:6px; pointer-events:auto;"
-                       onclick="event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }"
                        ontouchend="event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},400); var h=window.hass||document.querySelector('home-assistant')?.hass; if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
                     <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                   </div>
