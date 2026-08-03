@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785728460
+  id: office_view_v6_clean_v6_88_1785729374
   badges: []
   type: panel
   cards:
@@ -312,7 +312,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout (Time Left, Climate Right)
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 7) return;
+                  if (window._ssInitialized && window._ssVersion === 10) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherIcon, elWeatherTemp, elWeatherCond;
@@ -399,86 +399,94 @@ views:
                   if (oldOverlay) oldOverlay.remove();
                   overlay = document.createElement('div');
                   overlay.id = 'screensaver_overlay';
-                  overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; will-change:opacity; transform:translateZ(0);';
-                  // Left column - time + date (centered on left side)
+                  overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:99999; background:#000; align-items:center; justify-content:center; will-change:opacity; transform:translateZ(0);';
+                  // Vertical divider at center
+                  var divider = document.createElement('div');
+                  divider.style.cssText = 'position:absolute; left:50%; top:0; width:1px; height:100vh; background:rgba(255,255,255,0.08);';
+                  overlay.appendChild(divider);
+                  // Left column - time + date (centered on left half)
                   var leftCol = document.createElement('div');
-                  leftCol.style.cssText = 'position:absolute; left:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:12px;';
+                  leftCol.style.cssText = 'position:absolute; left:0; width:50%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:16px;';
                   var timeDiv = document.createElement('div');
                   timeDiv.id = 'screensaver_time';
-                  timeDiv.style.cssText = 'font-size:140px; font-weight:800; color:rgba(255,255,255,0.95); letter-spacing:-0.02em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  timeDiv.style.cssText = 'font-size:120px; font-weight:700; color:#fff; letter-spacing:-0.02em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
                   var dateDiv = document.createElement('div');
                   dateDiv.id = 'screensaver_date';
-                  dateDiv.style.cssText = 'font-size:18px; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:0.2em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  dateDiv.style.cssText = 'font-size:20px; font-weight:400; color:rgba(255,255,255,0.7); letter-spacing:0.3em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
                   leftCol.appendChild(timeDiv);
                   leftCol.appendChild(dateDiv);
                   overlay.appendChild(leftCol);
-                  // Right column - climate data (vertically centered)
+                  // Right column - climate data (centered on right half)
                   var rightCol = document.createElement('div');
-                  rightCol.style.cssText = 'position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:16px; align-items:flex-end;';
-                  // Current temperature section
+                  rightCol.style.cssText = 'position:absolute; right:0; width:50%; top:15%; display:flex; flex-direction:column; gap:20px;';
+                  // Current temperature: icon + (label over value)
                   var curTempSection = document.createElement('div');
-                  curTempSection.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:4px;';
-                  var curTempLabel = document.createElement('div');
-                  curTempLabel.style.cssText = 'font-size:11px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.15em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  curTempLabel.textContent = 'CURRENT TEMPERATURE';
-                  var curTempRow = document.createElement('div');
-                  curTempRow.style.cssText = 'display:flex; align-items:center; gap:14px;';
+                  curTempSection.style.cssText = 'display:flex; align-items:center; gap:12px;';
                   var curTempIcon = document.createElement('ha-icon');
                   curTempIcon.setAttribute('icon', 'mdi:thermometer');
-                  curTempIcon.style.cssText = 'width:32px; height:32px; --mdc-icon-size:32px; color:rgba(255,255,255,0.9);';
+                  curTempIcon.style.cssText = 'width:36px; height:36px; --mdc-icon-size:36px; color:#fff; flex-shrink:0;';
+                  var curTempStack = document.createElement('div');
+                  curTempStack.style.cssText = 'display:flex; flex-direction:column; gap:2px;';
+                  var curTempLabel = document.createElement('div');
+                  curTempLabel.style.cssText = 'font-size:10px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.12em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  curTempLabel.textContent = 'CURRENT TEMPERATURE';
                   var curTempDiv = document.createElement('div');
                   curTempDiv.id = 'screensaver_curtemp';
-                  curTempDiv.style.cssText = 'font-size:72px; font-weight:300; color:rgba(255,255,255,0.9); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
-                  curTempRow.appendChild(curTempIcon);
-                  curTempRow.appendChild(curTempDiv);
-                  curTempSection.appendChild(curTempLabel);
-                  curTempSection.appendChild(curTempRow);
+                  curTempDiv.style.cssText = 'font-size:64px; font-weight:700; color:#fff; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  curTempStack.appendChild(curTempLabel);
+                  curTempStack.appendChild(curTempDiv);
+                  curTempSection.appendChild(curTempIcon);
+                  curTempSection.appendChild(curTempStack);
                   rightCol.appendChild(curTempSection);
-                  // Setpoint section
+                  // Setpoint: icon + (label over value)
                   var setpointSection = document.createElement('div');
-                  setpointSection.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:4px;';
-                  var setpointLabel = document.createElement('div');
-                  setpointLabel.style.cssText = 'font-size:11px; font-weight:700; color:rgba(255,255,255,0.7); letter-spacing:0.15em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  setpointLabel.textContent = 'TARGET SETPOINT';
-                  var setpointRow = document.createElement('div');
-                  setpointRow.style.cssText = 'display:flex; align-items:center; gap:14px;';
+                  setpointSection.style.cssText = 'display:flex; align-items:center; gap:12px;';
                   var setpointIcon = document.createElement('ha-icon');
-                  setpointIcon.setAttribute('icon', 'mdi:target');
-                  setpointIcon.style.cssText = 'width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF;';
+                  setpointIcon.setAttribute('icon', 'mdi:bullseye');
+                  setpointIcon.style.cssText = 'width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF; flex-shrink:0;';
+                  var setpointStack = document.createElement('div');
+                  setpointStack.style.cssText = 'display:flex; flex-direction:column; gap:2px;';
+                  var setpointLabel = document.createElement('div');
+                  setpointLabel.style.cssText = 'font-size:10px; font-weight:700; color:rgba(0,176,223,0.6); letter-spacing:0.12em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  setpointLabel.textContent = 'TARGET SETPOINT';
                   var setpointDiv = document.createElement('div');
                   setpointDiv.id = 'screensaver_setpoint';
-                  setpointDiv.style.cssText = 'font-size:36px; font-weight:400; color:#00B0DF; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
-                  setpointRow.appendChild(setpointIcon);
-                  setpointRow.appendChild(setpointDiv);
-                  setpointSection.appendChild(setpointLabel);
-                  setpointSection.appendChild(setpointRow);
+                  setpointDiv.style.cssText = 'font-size:32px; font-weight:600; color:#00B0DF; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  setpointStack.appendChild(setpointLabel);
+                  setpointStack.appendChild(setpointDiv);
+                  setpointSection.appendChild(setpointIcon);
+                  setpointSection.appendChild(setpointStack);
                   rightCol.appendChild(setpointSection);
-                  // Weather section
+                  // Horizontal divider
+                  var weatherDivider = document.createElement('div');
+                  weatherDivider.style.cssText = 'height:1px; background:rgba(255,255,255,0.08);';
+                  rightCol.appendChild(weatherDivider);
+                  // Weather: icon + (value over condition)
                   var weatherSection = document.createElement('div');
-                  weatherSection.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:4px;';
-                  var weatherInnerRow = document.createElement('div');
-                  weatherInnerRow.style.cssText = 'display:flex; align-items:center; gap:12px;';
+                  weatherSection.style.cssText = 'display:flex; align-items:center; gap:12px;';
                   var weatherIconDiv = document.createElement('ha-icon');
                   weatherIconDiv.id = 'screensaver_weather_icon';
                   weatherIconDiv.setAttribute('icon', 'mdi:weather-partly-cloudy');
-                  weatherIconDiv.style.cssText = 'width:40px; height:40px; --mdc-icon-size:40px; color:#FF9F0A;';
+                  weatherIconDiv.style.cssText = 'width:48px; height:48px; --mdc-icon-size:48px; color:#FF9F0A; flex-shrink:0;';
+                  var weatherStack = document.createElement('div');
+                  weatherStack.style.cssText = 'display:flex; flex-direction:column; gap:2px;';
                   var weatherTempDiv = document.createElement('div');
                   weatherTempDiv.id = 'screensaver_weather_temp';
-                  weatherTempDiv.style.cssText = 'font-size:40px; font-weight:400; color:rgba(255,255,255,0.9); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
-                  weatherInnerRow.appendChild(weatherIconDiv);
-                  weatherInnerRow.appendChild(weatherTempDiv);
+                  weatherTempDiv.style.cssText = 'font-size:40px; font-weight:600; color:#fff; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
                   var weatherCondDiv = document.createElement('div');
                   weatherCondDiv.id = 'screensaver_weather_cond';
-                  weatherCondDiv.style.cssText = 'font-size:15px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:0.15em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  weatherSection.appendChild(weatherInnerRow);
-                  weatherSection.appendChild(weatherCondDiv);
+                  weatherCondDiv.style.cssText = 'font-size:13px; font-weight:600; color:rgba(255,255,255,0.5); letter-spacing:0.12em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  weatherStack.appendChild(weatherTempDiv);
+                  weatherStack.appendChild(weatherCondDiv);
+                  weatherSection.appendChild(weatherIconDiv);
+                  weatherSection.appendChild(weatherStack);
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
                   window._ssUpdateTheme();
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssInitialized = true;
-                  window._ssVersion = 7;
+                  window._ssVersion = 10;
                 };
                 window._ssRunInit = _ssInit;
                 _ssInit();
