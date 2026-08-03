@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785715192
+  id: office_view_v6_clean_v6_88_1785715592
   badges: []
   type: panel
   cards:
@@ -317,7 +317,7 @@ views:
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherTemp, elWeatherCond;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
-                  var IDLE_MS = 10000;
+                  var IDLE_MS = 5000;
                   document.addEventListener('touchstart', function() {
                     if (isVisible) {
                       isDismissing = true;
@@ -398,9 +398,9 @@ views:
                   leftCol.appendChild(timeDiv);
                   leftCol.appendChild(dateDiv);
                   overlay.appendChild(leftCol);
-                  // Right column - temp + setpoint + weather
+                  // Right column - temp + setpoint + weather (top-aligned to match mockup)
                   var rightCol = document.createElement('div');
-                  rightCol.style.cssText = 'position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:20px; align-items:flex-end;';
+                  rightCol.style.cssText = 'position:absolute; right:60px; top:35%; transform:translateY(-50%); display:flex; flex-direction:column; gap:16px; align-items:flex-end;';
                   // Current temp row
                   var curTempRow = document.createElement('div');
                   curTempRow.style.cssText = 'display:flex; align-items:center; gap:12px;';
@@ -427,7 +427,7 @@ views:
                   rightCol.appendChild(setpointRow);
                   // Weather row
                   var weatherRow = document.createElement('div');
-                  weatherRow.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:2px;';
+                  weatherRow.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:2px; margin-top:4px;';
                   var weatherTempDiv = document.createElement('div');
                   weatherTempDiv.id = 'screensaver_weather_temp';
                   weatherTempDiv.style.cssText = 'font-size:32px; font-weight:400; color:rgba(255,255,255,0.65); font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
