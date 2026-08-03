@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785715592
+  id: office_view_v6_clean_v6_88_1785715726
   badges: []
   type: panel
   cards:
@@ -315,7 +315,7 @@ views:
                   if (window._ssInitialized && window._ssVersion === 2) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
-                  var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherTemp, elWeatherCond;
+                  var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherIcon, elWeatherTemp, elWeatherCond;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
                   var IDLE_MS = 5000;
                   document.addEventListener('touchstart', function() {
@@ -372,7 +372,8 @@ views:
                     if (elDate) elDate.textContent = dateStr;
                     if (elCurTemp) elCurTemp.textContent = curTemp;
                     if (elSetpoint) elSetpoint.textContent = setpoint;
-                    if (elWeatherTemp) elWeatherTemp.textContent = wIcon + ' ' + wTemp;
+                    if (elWeatherIcon) elWeatherIcon.textContent = wIcon;
+                    if (elWeatherTemp) elWeatherTemp.textContent = wTemp;
                     if (elWeatherCond) elWeatherCond.textContent = condText;
                   };
                   window._ssUpdateTheme = function() {
@@ -425,16 +426,23 @@ views:
                   setpointRow.appendChild(setpointIcon);
                   setpointRow.appendChild(setpointDiv);
                   rightCol.appendChild(setpointRow);
-                  // Weather row
+                  // Weather row - icon + temp on same line, condition below
                   var weatherRow = document.createElement('div');
-                  weatherRow.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:2px; margin-top:4px;';
+                  weatherRow.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:2px; margin-top:8px;';
+                  var weatherInnerRow = document.createElement('div');
+                  weatherInnerRow.style.cssText = 'display:flex; align-items:center; gap:8px;';
+                  var weatherIconDiv = document.createElement('div');
+                  weatherIconDiv.id = 'screensaver_weather_icon';
+                  weatherIconDiv.style.cssText = 'font-size:32px; color:rgba(255,255,255,0.65); line-height:1;';
                   var weatherTempDiv = document.createElement('div');
                   weatherTempDiv.id = 'screensaver_weather_temp';
-                  weatherTempDiv.style.cssText = 'font-size:32px; font-weight:400; color:rgba(255,255,255,0.65); font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  weatherTempDiv.style.cssText = 'font-size:32px; font-weight:400; color:rgba(255,255,255,0.65); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  weatherInnerRow.appendChild(weatherIconDiv);
+                  weatherInnerRow.appendChild(weatherTempDiv);
                   var weatherCondDiv = document.createElement('div');
                   weatherCondDiv.id = 'screensaver_weather_cond';
                   weatherCondDiv.style.cssText = 'font-size:16px; font-weight:600; color:rgba(255,255,255,0.4); letter-spacing:0.1em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
-                  weatherRow.appendChild(weatherTempDiv);
+                  weatherRow.appendChild(weatherInnerRow);
                   weatherRow.appendChild(weatherCondDiv);
                   rightCol.appendChild(weatherRow);
                   overlay.appendChild(rightCol);
@@ -443,6 +451,7 @@ views:
                   elDate = dateDiv;
                   elCurTemp = curTempDiv;
                   elSetpoint = setpointDiv;
+                  elWeatherIcon = weatherIconDiv;
                   elWeatherTemp = weatherTempDiv;
                   elWeatherCond = weatherCondDiv;
                   window._ssUpdateTheme();
