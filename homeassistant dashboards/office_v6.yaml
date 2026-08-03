@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785716922
+  id: office_view_v6_clean_v6_88_1785728460
   badges: []
   type: panel
   cards:
@@ -311,26 +311,29 @@ views:
                 })();
 
                 // Screensaver Overlay - Two-Column Layout (Time Left, Climate Right)
-                (function() {
-                  if (window._ssInitialized && window._ssVersion === 6) return;
+                var _ssInit = function() {
+                  if (window._ssInitialized && window._ssVersion === 7) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay, elTime, elDate, elCurTemp, elSetpoint, elWeatherIcon, elWeatherTemp, elWeatherCond;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
                   var IDLE_MS = 5000;
-                  document.addEventListener('touchstart', function() {
-                    if (isVisible) {
-                      isDismissing = true;
-                      overlay.style.opacity = '0';
-                      overlay.style.transition = 'opacity 0.4s ease';
-                      clearTimeout(updateTimer);
-                      updateTimer = null;
-                      setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
-                    } else if (!isDismissing) {
-                      clearTimeout(idleTimer);
-                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
-                    }
-                  }, { passive: true });
+                  if (!window._ssTouchBound) {
+                    window._ssTouchBound = true;
+                    document.addEventListener('touchstart', function() {
+                      if (isVisible) {
+                        isDismissing = true;
+                        overlay.style.opacity = '0';
+                        overlay.style.transition = 'opacity 0.4s ease';
+                        clearTimeout(updateTimer);
+                        updateTimer = null;
+                        setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
+                      } else if (!isDismissing) {
+                        clearTimeout(idleTimer);
+                        idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                      }
+                    }, { passive: true });
+                  }
                   window._ssShow = function() {
                     if (!overlay || popupOpen() || isDismissing) return;
                     var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
@@ -344,12 +347,16 @@ views:
                       overlay.style.opacity = '1';
                     });
                     isVisible = true;
-                    updateTimer = setInterval(function() {
-                      if (!isVisible) { clearInterval(updateTimer); return; }
-                      var h2 = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
-                      var st2 = h2 ? h2.states : states;
-                      window._ssRender(st2);
-                    }, 5000);
+                    updateTimer = setTimeout(function() { window._ssRender(st); updateTimer = setTimeout(arguments.callee, 2000); }, 2000);
+                  };
+                  window._ssHide = function() {
+                    if (!isVisible) return;
+                    isDismissing = true;
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.4s ease';
+                    clearTimeout(updateTimer);
+                    updateTimer = null;
+                    setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; }, 400);
                   };
                   window._ssRender = function(st) {
                     var now = new Date();
@@ -358,7 +365,7 @@ views:
                     var days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
                     var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
                     var timeStr = (hours < 10 ? '0' : '') + hours + ':' + (mins < 10 ? '0' : '') + mins;
-                    var dateStr = days[now.getDay()] + ',  ' + months[now.getMonth()] + ' ' + now.getDate();
+                    var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
                     var cl = st['climate.air_conditioner_office_climate'];
                     var curTemp = (cl && cl.attributes && cl.attributes.current_temperature) ? parseFloat(cl.attributes.current_temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
                     var setpoint = (cl && cl.attributes && cl.attributes.temperature) ? parseFloat(cl.attributes.temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
@@ -368,6 +375,13 @@ views:
                     var wIcon = wStates[wState] || 'mdi:weather-cloudy';
                     var wTemp = (w && w.attributes && w.attributes.temperature) ? Math.round(w.attributes.temperature) + '\u00B0C' : '--\u00B0C';
                     var condText = wState.replace('-', ' ').toUpperCase();
+                    var elTime = document.getElementById('screensaver_time');
+                    var elDate = document.getElementById('screensaver_date');
+                    var elCurTemp = document.getElementById('screensaver_curtemp');
+                    var elSetpoint = document.getElementById('screensaver_setpoint');
+                    var elWeatherIcon = document.getElementById('screensaver_weather_icon');
+                    var elWeatherTemp = document.getElementById('screensaver_weather_temp');
+                    var elWeatherCond = document.getElementById('screensaver_weather_cond');
                     if (elTime) elTime.textContent = timeStr;
                     if (elDate) elDate.textContent = dateStr;
                     if (elCurTemp) elCurTemp.textContent = curTemp;
@@ -381,7 +395,6 @@ views:
                     var isN = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
                     document.documentElement.setAttribute('data-screensaver-theme', isN ? 'night' : 'day');
                   };
-                  // Create overlay via DOM API - two-column layout
                   var oldOverlay = document.getElementById('screensaver_overlay');
                   if (oldOverlay) oldOverlay.remove();
                   overlay = document.createElement('div');
@@ -395,27 +408,27 @@ views:
                   timeDiv.style.cssText = 'font-size:140px; font-weight:800; color:rgba(255,255,255,0.95); letter-spacing:-0.02em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
                   var dateDiv = document.createElement('div');
                   dateDiv.id = 'screensaver_date';
-                  dateDiv.style.cssText = 'font-size:22px; font-weight:600; color:rgba(255,255,255,0.7); letter-spacing:0.2em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  dateDiv.style.cssText = 'font-size:18px; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:0.2em; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
                   leftCol.appendChild(timeDiv);
                   leftCol.appendChild(dateDiv);
                   overlay.appendChild(leftCol);
-                  // Right column - temp + setpoint + weather (vertically centered on right side)
+                  // Right column - climate data (vertically centered)
                   var rightCol = document.createElement('div');
-                  rightCol.style.cssText = 'position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:24px; align-items:flex-end;';
-                  // Current temp section
+                  rightCol.style.cssText = 'position:absolute; right:60px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:16px; align-items:flex-end;';
+                  // Current temperature section
                   var curTempSection = document.createElement('div');
                   curTempSection.style.cssText = 'display:flex; flex-direction:column; align-items:flex-end; gap:4px;';
                   var curTempLabel = document.createElement('div');
-                  curTempLabel.style.cssText = 'font-size:11px; font-weight:700; color:rgba(255,255,255,0.45); letter-spacing:0.15em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
+                  curTempLabel.style.cssText = 'font-size:11px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.15em; text-transform:uppercase; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;';
                   curTempLabel.textContent = 'CURRENT TEMPERATURE';
                   var curTempRow = document.createElement('div');
                   curTempRow.style.cssText = 'display:flex; align-items:center; gap:14px;';
                   var curTempIcon = document.createElement('ha-icon');
                   curTempIcon.setAttribute('icon', 'mdi:thermometer');
-                  curTempIcon.style.cssText = 'width:36px; height:36px; --mdc-icon-size:36px; color:rgba(255,255,255,0.9);';
+                  curTempIcon.style.cssText = 'width:32px; height:32px; --mdc-icon-size:32px; color:rgba(255,255,255,0.9);';
                   var curTempDiv = document.createElement('div');
-                  curTempDiv.id = 'screensaver_cur_temp';
-                  curTempDiv.style.cssText = 'font-size:72px; font-weight:300; color:rgba(255,255,255,0.95); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
+                  curTempDiv.id = 'screensaver_curtemp';
+                  curTempDiv.style.cssText = 'font-size:72px; font-weight:300; color:rgba(255,255,255,0.9); font-family:Helvetica Neue,Helvetica,Arial,sans-serif; font-variant-numeric:tabular-nums; line-height:1;';
                   curTempRow.appendChild(curTempIcon);
                   curTempRow.appendChild(curTempDiv);
                   curTempSection.appendChild(curTempLabel);
@@ -462,18 +475,27 @@ views:
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
-                  elTime = timeDiv;
-                  elDate = dateDiv;
-                  elCurTemp = curTempDiv;
-                  elSetpoint = setpointDiv;
-                  elWeatherIcon = weatherIconDiv;
-                  elWeatherTemp = weatherTempDiv;
-                  elWeatherCond = weatherCondDiv;
                   window._ssUpdateTheme();
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssInitialized = true;
-                  window._ssVersion = 6;
-                })();
+                  window._ssVersion = 7;
+                };
+                window._ssRunInit = _ssInit;
+                _ssInit();
+                // Re-initialize screensaver after panel wakes from hardware sleep
+                document.addEventListener('visibilitychange', function() {
+                  if (document.visibilityState === 'visible') {
+                    if (window._ssInitialized) {
+                      window._ssInitialized = false;
+                      window._ssTouchBound = false;
+                      var old = document.getElementById('screensaver_overlay');
+                      if (old) old.remove();
+                    }
+                    if (!window._ssInitialized) {
+                      setTimeout(function() { window._ssRunInit && window._ssRunInit(); }, 500);
+                    }
+                  }
+                });
 
 
                 // Custom Detailed Mitsubishi AC Popup Overlay Handler
