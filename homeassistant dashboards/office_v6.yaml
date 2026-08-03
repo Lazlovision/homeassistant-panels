@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785732287
+  id: office_view_v6_clean_v6_88_1785732615
   badges: []
   type: panel
   cards:
@@ -312,7 +312,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 11) return;
+                  if (window._ssInitialized && window._ssVersion === 13) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay;
@@ -321,20 +321,20 @@ views:
                   var IDLE_MS = 5000;
                   if (!window._ssTouchBound) {
                     window._ssTouchBound = true;
-                    document.addEventListener('touchstart', function() {
-                      if (isVisible) {
-                        isDismissing = true;
-                        overlay.style.opacity = '0';
-                        overlay.style.transition = 'opacity 0.4s ease';
-                        clearTimeout(updateTimer);
-                        updateTimer = null;
-                        setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
-                      } else if (!isDismissing) {
-                        clearTimeout(idleTimer);
-                        idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
-                      }
-                    }, { passive: true });
                   }
+                  var dismissHandler = function() {
+                    if (isVisible) {
+                      isDismissing = true;
+                      overlay.style.opacity = '0';
+                      overlay.style.transition = 'opacity 0.4s ease';
+                      clearTimeout(updateTimer);
+                      updateTimer = null;
+                      setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
+                    } else if (!isDismissing) {
+                      clearTimeout(idleTimer);
+                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                    }
+                  };
                   window._ssShow = function() {
                     if (!overlay || popupOpen() || isDismissing) return;
                     var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
@@ -507,9 +507,10 @@ views:
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
                   window._ssUpdateTheme();
-                  idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                  window._ssVersion = 13;
+                  overlay.addEventListener('touchstart', dismissHandler, { passive: true });
+                  overlay.addEventListener('mousedown', dismissHandler);
                   window._ssInitialized = true;
-                  window._ssVersion = 11;
                 };
                 window._ssRunInit = _ssInit;
                 _ssInit();
