@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785732615
+  id: office_view_v6_clean_v6_88_1785732900
   badges: []
   type: panel
   cards:
@@ -312,7 +312,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 13) return;
+                  if (window._ssInitialized && window._ssVersion === 14) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay;
@@ -327,7 +327,7 @@ views:
                       isDismissing = true;
                       overlay.style.opacity = '0';
                       overlay.style.transition = 'opacity 0.4s ease';
-                      clearTimeout(updateTimer);
+                      clearInterval(updateTimer);
                       updateTimer = null;
                       setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
                     } else if (!isDismissing) {
@@ -349,29 +349,36 @@ views:
                       overlay.style.opacity = '1';
                     });
                     isVisible = true;
-                    updateTimer = setTimeout(function() { window._ssRender(st); updateTimer = setTimeout(arguments.callee, 2000); }, 2000);
+                    updateTimer = setInterval(function() { window._ssRender(); }, 2000);
                   };
                   window._ssHide = function() {
                     if (!isVisible) return;
                     isDismissing = true;
                     overlay.style.opacity = '0';
                     overlay.style.transition = 'opacity 0.4s ease';
-                    clearTimeout(updateTimer);
-                    updateTimer = null;
+                    clearInterval(updateTimer);
                     setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; }, 400);
                   };
                   window._ssRender = function(st) {
                     var now = new Date();
                     var hours = now.getHours();
                     var mins = now.getMinutes();
+                    var ampm = hours >= 12 ? 'PM' : 'AM';
+                    var h12 = hours % 12;
+                    if (h12 === 0) h12 = 12;
                     var days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
                     var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-                    var timeStr = (hours < 10 ? '0' : '') + hours + ':' + (mins < 10 ? '0' : '') + mins;
+                    var timeStr = h12 + ':' + (mins < 10 ? '0' : '') + mins + ' ' + ampm;
                     var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
-                    var cl = st['climate.air_conditioner_office_climate'];
+
+                    // Always grab fresh state
+                    var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
+                    var curSt = h ? h.states : (st || states);
+
+                    var cl = curSt['climate.air_conditioner_office_climate'];
                     var curTemp = (cl && cl.attributes && cl.attributes.current_temperature != null) ? parseFloat(cl.attributes.current_temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
                     var setpoint = (cl && cl.attributes && cl.attributes.temperature != null) ? parseFloat(cl.attributes.temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
-                    var w = st['weather.forecast_home'];
+                    var w = curSt['weather.forecast_home'];
                     var wStates = { 'sunny': 'mdi:weather-sunny', 'clear': 'mdi:weather-sunny', 'partlycloudy': 'mdi:weather-partly-cloudy', 'cloudy': 'mdi:weather-cloudy', 'fog': 'mdi:weather-fog', 'hazy': 'mdi:weather-fog', 'rainy': 'mdi:weather-rainy', 'pouring': 'mdi:weather-pouring', 'snowy': 'mdi:weather-snowy', 'windy': 'mdi:weather-windy', 'lightning': 'mdi:weather-lightning', 'lightning-rainy': 'mdi:weather-lightning-rainy', 'clear-night': 'mdi:weather-night' };
                     var wState = (w && w.state) || 'partlycloudy';
                     var wIcon = wStates[wState] || 'mdi:weather-partly-cloudy';
@@ -500,14 +507,13 @@ views:
                   weatherCondDiv.id = 'screensaver_weather_cond';
                   weatherCondDiv.style.cssText = 'font-size:14px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;';
                   weatherStack.appendChild(weatherTempDiv);
-                  weatherStack.appendChild(weatherCondDiv);
                   weatherSection.appendChild(weatherIconDiv);
                   weatherSection.appendChild(weatherStack);
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
                   window._ssUpdateTheme();
-                  window._ssVersion = 13;
+                  window._ssVersion = 14;
                   overlay.addEventListener('touchstart', dismissHandler, { passive: true });
                   overlay.addEventListener('mousedown', dismissHandler);
                   window._ssInitialized = true;
