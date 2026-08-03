@@ -182,6 +182,8 @@ s.attributes?.brightness ?? 0
 
 **Rule:** Use `ontouchend` with debounce guards for touch-interactive elements. Always include `event.stopPropagation()` to prevent event bubbling to parent cards. The `ontouchstart` event should only be used for visual press feedback (e.g., `scale(0.85)`) — never for service calls.
 
+**Backdrop-filter quirk:** Elements with `backdrop-filter: blur()` create a GPU compositing layer on the Crestron WebView that **blocks touch events from bubbling to `document`**. If a full-screen overlay uses blur, bind touch/click handlers directly to the overlay element itself — never rely on `document.addEventListener('touchstart', ...)`.
+
 ### 6.4 State Access: `states` vs `window.hass`
 
 Two ways to access Home Assistant state in JS templates:
@@ -274,6 +276,21 @@ Google Fonts (Hanken Grotesk / Inter) render ~5% wider under Android FreeType th
 ### 6.13 UTF-8 Encoding
 
 When pushing YAML via WebSocket, `ensure_ascii=False` in JSON serialization is required to preserve degree symbols (°), bullets, and other special characters.
+### 6.14 Full-Screen Overlays (Screensaver Pattern)
+
+Full-screen overlays appended to `document.body` have specific requirements on the Crestron WebView:
+
+**Touch handlers:** Bind `touchstart` and `mousedown` directly to the overlay element, not `document`. `backdrop-filter: blur()` blocks event bubbling (§6.3).
+
+**Timers:** Use `setInterval` for periodic updates — recursive `setTimeout(arguments.callee, N)` dies unpredictably on the WebView. Always `clearInterval` on hide/dismiss.
+
+**State access:** For periodic updates, always grab fresh state from `window.hass` inside the render function. Capturing `states` in a closure at init time freezes the data.
+
+**Version guard:** Use `window._ssInitialized` + `window._ssVersion` to prevent duplicate initialization. Bump the version number on every code change to force re-initialization.
+
+**Sleep wake recovery:** Listen for `visibilitychange` to tear down and reinitialize the overlay after panel hardware sleep. Clear all flags, remove the overlay element, then reinitialize after a 500ms delay (gives WebView time to stabilize).
+
+**Popup awareness:** Check for open popups before showing. Existing popup IDs: `custom_mitsubishi_popup_overlay`, `custom_weather_popup_overlay`, `custom_blueair_popup_overlay`.
 
 ---
 
@@ -311,10 +328,9 @@ Never hardcode credentials. The push script reads `secrets.json` automatically.
 | Using `ontouchstart` for service calls | Use `ontouchend` with debounce guard; `ontouchstart` only for visual feedback |
 | Using `?.` or `??` in JS templates | Use explicit ES5 null checks: `(x && x.attr) ? x.attr : default` |
 | Using `const`/`let`/`async`/arrow fns in templates | Use `var`, `function()`, plain callbacks |
-| Trusting Chrome screenshots for layout | Verify on physical panel |
+| Binding touch handlers to `document` for blurred overlays | Bind directly to the overlay element — `backdrop-filter` blocks bubbling |
 | Editing files in `archive/` | Work only with active files |
-| Assuming push succeeded because script says OK | Verify HA view ID changed |
-| Injecting full-screen overlays with `setInterval` | Avoid global timers that persist in WebView RAM |
+| Recursive `setTimeout(arguments.callee, N)` for periodic updates | Use `setInterval` — recursive setTimeout dies on Crestron WebView |
 | Pinning layout via `setTimeout` at one shadow DOM depth | Use recursive `queryDeep`, global CSS injection, and `MutationObserver` (crestron_viewport_guide.md §8) |
 | Forgetting `triggers_update` for cross-entity reactivity | List all entities whose changes should trigger re-render |
 | Forgetting `event.stopPropagation()` on nested touch handlers | Always stop propagation to prevent parent card taps |
@@ -359,6 +375,7 @@ git reset --hard <tag_name>
 - **Colors/fonts look wrong in screenshots:** Expected. Chrome ≠ Crestron WebView. See `crestron_viewport_guide.md` §5.
 - **Push script fails:** Check `secrets.json` has valid `HA_TOKEN`. Check HA is reachable at `ws://10.10.10.100:8123`.
 - **Text overflow on panel:** Android FreeType renders fonts 3-5% wider. Reduce padding or font size slightly.
+- **Screensaver doesn't dismiss on touch:** Check that touch handlers are bound to the overlay element, not `document`. `backdrop-filter: blur()` blocks bubbling. Also verify `mousedown` listener is present (Crestron may send mouse events).
 - **Popup not themed correctly:** Check dialog theme injection is firing. See §6.11.
 - **Card not updating when entity changes:** Check `triggers_update` lists the entity. See §6.5.
 
