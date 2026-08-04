@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785870910
+  id: office_view_v6_clean_v6_88_1785871428
   badges: []
   type: panel
   cards:
@@ -333,7 +333,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 20) return;
+                  if (window._ssInitialized && window._ssVersion === 21) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay;
@@ -543,7 +543,7 @@ views:
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
-                  window._ssVersion = 20;
+                  window._ssVersion = 21;
                   overlay.addEventListener('touchstart', dismissHandler, { passive: true });
                   overlay.addEventListener('mousedown', dismissHandler);
                   window._ssInitialized = true;
@@ -1835,6 +1835,10 @@ views:
       show_name: false
       show_icon: false
       show_state: false
+      triggers_update:
+      - media_player.the_moon
+      - media_player.living_room_speaker
+      - sun.sun
       tap_action:
         action: none
       card_mod:
@@ -1898,40 +1902,28 @@ views:
                 mainTitle = appName || 'Plex Media';
                 mainSubtitle = contentType ? (appName + ' • ' + contentType.toUpperCase()) : 'Playing';
                 
-                (function(mId) {
-                  var plexToken = 'YOUR_PLEX_TOKEN';
-                  var fetchUrl = 'http://YOUR_HA_IP:32400/library/metadata/' + mId + '?X-Plex-Token=' + plexToken;
-                  fetch(fetchUrl)
-                    .then(function(res) { return res.text(); })
-                    .then(function(xmlText) {
-                      var parser = new DOMParser();
-                      var xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                      var video = xmlDoc.querySelector('Video');
-                      if (video) {
-                        var vType = video.getAttribute('type');
-                        var t = '', sub = '';
-                        if (vType === 'episode') {
-                          var show = video.getAttribute('grandparentTitle') || '';
-                          var sNum = video.getAttribute('parentIndex') || '';
-                          var eNum = video.getAttribute('index') || '';
-                          var eTitle = video.getAttribute('title') || '';
-                          t = show;
-                          sub = (sNum && eNum) ? ('S' + sNum + ':E' + eNum + (eTitle ? ' • ' + eTitle : '')) : eTitle;
-                        } else {
-                          t = video.getAttribute('title') || '';
-                          var yr = video.getAttribute('year') || '';
-                          sub = yr ? ('Plex • Movie (' + yr + ')') : 'Plex • Movie';
-                        }
+                (function(mId, eId) {
+                  var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
+                  if (!h) return;
+                  var token = h.connection.auth.data.access_token;
+                  var base = h.connection.auth.data.href;
+                  // Fetch fresh entity state from HA to get media_title
+                  fetch(base + 'api/states/' + eId, { headers: { 'Authorization': 'Bearer ' + token } })
+                    .then(function(res) { return res.json(); })
+                    .then(function(state) {
+                      var attrs = state.attributes || {};
+                      var t = attrs.media_title || '';
+                      var sub = attrs.media_artist || attrs.album || attrs.extra || '';
+                      if (t && t.trim()) {
                         window._plexCache[mId] = { title: t, subtitle: sub };
-                        
                         var elT = document.getElementById('restored_media_title');
                         var elS = document.getElementById('restored_media_sub');
-                        if (elT && t) elT.innerText = t;
+                        if (elT) elT.innerText = t;
                         if (elS && sub) elS.innerText = sub;
                       }
                     })
-                    .catch(function(err) {});
-                })(metaId);
+                    .catch(function() {});
+                })(metaId, entityId);
               }
             }
 
