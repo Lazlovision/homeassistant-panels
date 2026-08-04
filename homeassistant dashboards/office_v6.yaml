@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785732900
+  id: office_view_v6_clean_v6_88_1785865451
   badges: []
   type: panel
   cards:
@@ -312,13 +312,13 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 14) return;
+                  if (window._ssInitialized && window._ssVersion === 15) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay;
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
-                  var IDLE_MS = 5000;
+                  var IDLE_MS = 1800000;
                   if (!window._ssTouchBound) {
                     window._ssTouchBound = true;
                   }
@@ -513,7 +513,7 @@ views:
                   overlay.appendChild(rightCol);
                   document.body.appendChild(overlay);
                   window._ssUpdateTheme();
-                  window._ssVersion = 14;
+                  window._ssVersion = 15;
                   overlay.addEventListener('touchstart', dismissHandler, { passive: true });
                   overlay.addEventListener('mousedown', dismissHandler);
                   window._ssInitialized = true;
