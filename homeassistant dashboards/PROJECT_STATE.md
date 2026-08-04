@@ -1,7 +1,7 @@
 # Office Dashboard — Project State
 
 > Single source of truth. Updated after every meaningful change.
-> Last updated: 2026-08-02
+> Last updated: 2026-08-04
 
 ---
 
@@ -118,7 +118,21 @@ See `status_summary.md` for the troubleshooting history.
 1. **Screensaver overlay blocking touches** — `event.stopPropagation()` consumed all taps. Removed screensaver code (commit `6ed68b5`).
 2. **Wrong HA endpoint** — push script was updating `office-panel` but HA also served from default endpoint. Fixed: push to both endpoints.
 3. **WebView RAM cache** — old JavaScript stayed running until power cycle. Fix: power cycle panel after push.
+4. **Screensaver not activating** — missing document-level activity listeners; `window._ssTouchBound` was set but no listeners attached. Fixed: added `touchstart`/`mousedown` listeners + initial timer start. Also removed `mousemove`/`scroll` which caused Crestron WebView spurious events to reset the timer continuously.
+5. **Screensaver too bright** — was semi-transparent white overlay. Fixed: nearly black background (`rgba(5,5,8,0.96)`) with dim text at 22-45% opacity.
+6. **Screensaver right column misaligned** — different icon sizes (42-60px) and text sizes (44-76px) made labels not line up. Fixed: uniform 42px icons, 44px values, 12px labels with consistent "CURRENT"/"TARGET"/"OUTDOOR" naming.
 
+### Changelog — Session 2026-08-04
+
+| Change | Details |
+|--------|---------|
+| Screensaver timer | Changed from 5s (testing) to 30 minutes (production) |
+| Screensaver activation | Added missing document activity listeners + initial timer start |
+| Screensaver appearance | Dim overlay: `rgba(5,5,8,0.96)` background, subtle text (22-45% opacity) |
+| Screensaver alignment | Uniform 42px icons, 44px values, 12px labels across all right-column sections |
+| Screensaver weather label | Added "OUTDOOR" label; combined temp + condition in value display |
+| Screensaver version | Bumped to v20 |
+| Documentation | Added panel reload troubleshooting note to AGENTS.md §10 |
 ---
 
 ## Rules for This Project

@@ -378,7 +378,7 @@ git reset --hard <tag_name>
 - **Screensaver doesn't dismiss on touch:** Check that touch handlers are bound to the overlay element, not `document`. `backdrop-filter: blur()` blocks bubbling. Also verify `mousedown` listener is present (Crestron may send mouse events).
 - **Popup not themed correctly:** Check dialog theme injection is firing. See §6.11.
 - **Card not updating when entity changes:** Check `triggers_update` lists the entity. See §6.5.
-
+- **Panel not reflecting pushed changes:** The `push_clean_v6.py` script auto-increments the view ID with a timestamp each push, which normally forces the Crestron WebView to reload. If the panel still shows the old dashboard after a push, wait ~10 seconds then try again. As a last resort, unplug/replug the panel (WebView caches aggressively).
 ---
 
 ## 11. When in Doubt
