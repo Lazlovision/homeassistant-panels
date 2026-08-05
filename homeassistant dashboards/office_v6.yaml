@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785871667
+  id: office_view_v6_clean_v6_88_1785889456
   badges: []
   type: panel
   cards:
@@ -323,7 +323,23 @@ views:
                   if (!window._crestronViewportObserverAttached) {
                     window._crestronViewportObserverAttached = true;
                     try {
-                      var observer = new MutationObserver(function() {
+                      var _vpLast = 0, _vpDebounce = 300;
+                      var observer = new MutationObserver(function(mutations) {
+                        // Filter out mutations from screensaver overlay to avoid render-triggered reflow loops
+                        var relevant = false;
+                        for (var i = 0; i < mutations.length; i++) {
+                          var target = mutations[i].target;
+                          if (target && target.id !== 'screensaver_overlay') {
+                            var p = target.parentElement;
+                            while (p && p.id !== 'screensaver_overlay') p = p.parentElement;
+                            if (!p) { relevant = true; break; }
+                          }
+                        }
+                        if (!relevant) return;
+                        // Debounce to prevent rapid-fire layout thrashing
+                        var now = Date.now();
+                        if (now - _vpLast < _vpDebounce) return;
+                        _vpLast = now;
                         pinViewport();
                       });
                       observer.observe(document.body, { childList: true, subtree: true });
@@ -333,7 +349,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 22) return;
+                  if (window._ssInitialized && window._ssVersion === 23) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
                   var overlay;
@@ -356,6 +372,7 @@ views:
                       idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }
                   };
+                  window._ssDismissHandler = dismissHandler;
                   // Document-level activity listeners to reset idle timer (touch/click only, not mousemove)
                   if (!window._ssDocBound) {
                     window._ssDocBound = true;
@@ -378,7 +395,9 @@ views:
                       overlay.style.opacity = '1';
                     });
                     isVisible = true;
-                    updateTimer = setInterval(function() { window._ssRender(); }, 2000);
+                    updateTimer = setInterval(function() {
+                      try { window._ssRender(); } catch(e) {}
+                    }, 30000);
                   };
                   window._ssHide = function() {
                     if (!isVisible) return;
@@ -386,6 +405,7 @@ views:
                     overlay.style.opacity = '0';
                     overlay.style.transition = 'opacity 0.4s ease';
                     clearInterval(updateTimer);
+                    updateTimer = null;
                     setTimeout(function() { overlay.style.display = 'none'; isVisible = false; isDismissing = false; }, 400);
                   };
                   window._ssRender = function(st) {
@@ -400,9 +420,9 @@ views:
                     var timeStr = h12 + ':' + (mins < 10 ? '0' : '') + mins + ' ' + ampm;
                     var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate();
 
-                    // Always grab fresh state
-                    var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
-                    var curSt = h ? h.states : (st || states);
+                    // Grab fresh state with safe fallback
+                    var h, curSt;
+                    try { h = window.hass; curSt = h ? h.states : (st || states); } catch(e) { curSt = st || states; }
 
                     var cl = curSt['climate.air_conditioner_office_climate'];
                     var curTemp = (cl && cl.attributes && cl.attributes.current_temperature != null) ? parseFloat(cl.attributes.current_temperature).toFixed(1) + '\u00B0C' : '--\u00B0C';
@@ -414,20 +434,14 @@ views:
                     var wTemp = (w && w.attributes && w.attributes.temperature != null) ? Math.round(parseFloat(w.attributes.temperature)) + '\u00B0C' : '--\u00B0C';
                     var condText = wState.replace('-', ' ').toUpperCase();
 
-                    var elTime = document.getElementById('screensaver_time');
-                    var elDate = document.getElementById('screensaver_date');
-                    var elCurTemp = document.getElementById('screensaver_curtemp');
-                    var elSetpoint = document.getElementById('screensaver_setpoint');
-                    var elWeatherIcon = document.getElementById('screensaver_weather_icon');
-                    var elWeatherTemp = document.getElementById('screensaver_weather_temp');
-                    var elWeatherCond = document.getElementById('screensaver_weather_cond');
-                    if (elTime) elTime.textContent = timeStr;
-                    if (elDate) elDate.textContent = dateStr;
-                    if (elCurTemp) elCurTemp.textContent = curTemp;
-                    if (elSetpoint) elSetpoint.textContent = setpoint;
-                    if (elWeatherIcon) elWeatherIcon.setAttribute('icon', wIcon);
-                    if (elWeatherTemp) elWeatherTemp.textContent = wTemp + ' ' + condText;
-                    if (elWeatherCond) elWeatherCond.textContent = 'OUTDOOR';
+                    // Use cached references instead of getElementById
+                    if (cachedEl.time) cachedEl.time.textContent = timeStr;
+                    if (cachedEl.date) cachedEl.date.textContent = dateStr;
+                    if (cachedEl.curTemp) cachedEl.curTemp.textContent = curTemp;
+                    if (cachedEl.setpoint) cachedEl.setpoint.textContent = setpoint;
+                    if (cachedEl.weatherIcon) cachedEl.weatherIcon.setAttribute('icon', wIcon);
+                    if (cachedEl.weatherTemp) cachedEl.weatherTemp.textContent = wTemp + ' ' + condText;
+                    if (cachedEl.weatherCond) cachedEl.weatherCond.textContent = 'OUTDOOR';
                   };
                   window._ssUpdateTheme = function() {
                     if (!overlay) return;
@@ -542,10 +556,14 @@ views:
                   weatherSection.appendChild(weatherStack);
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
+                  // Cache DOM references to avoid getElementById churn in render loop
+                  var cachedEl = {
+                    time: timeDiv, date: dateDiv,
+                    curTemp: curTempDiv, setpoint: setpointDiv,
+                    weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
+                  };
                   document.body.appendChild(overlay);
-                  window._ssVersion = 22;
-                  overlay.addEventListener('touchstart', dismissHandler, { passive: true });
-                  overlay.addEventListener('mousedown', dismissHandler);
+                  window._ssVersion = 23;
                   window._ssInitialized = true;
                 };
                 window._ssRunInit = _ssInit;
@@ -554,6 +572,13 @@ views:
                 document.addEventListener('visibilitychange', function() {
                   if (document.visibilityState === 'visible') {
                     if (window._ssInitialized) {
+                      // Remove old document listeners to prevent stacking on re-init
+                      if (window._ssDismissHandler) {
+                        document.removeEventListener('touchstart', window._ssDismissHandler, { passive: true });
+                        document.removeEventListener('mousedown', window._ssDismissHandler);
+                      }
+                      // Clear any active timers
+                      if (window._ssHide) window._ssHide();
                       window._ssInitialized = false;
                       window._ssTouchBound = false;
                       window._ssDocBound = false;
