@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785904886
+  id: office_view_v6_clean_v6_88_1785905511
   badges: []
   type: panel
   cards:
@@ -355,7 +355,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 28) return;
+                  if (window._ssInitialized && window._ssVersion === 29) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var overlay;
@@ -569,29 +569,18 @@ views:
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
                   document.body.appendChild(overlay);
-                  window._ssVersion = 28;
+                  window._ssVersion = 29;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep
                 document.addEventListener('visibilitychange', function() {
                   if (document.visibilityState === 'visible') {
                     if (window._ssInitialized) {
-                      // Remove old document listeners to prevent stacking on re-init
-                      if (window._ssDismissHandler) {
-                        document.removeEventListener('touchstart', window._ssDismissHandler, { passive: true });
-                        document.removeEventListener('mousedown', window._ssDismissHandler);
-                      }
-                      // Clear any active timers
-                      if (window._ssHide) window._ssHide();
-                      window._ssInitialized = false;
-                      window._ssTouchBound = false;
-                      window._ssDocBound = false;
-                      var old = document.getElementById('screensaver_overlay');
-                      if (old) old.remove();
+                      // Screensaver is already running — don't tear it down on spurious visibility events
+                      return;
                     }
-                    if (!window._ssInitialized) {
-                      setTimeout(function() { window._ssRunInit && window._ssRunInit(); }, 500);
-                    }
+                    // Not initialized yet — start it (e.g. after hardware sleep recovery)
+                    setTimeout(function() { window._ssRunInit && window._ssRunInit(); }, 500);
                   }
                 });
                 // Initialize screensaver on page load
