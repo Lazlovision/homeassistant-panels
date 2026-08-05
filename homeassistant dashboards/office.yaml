@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785890218
+  id: office_view_v6_clean_v6_88_1785893595
   badges: []
   type: panel
   cards:
@@ -355,9 +355,9 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 25) return;
+                  if (window._ssInitialized && window._ssVersion === 26) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
-                  var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { if (document.getElementById(popupIds[i])) return true; } return false; };
+                  var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var overlay;
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
                   var idleTimer, updateTimer, isVisible = false, isDismissing = false;
@@ -569,8 +569,7 @@ views:
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
                   document.body.appendChild(overlay);
-                  window._ssVersion = 25;
-                  window._ssInitialized = true;
+                  window._ssVersion = 26;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep
