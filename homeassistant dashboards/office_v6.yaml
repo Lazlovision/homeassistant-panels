@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785905511
+  id: office_view_v6_clean_v6_88_1785905767
   badges: []
   type: panel
   cards:
@@ -355,7 +355,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 29) return;
+                  if (window._ssInitialized && window._ssVersion === 30) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var overlay;
@@ -372,18 +372,31 @@ views:
                       overlay.style.transition = 'opacity 0.4s ease';
                       clearInterval(updateTimer);
                       updateTimer = null;
-                      setTimeout(function() { overlay.style.display = 'none'; isVisible = false; window._ssIsVisible = false; isDismissing = false; idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS); }, 400);
+                      setTimeout(function() {
+                        overlay.style.display = 'none';
+                        isVisible = false;
+                        window._ssIsVisible = false;
+                        isDismissing = false;
+                        window._ssInitialized = false;
+                        idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                      }, 400);
                     } else if (!isDismissing) {
                       clearTimeout(idleTimer);
                       idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }
                   };
                   window._ssDismissHandler = dismissHandler;
-                  // Document-level activity listeners to reset idle timer (touch/click only, not mousemove)
+                  // Touch listener on document to reset idle timer (only when screensaver is NOT visible)
+                  var activityHandler = function() {
+                    if (!isVisible && !isDismissing) {
+                      clearTimeout(idleTimer);
+                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                    }
+                  };
                   if (!window._ssDocBound) {
                     window._ssDocBound = true;
-                    document.addEventListener('touchstart', dismissHandler, { passive: true });
-                    document.addEventListener('mousedown', dismissHandler);
+                    document.addEventListener('touchstart', activityHandler, { passive: true });
+                    document.addEventListener('mousedown', activityHandler);
                   }
                   // Start initial idle timer immediately
                   idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
@@ -412,7 +425,13 @@ views:
                     overlay.style.transition = 'opacity 0.4s ease';
                     clearInterval(updateTimer);
                     updateTimer = null;
-                    setTimeout(function() { overlay.style.display = 'none'; isVisible = false; window._ssIsVisible = false; isDismissing = false; }, 400);
+                    setTimeout(function() {
+                      overlay.style.display = 'none';
+                      isVisible = false;
+                      window._ssIsVisible = false;
+                      isDismissing = false;
+                      window._ssInitialized = false;
+                    }, 400);
                   };
                   window._ssRender = function(st) {
                     var now = new Date();
@@ -562,14 +581,13 @@ views:
                   weatherSection.appendChild(weatherStack);
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
-                  // Cache DOM references to avoid getElementById churn in render loop
                   var cachedEl = {
                     time: timeDiv, date: dateDiv,
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
                   document.body.appendChild(overlay);
-                  window._ssVersion = 29;
+                  window._ssVersion = 30;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep
