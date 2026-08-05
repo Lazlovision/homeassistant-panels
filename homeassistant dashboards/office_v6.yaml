@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785909781
+  id: office_view_v6_clean_v6_88_1785968531
   badges: []
   type: panel
   cards:
@@ -239,9 +239,15 @@ views:
                       '  width: 100vw !important; height: 100vh !important;' +
                       '  max-height: 100vh !important; min-height: 100vh !important;' +
                       '  overflow: hidden !important; box-sizing: border-box !important;' +
-                      '}';
+                      '}' +
+                      '.res-btn:active { background: rgba(255, 255, 255, 0.35) !important; transform: scale(0.95) !important; transition: none !important; }';
                     document.head.appendChild(style);
                   }
+
+                  // Live hass helper — always fetches the current active hass object reference
+                  window._getHass = function() {
+                    return window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
+                  };
 
                   // 2. Recursive shadow DOM query
                   function queryDeep(selector, root) {
@@ -262,6 +268,7 @@ views:
 
                   // 3. Pin vertical stack & horizontal stack shadow roots
                   function pinViewport() {
+                    if (window._ssIsVisible || window._ssIsDismissing) return;
                     try {
                       var vStack = queryDeep('hui-vertical-stack-card');
                       if (vStack && vStack.shadowRoot) {
@@ -323,11 +330,10 @@ views:
                   if (!window._crestronViewportObserverAttached) {
                     window._crestronViewportObserverAttached = true;
                     try {
-                      var _vpLast = 0, _vpDebounce = 2000, _vpPending = false;
+                      var _vpTimer = null;
+                      var _vpDebounce = 2000;
                       var observer = new MutationObserver(function(mutations) {
-                        // Skip if screensaver is visible — no need to pin viewport while it's up
                         if (window._ssIsVisible) return;
-                        // Filter: only care about mutations outside the screensaver overlay
                         var relevant = false;
                         for (var i = 0; i < mutations.length; i++) {
                           var target = mutations[i].target;
@@ -338,28 +344,24 @@ views:
                           }
                         }
                         if (!relevant) return;
-                        // Debounce + defer to rAF to avoid blocking the main thread synchronously
-                        var now = Date.now();
-                        if (_vpPending) { _vpLast = now; return; }
-                        if (now - _vpLast < _vpDebounce) { _vpPending = true; _vpLast = now; return; }
-                        _vpLast = now;
-                        _vpPending = true;
-                        requestAnimationFrame(function() {
-                          _vpPending = false;
-                          pinViewport();
-                        });
+                        if (_vpTimer) clearTimeout(_vpTimer);
+                        _vpTimer = setTimeout(function() {
+                          _vpTimer = null;
+                          requestAnimationFrame(pinViewport);
+                        }, _vpDebounce);
                       });
+                      observer.observe(document.body, { childList: true, subtree: true });
                     } catch(e) {}
                   }
                 })();
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 39) return;
+                  if (window._ssInitialized && window._ssVersion === 42) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
-                  var IDLE_MS = 300000; // 5 minutes
+                  var IDLE_MS = 10000; // 10 seconds for testing (set to 300000 for production)
 
                   window._ssIsVisible = false;
                   window._ssIsDismissing = false;
@@ -371,10 +373,11 @@ views:
                     if (!overlay) return;
                     window._ssIsVisible = true;
                     window._ssShowTime = Date.now();
-                    var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
+                    var h = window._getHass ? window._getHass() : (window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass));
                     var st = h ? h.states : states;
                     window._ssRender(st);
                     window._ssUpdateTheme();
+                    overlay.style.pointerEvents = 'auto';
                     overlay.style.display = 'flex';
                     overlay.style.opacity = '0';
                     overlay.style.transition = 'none';
@@ -385,14 +388,18 @@ views:
                     if (window._ssUpdateTimer) clearInterval(window._ssUpdateTimer);
                     window._ssUpdateTimer = setInterval(function() {
                       try { window._ssRender(); } catch(e) {}
-                    }, 30000);
+                    }, 60000); // 1 minute refresh rate
                   };
 
                   window._ssHide = function() {
                     if (!window._ssIsVisible || window._ssIsDismissing) return;
                     window._ssIsDismissing = true;
+                    window._climDB = false; window._modeDB = false; window._fanDB = false;
+                    window._mpDB = false; window._ppDB = false; window._mnDB = false; window._muteDB = false;
+                    window._hass = null;
                     var overlay = document.getElementById('screensaver_overlay');
                     if (overlay) {
+                      overlay.style.pointerEvents = 'none';
                       overlay.style.opacity = '0';
                       overlay.style.transition = 'opacity 0.4s ease';
                     }
@@ -401,6 +408,9 @@ views:
                       if (overlay) overlay.style.display = 'none';
                       window._ssIsVisible = false;
                       window._ssIsDismissing = false;
+                      setTimeout(function() {
+                        pinViewport();
+                      }, 500);
                       if (window._ssIdleTimer) clearTimeout(window._ssIdleTimer);
                       window._ssIdleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }, 400);
@@ -501,6 +511,7 @@ views:
                   var overlay = document.createElement('div');
                   overlay.id = 'screensaver_overlay';
                   overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:100000; box-sizing:border-box; align-items:center; justify-content:center; flex-direction:row; will-change:opacity; transform:translateZ(0); -webkit-tap-highlight-color:transparent; cursor:pointer;';
+                  overlay.addEventListener('touchstart', dismissHandler, { passive: true });
                   overlay.addEventListener('touchend', dismissHandler, { passive: true });
                   overlay.addEventListener('mouseup', dismissHandler);
 
@@ -591,7 +602,7 @@ views:
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
-                  window._ssVersion = 39;
+                  window._ssVersion = 42;
                   window._ssInitialized = true;
                 };
                 window._ssRunInit = _ssInit;
@@ -692,7 +703,7 @@ views:
                       var isSelected = activePos === opt;
                       var label = opt === 'AUTO' ? 'AUTO' : (opt === 'SWING' ? 'SWING' : opt);
                       html += `
-                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('select','select_option',{entity_id:'select.air_conditioner_office_vertical_vane', option:'${opt}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){var h=window._getHass(); return h&&h.callService;})()('select','select_option',{entity_id:'select.air_conditioner_office_vertical_vane', option:'${opt}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px 6px; border-radius:14px; border:${isSelected ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSelected ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSelected ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${label}</button>
                       `;
                     });
@@ -712,7 +723,7 @@ views:
                     modes.forEach(function(m) {
                       var isSel = activeState === m.id;
                       html += `
-                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'${m.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){var h=window._getHass(); return h&&h.callService;})()('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'${m.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px; border-radius:14px; border:${isSel ? ('1.5px solid ' + m.color) : ('1px solid ' + borderColor)}; background:${isSel ? (m.color + '25') : cardBg}; color:${isSel ? m.color : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${m.name}</button>
                       `;
                     });
@@ -730,7 +741,7 @@ views:
                     speeds.forEach(function(sp) {
                       var isSel = activeSpeed === sp.id;
                       html += `
-                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'${sp.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="window._popPress(this)" ontouchend="window._popRelease(this);(function(){var h=window._getHass(); return h&&h.callService;})()('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'${sp.id}'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:12px; border-radius:14px; border:${isSel ? '1.5px solid #00B0DF' : ('1px solid ' + borderColor)}; background:${isSel ? 'rgba(0,176,223,0.2)' : cardBg}; color:${isSel ? '#00B0DF' : textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">${sp.name}</button>
                       `;
                     });
@@ -806,7 +817,7 @@ views:
                           </div>
                         </div>
 
-                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
+                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
                                 style="padding:14px; border-radius:16px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:weather-night" style="width:22px; height:22px; --mdc-icon-size:22px; color:${d.nightState ? '#FF9F0A' : subColor};"></ha-icon>
                           Night Mode: ${d.nightState ? 'ON' : 'OFF'}
@@ -1147,36 +1158,36 @@ views:
                         </div>
                         
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'auto'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'auto'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${preset==='auto'?'1.5px solid #30D158':('1px solid '+borderColor)}; background:${preset==='auto'?'rgba(48,209,88,0.2)':cardBg}; color:${preset==='auto'?'#30D158':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">AUTO MODE</button>
                           
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'night'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','turn_on',{entity_id:'fan.office_air_purifier_fan', preset_mode:'night'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${preset==='night'?'1.5px solid #00B0DF':('1px solid '+borderColor)}; background:${preset==='night'?'rgba(0,176,223,0.2)':cardBg}; color:${preset==='night'?'#00B0DF':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">NIGHT MODE</button>
                           
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','turn_off',{entity_id:'fan.office_air_purifier_fan'}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','turn_off',{entity_id:'fan.office_air_purifier_fan'}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${fanState==='off'?'1.5px solid #FF4D4D':('1px solid '+borderColor)}; background:${fanState==='off'?'rgba(255,77,77,0.2)':cardBg}; color:${fanState==='off'?'#FF4D4D':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">FAN OFF</button>
                         </div>
 
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:33}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:33}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>0 && pct<=35)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 1 (LOW)</button>
                           
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:66}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:66}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>35 && pct<=70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 2 (MED)</button>
 
-                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:100}); document.getElementById('${modalId}').remove();"
+                          <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('fan','set_percentage',{entity_id:'fan.office_air_purifier_fan', percentage:100}); document.getElementById('${modalId}').remove();"
                                   style="padding:12px; border-radius:14px; border:${(fanState!=='off' && !preset && pct>70)?'1.5px solid #FF9F0A':('1px solid '+borderColor)}; background:${(fanState!=='off' && !preset && pct>70)?'rgba(255,159,10,0.2)':cardBg}; color:${(fanState!=='off' && !preset && pct>70)?'#FF9F0A':textColor}; font-size:14px; font-weight:800; cursor:pointer; touch-action:manipulation;">SPEED 3 (HIGH)</button>
                         </div>
                       </div>
 
                       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('light','toggle',{entity_id:'light.office_air_purifier_led_light'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('light','toggle',{entity_id:'light.office_air_purifier_led_light'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
                                 style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:led-on" style="width:18px; height:18px; --mdc-icon-size:18px; color:${ledLight?'#FF9F0A':subColor};"></ha-icon>
                           LED Display: ${ledLight?'ON':'OFF'}
                         </button>
 
-                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} return window._hass&&window._hass.callService;})()('switch','toggle',{entity_id:'switch.office_air_purifier_child_lock'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
+                        <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('switch','toggle',{entity_id:'switch.office_air_purifier_child_lock'}); setTimeout(function(){ document.getElementById('${modalId}').remove(); }, 300);"
                                 style="padding:12px; border-radius:14px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; touch-action:manipulation;">
                           <ha-icon icon="mdi:lock" style="width:18px; height:18px; --mdc-icon-size:18px; color:${childLock?'#FF4D4D':subColor};"></ha-icon>
                           Child Lock: ${childLock?'ON':'OFF'}
@@ -1715,8 +1726,6 @@ views:
         custom_fields:
           hvac_panel: |
             [[[
-              window._btnPress = function(b){b.style.background='rgba(255,255,255,0.35)';b.style.transform='scale(0.95)';};
-              window._btnRelease = function(b){b.style.background='';b.style.transform='';};
               var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
               var mainTempColor = isNight ? '#FFFFFF' : '#1C1C1E';
               var trackColor = isNight ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
@@ -1799,8 +1808,8 @@ views:
                 { id: 'high', name: 'HIGH' }
               ];
 
-              var callMinus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextMinusTemp + "}); }";
-              var callPlus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextPlusTemp + "}); }";
+              var callMinus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextMinusTemp + "}); }";
+              var callPlus = "if(window._climDB) return; window._climDB=true; setTimeout(function(){window._climDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_temperature',{entity_id:'climate.air_conditioner_office_climate', temperature:" + nextPlusTemp + "}); }";
 
               var modesRow1Html = '';
               modesList.slice(0, 3).forEach(function(m) {
@@ -1809,8 +1818,8 @@ views:
                 var border = isSel ? ('1px solid ' + m.color) : btnBorder;
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
-                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow1Html += '<button class="res-btn" ontouchstart="window._btnPress(this)" ontouchend="window._btnRelease(this);event.stopPropagation(); ' + callMode + '" onmousedown="window._btnPress(this)" onmouseup="window._btnRelease(this);event.stopPropagation(); ' + callMode + '"' +
+                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                modesRow1Html += '<button class="res-btn" onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '" ontouchcancel="event.stopPropagation();"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
@@ -1821,8 +1830,8 @@ views:
                 var border = isSel ? ('1px solid ' + m.color) : btnBorder;
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
-                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow2Html += '<button class="res-btn" ontouchstart="window._btnPress(this)" ontouchend="window._btnRelease(this);event.stopPropagation(); ' + callMode + '" onmousedown="window._btnPress(this)" onmouseup="window._btnRelease(this);event.stopPropagation(); ' + callMode + '"' +
+                var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
+                modesRow2Html += '<button class="res-btn" onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '" ontouchcancel="event.stopPropagation();"' +
                                  ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
               });
 
@@ -1832,8 +1841,8 @@ views:
                 var bg = isSel ? (isNight ? 'rgba(255,255,255,0.22)' : '#1C1C1E') : btnBg;
                 var border = isSel ? (isNight ? '1px solid #FFFFFF' : '1px solid #1C1C1E') : btnBorder;
                 var txtColor = isSel ? '#FFFFFF' : (isNight ? '#9E9EA8' : '#6E6E73');
-                var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
-                fanRowHtml += '<button class="res-btn" ontouchstart="window._btnPress(this)" ontouchend="window._btnRelease(this);event.stopPropagation(); ' + callFan + '" onmousedown="window._btnPress(this)" onmouseup="window._btnRelease(this);event.stopPropagation(); ' + callFan + '"' +
+                var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
+                fanRowHtml += '<button class="res-btn" onclick="event.stopPropagation(); ' + callFan + '" ontouchend="event.stopPropagation(); ' + callFan + '" ontouchcancel="event.stopPropagation();"' +
                               ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
               });
 
@@ -1841,7 +1850,7 @@ views:
 
               return '<div id="hvac_panel" style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; box-sizing:border-box; pointer-events:auto;">' +
                      '<div style="display:flex; align-items:flex-start; justify-content:space-between; width:100%; height:275px; min-height:275px; max-height:275px; flex-shrink:0;">' +
-                     '<button class="res-btn" ontouchstart="window._btnPress(this)" ontouchend="window._btnRelease(this);event.stopPropagation(); ' + callMinus + '" onmousedown="window._btnPress(this)" onmouseup="window._btnRelease(this);event.stopPropagation(); ' + callMinus + '"' +
+                     '<button class="res-btn" onclick="event.stopPropagation(); ' + callMinus + '" ontouchend="event.stopPropagation(); ' + callMinus + '" ontouchcancel="event.stopPropagation();"' +
                      ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
                      '<ha-icon icon="mdi:minus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
                      '<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; flex:1; height:275px; min-height:275px; max-height:275px; overflow:hidden;">' +
@@ -1850,7 +1859,7 @@ views:
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + trackColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="310 117" />' +
                      '<circle cx="80" cy="80" r="68" fill="none" stroke="' + act.arcColor + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + activeLen + ' ' + gapLen + '" style="transition: stroke-dasharray 0.6s ease, stroke 0.4s ease;" />' +
                      pipSvg + '</svg>' +
-                     '<div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; padding:10px; border-radius:50%;" ontouchend="window.openMitsubishiPopup(event);">' +
+                     '<div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; padding:10px; border-radius:50%;" onclick="window.openMitsubishiPopup(event);" ontouchend="window.openMitsubishiPopup(event);">' +
                      '<div style="display:flex; align-items:flex-start; margin-left:6px; pointer-events:none;">' +
                      '<span style="font-size:74px; font-weight:700; color:' + mainTempColor + '; line-height:1; letter-spacing:-0.03em;">' + cur + '</span>' +
                      '<span style="font-size:24px; font-weight:600; color:' + mainTempColor + '; margin-top:4px;">°C</span></div>' +
@@ -1860,7 +1869,7 @@ views:
                      '<div style="height:62px; min-height:62px; max-height:62px; overflow:hidden; margin-top:4px; text-align:center; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
                      '<div style="height:44px; min-height:44px; max-height:44px; line-height:44px; font-size:' + setpointFontSize + '; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointMainTxt + '</div>' +
                      '<div style="height:16px; min-height:16px; max-height:16px; line-height:16px; font-size:14px; font-weight:800; color:#9E9EA8; letter-spacing:0.12em; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointLabelTxt + '</div></div></div>' +
-                     '<button class="res-btn" ontouchstart="window._btnPress(this)" ontouchend="window._btnRelease(this);event.stopPropagation(); ' + callPlus + '" onmousedown="window._btnPress(this)" onmouseup="window._btnRelease(this);event.stopPropagation(); ' + callPlus + '"' +
+                     '<button class="res-btn" onclick="event.stopPropagation(); ' + callPlus + '" ontouchend="event.stopPropagation(); ' + callPlus + '" ontouchcancel="event.stopPropagation();"' +
                      ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
                      '<ha-icon icon="mdi:plus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button></div>' +
                      '<div style="display:flex; flex-direction:column; gap:14px; width:100%; flex-shrink:0; margin-top:6px;">' +
@@ -1910,6 +1919,9 @@ views:
       custom_fields:
         music_player_row: |
           [[[
+            if (window._ssIsVisible) {
+              return '<div style="display:flex; align-items:center; justify-content:center; width:100%; height:100%; pointer-events:none;"></div>';
+            }
             window._plexCache = window._plexCache || {};
 
             var isNight = states['sun.sun'] ? states['sun.sun'].state === 'below_horizon' : false;
@@ -1937,7 +1949,7 @@ views:
             var mainTitle = (rawTitle && rawTitle.trim() !== '') ? rawTitle : '';
             var mainSubtitle = ((s&&s.attributes&&s.attributes.media_artist)) ? s.attributes.media_artist : '';
 
-            if (!mainTitle && metaId) {
+            if (!mainTitle && metaId && !window._ssIsVisible && !window._ssIsDismissing) {
               if (window._plexCache[metaId]) {
                 mainTitle = window._plexCache[metaId].title;
                 mainSubtitle = window._plexCache[metaId].subtitle;
@@ -2070,17 +2082,17 @@ views:
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
                   <div style="display:flex; align-items:center; gap:20px;">
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
+                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                     
                     <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
+                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; "></ha-icon>
                     </div>
                     
                     <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
+                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                   </div>
@@ -2098,7 +2110,7 @@ views:
                 
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
                   <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:12px; pointer-events:auto;"
-                       ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); if(!window._hass){window._hass=window.hass||(document.querySelector('home-assistant')&&document.querySelector('home-assistant').hass);} if(window._hass){ window._hass.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
+                       ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
                     <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                   </div>
                   

@@ -184,7 +184,7 @@ s.attributes?.brightness ?? 0
 
 **Backdrop-filter quirk:** Elements with `backdrop-filter: blur()` create a GPU compositing layer on the Crestron WebView that **blocks touch events from bubbling to `document`**. If a full-screen overlay uses blur, bind touch/click handlers directly to the overlay element itself — never rely on `document.addEventListener('touchstart', ...)`.
 
-### 6.4 State Access: `states` vs `window.hass`
+### 6.4 State Access: `states` vs `window.hass` (`window._getHass()`)
 
 Two ways to access Home Assistant state in JS templates:
 
@@ -192,12 +192,15 @@ Two ways to access Home Assistant state in JS templates:
 // `states` — snapshot at template render time (static)
 var temp = states['climate.air_conditioner_office_climate'].attributes.current_temperature;
 
-// `window.hass` — live runtime object (for event handlers)
-var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
-h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 22 });
+// `window._getHass()` — live runtime object (for event handlers)
+// CRITICAL: NEVER cache `window._hass` globally! Always call window._getHass() dynamically at event time!
+var h = window._getHass();
+if (h) {
+  h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 22 });
+}
 ```
 
-Use `states` for rendering. Use `window.hass` (with fallback) for service calls in event handlers.
+Use `states` for rendering. Use `window._getHass()` for service calls in event handlers. Never save `window._hass = ...` on global window.
 
 ### 6.5 Card Reactivity: `triggers_update`
 

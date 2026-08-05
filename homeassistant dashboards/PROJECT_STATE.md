@@ -122,17 +122,18 @@ See `status_summary.md` for the troubleshooting history.
 5. **Screensaver too bright** — was semi-transparent white overlay. Fixed: nearly black background (`rgba(5,5,8,0.96)`) with dim text at 22-45% opacity.
 6. **Screensaver right column misaligned** — different icon sizes (42-60px) and text sizes (44-76px) made labels not line up. Fixed: uniform 42px icons, 44px values, 12px labels with consistent "CURRENT"/"TARGET"/"OUTDOOR" naming.
 
-### Changelog — Session 2026-08-04
+### Changelog — Session 2026-08-05
 
 | Change | Details |
 |--------|---------|
-| Screensaver timer | Changed from 5s (testing) to 30 minutes (production) |
-| Screensaver activation | Added missing document activity listeners + initial timer start |
-| Screensaver appearance | Dim overlay: `rgba(5,5,8,0.96)` background, subtle text (22-45% opacity) |
-| Screensaver alignment | Uniform 42px icons, 44px values, 12px labels across all right-column sections |
-| Screensaver weather label | Added "OUTDOOR" label; combined temp + condition in value display |
-| Screensaver version | Bumped to v20 |
-| Documentation | Added panel reload troubleshooting note to AGENTS.md §10 |
+| Live `hass` Resolution | Replaced stale `window._hass` caching with `window._getHass()` across all 22 button handlers |
+| Background Media Freeze | Added `window._ssIsVisible` guard to media bar template (drops 1s background re-renders to 0) |
+| MutationObserver Fix | Fixed bugged `_vpPending` logic; replaced with trailing-edge `setTimeout` debounce (2000ms) |
+| Wake-up Sequence | Added 500ms settling delay in `_ssHide()` before `pinViewport()` to prevent CPU thread locking |
+| Desktop Mouse Support | Added `onclick` alongside `ontouchend` on all HVAC buttons for 100% PC browser compatibility |
+| Instant Wakeup | Added `touchstart` listener directly to `#screensaver_overlay` for first-frame touch dismissal |
+| Screensaver Version | Bumped to v42 |
+
 ---
 
 ## Rules for This Project
@@ -141,6 +142,8 @@ See `status_summary.md` for the troubleshooting history.
 2. **Read AGENTS.md first.** It has all critical knowledge.
 3. **Reuse existing patterns.** Check `office_v6.yaml` before writing new code.
 4. **Use ES5 JavaScript in templates.** No `?.`, `??`, `const`, `let`, `async/await`, or arrow functions.
-5. **Use `ontouchend` only.** Never `onclick` on touch targets.
-6. **Always `event.stopPropagation()`.** Prevent parent card tap interference.
-7. **Test on physical panel.** Chrome screenshots ≠ Crestron WebView.
+5. **Use `window._getHass()` for service calls.** Never cache `window._hass` globally — always fetch fresh live `hass` reference.
+6. **Use `onclick` + `ontouchend` with debounce guards.** Ensure mouse and touch both work reliably without double execution.
+7. **Always `event.stopPropagation()`.** Prevent parent card tap interference.
+8. **Test on physical panel.** Chrome screenshots ≠ Crestron WebView.
+
