@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785905781
+  id: office_view_v6_clean_v6_88_1785906420
   badges: []
   type: panel
   cards:
@@ -355,7 +355,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 31) return;
+                  if (window._ssInitialized && window._ssVersion === 32) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var overlay;
@@ -365,8 +365,10 @@ views:
                   if (!window._ssTouchBound) {
                     window._ssTouchBound = true;
                   }
+                  var showTime = 0;
+                  var MIN_DISPLAY_MS = 5000; // Minimum time before dismiss allowed (filters phantom touches)
                   var dismissHandler = function() {
-                    if (isVisible) {
+                    if (isVisible && (Date.now() - showTime) >= MIN_DISPLAY_MS) {
                       isDismissing = true;
                       overlay.style.opacity = '0';
                       overlay.style.transition = 'opacity 0.4s ease';
@@ -377,10 +379,9 @@ views:
                         isVisible = false;
                         window._ssIsVisible = false;
                         isDismissing = false;
-                        window._ssInitialized = false;
                         idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                       }, 400);
-                    } else if (!isDismissing) {
+                    } else if (!isDismissing && !isVisible) {
                       clearTimeout(idleTimer);
                       idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }
@@ -413,7 +414,7 @@ views:
                       overlay.style.transition = 'opacity 0.6s ease';
                       overlay.style.opacity = '1';
                     });
-                    isVisible = true; window._ssIsVisible = true;
+                    showTime = Date.now(); isVisible = true; window._ssIsVisible = true;
                     updateTimer = setInterval(function() {
                       try { window._ssRender(); } catch(e) {}
                     }, 30000);
@@ -430,7 +431,6 @@ views:
                       isVisible = false;
                       window._ssIsVisible = false;
                       isDismissing = false;
-                      window._ssInitialized = false;
                     }, 400);
                   };
                   window._ssRender = function(st) {
@@ -588,8 +588,7 @@ views:
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
-                  document.body.appendChild(overlay);
-                  window._ssVersion = 31;
+                  window._ssVersion = 32;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep
