@@ -132,7 +132,9 @@ See `status_summary.md` for the troubleshooting history.
 | Wake-up Sequence | Added 500ms settling delay in `_ssHide()` before `pinViewport()` to prevent CPU thread locking |
 | Desktop Mouse Support | Added `onclick` alongside `ontouchend` on all HVAC buttons for 100% PC browser compatibility |
 | Instant Wakeup | Added `touchstart` listener directly to `#screensaver_overlay` for first-frame touch dismissal |
-| Screensaver Version | Bumped to v42 |
+| Thermostat Press Feedback (v44) | Implemented explicit `ontouchstart` scale (`0.92`) and opacity (`0.6`) press handlers on all thermostat buttons |
+| Unified Press Feedback (v45) | Applied identical `ontouchstart` scale and opacity press handlers across 100% of panel elements (Header Pills, Scenes, Lights, Media Controls) |
+| Active Dashboard Version | **v45** |
 
 ---
 
@@ -143,7 +145,9 @@ See `status_summary.md` for the troubleshooting history.
 3. **Reuse existing patterns.** Check `office_v6.yaml` before writing new code.
 4. **Use ES5 JavaScript in templates.** No `?.`, `??`, `const`, `let`, `async/await`, or arrow functions.
 5. **Use `window._getHass()` for service calls.** Never cache `window._hass` globally — always fetch fresh live `hass` reference.
-6. **Use `onclick` + `ontouchend` with debounce guards.** Ensure mouse and touch both work reliably without double execution.
-7. **Always `event.stopPropagation()`.** Prevent parent card tap interference.
-8. **Test on physical panel.** Chrome screenshots ≠ Crestron WebView.
+6. **Use `ontouchstart` for visual press feedback.** Android WebView bypasses `:active` CSS rules — use explicit `ontouchstart` scale/opacity handlers.
+7. **Use `onclick` + `ontouchend` with debounce guards.** Ensure mouse and touch both work reliably without double execution.
+8. **Always `event.stopPropagation()`.** Prevent parent card tap interference.
+9. **Test on physical panel.** Chrome screenshots ≠ Crestron WebView.
+
 

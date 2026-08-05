@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785968531
+  id: office_view_v6_clean_v6_88_1785973568
   badges: []
   type: panel
   cards:
@@ -239,8 +239,9 @@ views:
                       '  width: 100vw !important; height: 100vh !important;' +
                       '  max-height: 100vh !important; min-height: 100vh !important;' +
                       '  overflow: hidden !important; box-sizing: border-box !important;' +
-                      '}' +
-                      '.res-btn:active { background: rgba(255, 255, 255, 0.35) !important; transform: scale(0.95) !important; transition: none !important; }';
+                      '.res-btn { touch-action: manipulation !important; user-select: none !important; -webkit-user-select: none !important; -webkit-tap-highlight-color: transparent !important; will-change: transform !important; }' +
+                      '.res-btn:active { background: rgba(255, 255, 255, 0.35) !important; transform: scale(0.95) !important; transition: none !important; }' +
+                      ':host(:active) .card { transform: scale(0.97) !important; transition: none !important; }';
                     document.head.appendChild(style);
                   }
 
@@ -357,7 +358,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 42) return;
+                  if (window._ssInitialized && window._ssVersion === 45) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
@@ -602,7 +603,7 @@ views:
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
-                  window._ssVersion = 42;
+                  window._ssVersion = 45;
                   window._ssInitialized = true;
                 };
                 window._ssRunInit = _ssInit;
@@ -1235,12 +1236,12 @@ views:
 
                 return `
                   <div style="display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; pointer-events:auto;">
-                    <div style="font-size:38px; font-weight:800; color:${titleColor}; letter-spacing:-0.02em; line-height:1.1; text-align:left; cursor:pointer; touch-action:manipulation; padding:2px 8px 2px 2px; user-select:none; -webkit-user-select:none; pointer-events:auto;"
-                         ontouchend="event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));">Office</div>
+                    <div style="font-size:38px; font-weight:800; color:${titleColor}; letter-spacing:-0.02em; line-height:1.1; text-align:left; cursor:pointer; touch-action:manipulation; padding:2px 8px 2px 2px; user-select:none; -webkit-user-select:none; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                         ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); window.dispatchEvent(new CustomEvent('location-changed'));" ontouchcancel="this.style.transform='none'; this.style.opacity='1';">Office</div>
                     
                     <div style="display:flex; align-items:center; gap:8px; pointer-events:auto;">
-                      <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
-                           ontouchend="window.openWeatherPopup(event);">
+                      <div style="display:flex; align-items:center; gap:8px; background:${pillBg}; border:1.5px solid ${pillBorder}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                           ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; window.openWeatherPopup(event);" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="window.openWeatherPopup(event);">
                         <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
                           <ha-icon icon="${wIcon}" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A; display:flex; align-items:center; justify-content:center;"></ha-icon>
                           <span style="font-size:19px; font-weight:800; color:${metricText}; letter-spacing:-0.01em;">${wTemp}</span>
@@ -1257,8 +1258,8 @@ views:
                         </div>
                       </div>
 
-                      <div style="display:flex; align-items:center; gap:6px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto;"
-                           ontouchend="window.openBlueairPopup(event);">
+                      <div style="display:flex; align-items:center; gap:6px; background:${pillBg}; border:1.5px solid ${isNight ? 'rgba(48,209,88,0.4)' : 'rgba(0,0,0,0.08)'}; box-shadow:${pillShadow}; padding:6px 12px; border-radius:28px; cursor:pointer; touch-action:manipulation; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                           ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; window.openBlueairPopup(event);" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="window.openBlueairPopup(event);">
                         <div style="display:flex; align-items:center; gap:5px; pointer-events:none;">
                           <ha-icon icon="mdi:air-purifier" style="width:22px; height:22px; --mdc-icon-size:22px; color:${isFanOn ? '#30D158' : '#9E9EA8'}; display:flex; align-items:center; justify-content:center;"></ha-icon>
                           <span style="font-size:17px; font-weight:800; color:${metricText};">PM2.5 ${pm25Val}</span>
@@ -1300,7 +1301,7 @@ views:
             icon: mdi:weather-sunny
             card_mod:
               style: |
-                :host(:active) .card { background: rgba(255,255,255,0.15) !important; }
+                :host(:active) .card { background: rgba(255,255,255,0.15) !important; transform: scale(0.97) !important; transition: none !important; }
             styles:
               card:
               - background: '[[[ return (states["sun.sun"]&&states["sun.sun"].state) === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
@@ -1343,7 +1344,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', hvac_mode: 'cool', temperature: 21.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runDayPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation; transition:transform 0.05s ease, opacity 0.05s ease;" ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; window.runDayPreset(event);" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="window.runDayPreset(event);"></div>`;
                 ]]]
 
           # Scene 2: NIGHT
@@ -1353,7 +1354,7 @@ views:
             icon: mdi:theme-light-dark
             card_mod:
               style: |
-                :host(:active) .card { background: rgba(255,255,255,0.15) !important; }
+                :host(:active) .card { background: rgba(255,255,255,0.15) !important; transform: scale(0.97) !important; transition: none !important; }
             styles:
               card:
               - background: '[[[ return (states["sun.sun"]&&states["sun.sun"].state) === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
@@ -1396,7 +1397,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 21.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runNightPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation; transition:transform 0.05s ease, opacity 0.05s ease;" ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; window.runNightPreset(event);" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="window.runNightPreset(event);"></div>`;
                 ]]]
 
           # Scene 3: SLEEP
@@ -1404,6 +1405,9 @@ views:
             entity: climate.air_conditioner_office_climate
             name: SLEEP
             icon: mdi:moon-waning-crescent
+            card_mod:
+              style: |
+                :host(:active) .card { background: rgba(255,255,255,0.15) !important; transform: scale(0.97) !important; transition: none !important; }
             styles:
               card:
               - background: '[[[ return (states["sun.sun"]&&states["sun.sun"].state) === "below_horizon" ? "rgba(26, 26, 36, 0.95)" : "#FFFFFF"; ]]]'
@@ -1446,7 +1450,7 @@ views:
                       h.callService('climate', 'set_temperature', { entity_id: 'climate.air_conditioner_office_climate', temperature: 22.5 });
                     }
                   };
-                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation;" ontouchend="window.runSleepPreset(event);"></div>`;
+                  return `<div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; cursor:pointer; touch-action:manipulation; transition:transform 0.05s ease, opacity 0.05s ease;" ontouchstart="this.style.transform='scale(0.94)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; window.runSleepPreset(event);" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="window.runSleepPreset(event);"></div>`;
                 ]]]
 
         # --- DYNAMICALLY STRETCHED LIGHT CARDS ---
@@ -1467,7 +1471,7 @@ views:
             card_mod:
               style: |
                 :host { display: flex !important; flex-direction: column !important; }
-                :host(:active) .card { background: rgba(255,255,255,0.1) !important; }
+                :host(:active) .card { background: rgba(255,255,255,0.1) !important; transform: scale(0.98) !important; transition: none !important; }
                 ha-card { display: flex !important; flex-direction: column !important; }
             tap_action:
               action: toggle
@@ -1572,7 +1576,7 @@ views:
             card_mod:
               style: |
                 :host { display: flex !important; flex-direction: column !important; }
-                :host(:active) .card { background: rgba(255,255,255,0.1) !important; }
+                :host(:active) .card { background: rgba(255,255,255,0.1) !important; transform: scale(0.98) !important; transition: none !important; }
                 ha-card { display: flex !important; flex-direction: column !important; }
             tap_action:
               action: toggle
@@ -1644,8 +1648,8 @@ views:
                           
                           <span style="font-size:26px; font-weight:800; color:${titleColor}; letter-spacing:-0.01em; pointer-events:none;">${lName}</span>
                           
-                          <div style="width:40px; height:40px; border-radius:50%; background:${iconOffBg}; border:1px solid ${iconOffBorder}; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation;"
-                               ontouchend="event.stopPropagation(); this.dispatchEvent(new CustomEvent('hass-more-info', {detail: {entityId: 'light.nanoleaf_light_panels_51_c8_ca_2'}, bubbles: true, composed: true}));">
+                          <div style="width:40px; height:40px; border-radius:50%; background:${iconOffBg}; border:1px solid ${iconOffBorder}; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; transition:transform 0.05s ease, opacity 0.05s ease;"
+                               ontouchstart="this.style.transform='scale(0.85)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); this.dispatchEvent(new CustomEvent('hass-more-info', {detail: {entityId: 'light.nanoleaf_light_panels_51_c8_ca_2'}, bubbles: true, composed: true}));" ontouchcancel="this.style.transform='none'; this.style.opacity='1';">
                             <ha-icon icon="mdi:palette-outline" style="width:22px; height:22px; --mdc-icon-size:22px; color:#FF9F0A; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                           </div>
                         </div>
@@ -1819,8 +1823,8 @@ views:
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow1Html += '<button class="res-btn" onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '" ontouchcancel="event.stopPropagation();"' +
-                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+                modesRow1Html += '<button class="res-btn" ontouchstart="this.style.transform=\'scale(0.92)\'; this.style.opacity=\'0.6\';" ontouchend="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation(); ' + callMode + '" ontouchcancel="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation();" onclick="event.stopPropagation(); ' + callMode + '"' +
+                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none; transition:transform 0.05s ease, opacity 0.05s ease;">' + m.name + '</button>';
               });
 
               var modesRow2Html = '';
@@ -1831,8 +1835,8 @@ views:
                 var shadow = isSel ? ('0 4px 14px ' + m.color + '66') : 'none';
                 var txtColor = isSel ? '#FFFFFF' : mainTempColor;
                 var callMode = "if(window._modeDB) return; window._modeDB=true; setTimeout(function(){window._modeDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_hvac_mode',{entity_id:'climate.air_conditioner_office_climate', hvac_mode:'" + m.id + "'}); }";
-                modesRow2Html += '<button class="res-btn" onclick="event.stopPropagation(); ' + callMode + '" ontouchend="event.stopPropagation(); ' + callMode + '" ontouchcancel="event.stopPropagation();"' +
-                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + m.name + '</button>';
+                modesRow2Html += '<button class="res-btn" ontouchstart="this.style.transform=\'scale(0.92)\'; this.style.opacity=\'0.6\';" ontouchend="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation(); ' + callMode + '" ontouchcancel="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation();" onclick="event.stopPropagation(); ' + callMode + '"' +
+                                 ' style="height:64px; border-radius:18px; background:' + bg + '; border:' + border + '; box-shadow:' + shadow + '; color:' + txtColor + '; font-size:19px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none; transition:transform 0.05s ease, opacity 0.05s ease;">' + m.name + '</button>';
               });
 
               var fanRowHtml = '';
@@ -1842,16 +1846,16 @@ views:
                 var border = isSel ? (isNight ? '1px solid #FFFFFF' : '1px solid #1C1C1E') : btnBorder;
                 var txtColor = isSel ? '#FFFFFF' : (isNight ? '#9E9EA8' : '#6E6E73');
                 var callFan = "if(window._fanDB) return; window._fanDB=true; setTimeout(function(){window._fanDB=false;},120); var h=window._getHass(); if(h){ h.callService('climate','set_fan_mode',{entity_id:'climate.air_conditioner_office_climate', fan_mode:'" + sp.id + "'}); }";
-                fanRowHtml += '<button class="res-btn" onclick="event.stopPropagation(); ' + callFan + '" ontouchend="event.stopPropagation(); ' + callFan + '" ontouchcancel="event.stopPropagation();"' +
-                              ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none;">' + sp.name + '</button>';
+                fanRowHtml += '<button class="res-btn" ontouchstart="this.style.transform=\'scale(0.92)\'; this.style.opacity=\'0.6\';" ontouchend="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation(); ' + callFan + '" ontouchcancel="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation();" onclick="event.stopPropagation(); ' + callFan + '"' +
+                              ' style="height:58px; border-radius:16px; background:' + bg + '; border:' + border + '; color:' + txtColor + '; font-size:17px; font-weight:800; cursor:pointer; touch-action:manipulation; outline:none; transition:transform 0.05s ease, opacity 0.05s ease;">' + sp.name + '</button>';
               });
 
               var pipSvg = (!isDisabled) ? ('<circle cx="' + pipX + '" cy="' + pipY + '" r="7" fill="#FFFFFF" stroke="' + act.color + '" stroke-width="3" style="transition: all 0.5s ease; filter: drop-shadow(0 0 6px ' + act.color + ');" />') : '';
 
               return '<div id="hvac_panel" style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; box-sizing:border-box; pointer-events:auto;">' +
                      '<div style="display:flex; align-items:flex-start; justify-content:space-between; width:100%; height:275px; min-height:275px; max-height:275px; flex-shrink:0;">' +
-                     '<button class="res-btn" onclick="event.stopPropagation(); ' + callMinus + '" ontouchend="event.stopPropagation(); ' + callMinus + '" ontouchcancel="event.stopPropagation();"' +
-                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     '<button class="res-btn" ontouchstart="this.style.transform=\'scale(0.92)\'; this.style.opacity=\'0.6\';" ontouchend="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation(); ' + callMinus + '" ontouchcancel="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation();" onclick="event.stopPropagation(); ' + callMinus + '"' +
+                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0; transition:transform 0.05s ease, opacity 0.05s ease;">' +
                      '<ha-icon icon="mdi:minus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button>' +
                      '<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-start; flex:1; height:275px; min-height:275px; max-height:275px; overflow:hidden;">' +
                      '<div style="position:relative; width:205px; height:205px; min-height:205px; max-height:205px; display:flex; align-items:center; justify-content:center; margin:0 auto; flex-shrink:0;">' +
@@ -1869,8 +1873,8 @@ views:
                      '<div style="height:62px; min-height:62px; max-height:62px; overflow:hidden; margin-top:4px; text-align:center; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0;">' +
                      '<div style="height:44px; min-height:44px; max-height:44px; line-height:44px; font-size:' + setpointFontSize + '; font-weight:800; color:' + mainTempColor + '; font-variant-numeric:tabular-nums; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointMainTxt + '</div>' +
                      '<div style="height:16px; min-height:16px; max-height:16px; line-height:16px; font-size:14px; font-weight:800; color:#9E9EA8; letter-spacing:0.12em; text-align:center; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">' + setpointLabelTxt + '</div></div></div>' +
-                     '<button class="res-btn" onclick="event.stopPropagation(); ' + callPlus + '" ontouchend="event.stopPropagation(); ' + callPlus + '" ontouchcancel="event.stopPropagation();"' +
-                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0;">' +
+                     '<button class="res-btn" ontouchstart="this.style.transform=\'scale(0.92)\'; this.style.opacity=\'0.6\';" ontouchend="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation(); ' + callPlus + '" ontouchcancel="this.style.transform=\'none\'; this.style.opacity=\'1\'; event.stopPropagation();" onclick="event.stopPropagation(); ' + callPlus + '"' +
+                     ' style="width:72px; height:245px; border-radius:24px; background:' + pillBg + '; border:' + pillBorder + '; display:flex; align-items:center; justify-content:center; cursor:pointer; touch-action:manipulation; outline:none; opacity:' + (isDisabled ? '0.3' : '1.0') + '; pointer-events:' + (isDisabled ? 'none' : 'auto') + '; flex-shrink:0; transition:transform 0.05s ease, opacity 0.05s ease;">' +
                      '<ha-icon icon="mdi:plus" style="width:44px; height:44px; --mdc-icon-size:44px; color:' + mainTempColor + '; pointer-events:none;"></ha-icon></button></div>' +
                      '<div style="display:flex; flex-direction:column; gap:14px; width:100%; flex-shrink:0; margin-top:6px;">' +
                      '<div style="font-size:14px; font-weight:800; color:' + titleColor + '; letter-spacing:0.12em; text-align:left; text-transform:uppercase;">SYSTEM MODE</div>' +
@@ -2081,18 +2085,18 @@ views:
                 
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; flex:1.5;">
                   <div style="display:flex; align-items:center; gap:20px;">
-                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
+                    <div class="res-btn" style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                         ontouchstart="this.style.transform='scale(0.88)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="event.stopPropagation(); if(window._mpDB) return; window._mpDB=true; setTimeout(function(){window._mpDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_previous_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-previous" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                     
-                    <div style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
+                    <div class="res-btn" style="width:48px; height:48px; border-radius:50%; background:${playBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.25); touch-action:manipulation; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                         ontouchstart="this.style.transform='scale(0.88)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="event.stopPropagation(); if(window._ppDB) return; window._ppDB=true; setTimeout(function(){window._ppDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_play_pause', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="${isPlaying ? 'mdi:pause' : 'mdi:play'}" style="width:26px; height:26px; --mdc-icon-size:26px; color:${playIcon}; display:flex; align-items:center; justify-content:center; pointer-events:none; "></ha-icon>
                     </div>
                     
-                    <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto;"
-                         ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
+                    <div class="res-btn" style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:10px; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                         ontouchstart="this.style.transform='scale(0.88)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="event.stopPropagation(); if(window._mnDB) return; window._mnDB=true; setTimeout(function(){window._mnDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'media_next_track', {entity_id: '${entityId}'}); }">
                       <ha-icon icon="mdi:skip-next" style="width:28px; height:28px; --mdc-icon-size:28px; color:${iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                     </div>
                   </div>
@@ -2109,8 +2113,8 @@ views:
                 </div>
                 
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; flex:1.1;">
-                  <div style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:12px; pointer-events:auto;"
-                       ontouchstart="window._mpPress(this)" ontouchend="window._mpRelease(this);event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
+                  <div class="res-btn" style="cursor:pointer; touch-action:manipulation; display:flex; align-items:center; padding:12px; pointer-events:auto; transition:transform 0.05s ease, opacity 0.05s ease;"
+                       ontouchstart="this.style.transform='scale(0.88)'; this.style.opacity='0.6';" ontouchend="this.style.transform='none'; this.style.opacity='1'; event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }" ontouchcancel="this.style.transform='none'; this.style.opacity='1';" onclick="event.stopPropagation(); if(window._muteDB) return; window._muteDB=true; setTimeout(function(){window._muteDB=false;},200); var h=window._getHass(); if(h){ h.callService('media_player', 'volume_mute', {entity_id: '${entityId}', is_volume_muted: ${!isMuted}}); }">
                     <ha-icon icon="${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}" style="width:24px; height:24px; --mdc-icon-size:24px; color:${isMuted ? '#FF3366' : iconColor}; display:flex; align-items:center; justify-content:center; pointer-events:none;"></ha-icon>
                   </div>
                   
