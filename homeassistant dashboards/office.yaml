@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785905767
+  id: office_view_v6_clean_v6_88_1785905781
   badges: []
   type: panel
   cards:
@@ -355,7 +355,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 30) return;
+                  if (window._ssInitialized && window._ssVersion === 31) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var overlay;
@@ -499,6 +499,8 @@ views:
                   overlay = document.createElement('div');
                   overlay.id = 'screensaver_overlay';
                   overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:100000; box-sizing:border-box; align-items:center; justify-content:center; flex-direction:row; will-change:opacity; transform:translateZ(0); -webkit-tap-highlight-color:transparent; cursor:pointer;';
+                  overlay.addEventListener('touchstart', function(e) { e.stopPropagation(); dismissHandler(); }, { passive: true });
+                  overlay.addEventListener('mousedown', function(e) { e.stopPropagation(); dismissHandler(); });
 
                   // Left column - time + date (centered on left half)
                   var leftCol = document.createElement('div');
@@ -587,7 +589,7 @@ views:
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
                   document.body.appendChild(overlay);
-                  window._ssVersion = 30;
+                  window._ssVersion = 31;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep
