@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785906420
+  id: office_view_v6_clean_v6_88_1785909781
   badges: []
   type: panel
   cards:
@@ -355,54 +355,22 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 32) return;
+                  if (window._ssInitialized && window._ssVersion === 39) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
-                  var overlay;
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
-                  var idleTimer, updateTimer, isVisible = false, isDismissing = false;
                   var IDLE_MS = 300000; // 5 minutes
-                  if (!window._ssTouchBound) {
-                    window._ssTouchBound = true;
-                  }
-                  var showTime = 0;
-                  var MIN_DISPLAY_MS = 5000; // Minimum time before dismiss allowed (filters phantom touches)
-                  var dismissHandler = function() {
-                    if (isVisible && (Date.now() - showTime) >= MIN_DISPLAY_MS) {
-                      isDismissing = true;
-                      overlay.style.opacity = '0';
-                      overlay.style.transition = 'opacity 0.4s ease';
-                      clearInterval(updateTimer);
-                      updateTimer = null;
-                      setTimeout(function() {
-                        overlay.style.display = 'none';
-                        isVisible = false;
-                        window._ssIsVisible = false;
-                        isDismissing = false;
-                        idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
-                      }, 400);
-                    } else if (!isDismissing && !isVisible) {
-                      clearTimeout(idleTimer);
-                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
-                    }
-                  };
-                  window._ssDismissHandler = dismissHandler;
-                  // Touch listener on document to reset idle timer (only when screensaver is NOT visible)
-                  var activityHandler = function() {
-                    if (!isVisible && !isDismissing) {
-                      clearTimeout(idleTimer);
-                      idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
-                    }
-                  };
-                  if (!window._ssDocBound) {
-                    window._ssDocBound = true;
-                    document.addEventListener('touchstart', activityHandler, { passive: true });
-                    document.addEventListener('mousedown', activityHandler);
-                  }
-                  // Start initial idle timer immediately
-                  idleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+
+                  window._ssIsVisible = false;
+                  window._ssIsDismissing = false;
+                  window._ssShowTime = 0;
+
                   window._ssShow = function() {
-                    if (!overlay || popupOpen() || isDismissing) return;
+                    if (window._ssIsVisible || window._ssIsDismissing || popupOpen()) return;
+                    var overlay = document.getElementById('screensaver_overlay');
+                    if (!overlay) return;
+                    window._ssIsVisible = true;
+                    window._ssShowTime = Date.now();
                     var h = window.hass || (document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
                     var st = h ? h.states : states;
                     window._ssRender(st);
@@ -414,25 +382,58 @@ views:
                       overlay.style.transition = 'opacity 0.6s ease';
                       overlay.style.opacity = '1';
                     });
-                    showTime = Date.now(); isVisible = true; window._ssIsVisible = true;
-                    updateTimer = setInterval(function() {
+                    if (window._ssUpdateTimer) clearInterval(window._ssUpdateTimer);
+                    window._ssUpdateTimer = setInterval(function() {
                       try { window._ssRender(); } catch(e) {}
                     }, 30000);
                   };
+
                   window._ssHide = function() {
-                    if (!isVisible) return;
-                    isDismissing = true;
-                    overlay.style.opacity = '0';
-                    overlay.style.transition = 'opacity 0.4s ease';
-                    clearInterval(updateTimer);
-                    updateTimer = null;
+                    if (!window._ssIsVisible || window._ssIsDismissing) return;
+                    window._ssIsDismissing = true;
+                    var overlay = document.getElementById('screensaver_overlay');
+                    if (overlay) {
+                      overlay.style.opacity = '0';
+                      overlay.style.transition = 'opacity 0.4s ease';
+                    }
+                    if (window._ssUpdateTimer) { clearInterval(window._ssUpdateTimer); window._ssUpdateTimer = null; }
                     setTimeout(function() {
-                      overlay.style.display = 'none';
-                      isVisible = false;
+                      if (overlay) overlay.style.display = 'none';
                       window._ssIsVisible = false;
-                      isDismissing = false;
+                      window._ssIsDismissing = false;
+                      if (window._ssIdleTimer) clearTimeout(window._ssIdleTimer);
+                      window._ssIdleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                     }, 400);
                   };
+
+                  var dismissHandler = function(e) {
+                    // Ignore dismissal if less than 1.5s since screensaver appeared (filters synthetic layout/mutation events)
+                    if (window._ssShowTime && (Date.now() - window._ssShowTime < 1500)) return;
+                    if (e) {
+                      try { if (e.cancelable) e.preventDefault(); } catch(err) {}
+                      try { e.stopPropagation(); } catch(err) {}
+                    }
+                    window._ssHide();
+                  };
+                  window._ssDismissHandler = dismissHandler;
+
+                  // Activity listener on document to reset idle timer (only when screensaver is NOT visible)
+                  var activityHandler = function(e) {
+                    if (!window._ssIsVisible && !window._ssIsDismissing) {
+                      if (window._ssIdleTimer) clearTimeout(window._ssIdleTimer);
+                      window._ssIdleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
+                    }
+                  };
+
+                  if (!window._ssDocBound) {
+                    window._ssDocBound = true;
+                    document.addEventListener('touchend', activityHandler, { passive: true });
+                    document.addEventListener('mouseup', activityHandler);
+                  }
+
+                  // Start initial idle timer immediately
+                  if (window._ssIdleTimer) clearTimeout(window._ssIdleTimer);
+                  window._ssIdleTimer = setTimeout(function() { if (!popupOpen()) window._ssShow(); }, IDLE_MS);
                   window._ssRender = function(st) {
                     var now = new Date();
                     var hours = now.getHours();
@@ -469,6 +470,7 @@ views:
                     if (cachedEl.weatherCond) cachedEl.weatherCond.textContent = 'OUTDOOR';
                   };
                   window._ssUpdateTheme = function() {
+                    var overlay = document.getElementById('screensaver_overlay');
                     if (!overlay) return;
                     // Dim screensaver - nearly black background, subtle text
                     overlay.style.background = 'rgba(5, 5, 8, 0.96)';
@@ -496,15 +498,15 @@ views:
 
                   var oldOverlay = document.getElementById('screensaver_overlay');
                   if (oldOverlay) oldOverlay.remove();
-                  overlay = document.createElement('div');
+                  var overlay = document.createElement('div');
                   overlay.id = 'screensaver_overlay';
                   overlay.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:100000; box-sizing:border-box; align-items:center; justify-content:center; flex-direction:row; will-change:opacity; transform:translateZ(0); -webkit-tap-highlight-color:transparent; cursor:pointer;';
-                  overlay.addEventListener('touchstart', function(e) { e.stopPropagation(); dismissHandler(); }, { passive: true });
-                  overlay.addEventListener('mousedown', function(e) { e.stopPropagation(); dismissHandler(); });
+                  overlay.addEventListener('touchend', dismissHandler, { passive: true });
+                  overlay.addEventListener('mouseup', dismissHandler);
 
                   // Left column - time + date (centered on left half)
                   var leftCol = document.createElement('div');
-                  leftCol.style.cssText = 'position:absolute; left:0; width:50%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; padding-right:20px;';
+                  leftCol.style.cssText = 'position:absolute; left:0; width:50%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; padding-right:20px; pointer-events:none;';
 
                   timeDiv = document.createElement('div');
                   timeDiv.id = 'screensaver_time';
@@ -520,7 +522,7 @@ views:
 
                   // Right column - climate + weather data (centered on right half)
                   var rightCol = document.createElement('div');
-                  rightCol.style.cssText = 'position:absolute; right:0; width:50%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding-left:60px; box-sizing:border-box; gap:32px;';
+                  rightCol.style.cssText = 'position:absolute; right:0; width:50%; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding-left:60px; box-sizing:border-box; gap:32px; pointer-events:none;';
 
                   // 1. Current Temperature Section
                   var curTempSection = document.createElement('div');
@@ -583,12 +585,14 @@ views:
                   weatherSection.appendChild(weatherStack);
                   rightCol.appendChild(weatherSection);
                   overlay.appendChild(rightCol);
+                  document.body.appendChild(overlay);
                   var cachedEl = {
                     time: timeDiv, date: dateDiv,
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
-                  window._ssVersion = 32;
+                  window._ssVersion = 39;
+                  window._ssInitialized = true;
                 };
                 window._ssRunInit = _ssInit;
                 // Re-initialize screensaver after panel wakes from hardware sleep

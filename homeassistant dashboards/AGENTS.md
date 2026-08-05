@@ -280,15 +280,23 @@ When pushing YAML via WebSocket, `ensure_ascii=False` in JSON serialization is r
 
 Full-screen overlays appended to `document.body` have specific requirements on the Crestron WebView:
 
-**Touch handlers:** Bind `touchstart` and `mousedown` directly to the overlay element, not `document`. `backdrop-filter: blur()` blocks event bubbling (§6.3).
+**Touch and Mouse handlers:** Bind `touchend` and `mouseup` directly to the overlay element. **NEVER use `onclick`, `touchstart`, or `mousedown` for dismiss handlers.** 
+- Crestron's native app wrapper dispatches physical touches with `event.isTrusted === false` — **NEVER filter on `event.isTrusted`**.
+- Chromium WebView dispatches synthetic `click` events on DOM text updates (e.g. clock minute changes). Listening to `touchend` and `mouseup` prevents synthetic clock ticks from auto-dismissing the screensaver.
+- Add a 1.5-second showTime guard (`if (window._ssShowTime && Date.now() - window._ssShowTime < 1500) return;`) to filter layout/render mutation events when the overlay first appears.
+- Set `pointer-events: none` on inner text/icon column wrappers (`leftCol` and `rightCol`) so clicks or taps anywhere on the screen land directly on `overlay`.
 
-**Timers:** Use `setInterval` for periodic updates — recursive `setTimeout(arguments.callee, N)` dies unpredictably on the WebView. Always `clearInterval` on hide/dismiss.
+**Global Window State:** Store all state flags on `window` (`window._ssIsVisible`, `window._ssIsDismissing`, `window._ssIdleTimer`, `window._ssUpdateTimer`) rather than closure-scoped variables to ensure document-level activity listeners and overlay dismiss handlers share identical state.
+
+**MutationObserver Isolation:** Filter out mutations inside `#screensaver_overlay` in the global `MutationObserver` callback to prevent continuous layout thrashing and main-thread starvation.
+
+**Timers:** Use `setInterval` (30s) for periodic updates. Always `clearInterval` and set timer handles to `null` on hide/dismiss.
 
 **State access:** For periodic updates, always grab fresh state from `window.hass` inside the render function. Capturing `states` in a closure at init time freezes the data.
 
 **Version guard:** Use `window._ssInitialized` + `window._ssVersion` to prevent duplicate initialization. Bump the version number on every code change to force re-initialization.
 
-**Sleep wake recovery:** Listen for `visibilitychange` to tear down and reinitialize the overlay after panel hardware sleep. Clear all flags, remove the overlay element, then reinitialize after a 500ms delay (gives WebView time to stabilize).
+**Sleep wake recovery:** Listen for `visibilitychange` to handle wake cycles. If already initialized (`window._ssInitialized`), ignore spurious visibility events.
 
 **Popup awareness:** Check for open popups before showing. Existing popup IDs: `custom_mitsubishi_popup_overlay`, `custom_weather_popup_overlay`, `custom_blueair_popup_overlay`.
 
