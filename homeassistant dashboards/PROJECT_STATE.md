@@ -134,7 +134,8 @@ See `status_summary.md` for the troubleshooting history.
 | Instant Wakeup | Added `touchstart` listener directly to `#screensaver_overlay` for first-frame touch dismissal |
 | Thermostat Press Feedback (v44) | Implemented explicit `ontouchstart` scale (`0.92`) and opacity (`0.6`) press handlers on all thermostat buttons |
 | Unified Press Feedback (v45) | Applied identical `ontouchstart` scale and opacity press handlers across 100% of panel elements (Header Pills, Scenes, Lights, Media Controls) |
-| Active Dashboard Version | **v45** |
+| Expanded Modal Windows (v46) | Expanded Weather (`940px`), Mitsubishi AC (`900px`), and Blueair Air Purifier (`860px`) popup modals for full-screen spaciousness |
+| Active Dashboard Version | **v46** |
 
 ---
 

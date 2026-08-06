@@ -8,7 +8,7 @@ title: Office Panel
 views:
 - title: Office
   path: office-panel
-  id: office_view_v6_clean_v6_88_1785973568
+  id: office_view_v6_clean_v6_88_1785975657
   badges: []
   type: panel
   cards:
@@ -358,7 +358,7 @@ views:
 
                 // Screensaver Overlay - Two-Column Layout matching screensaver_mockup.png
                 var _ssInit = function() {
-                  if (window._ssInitialized && window._ssVersion === 45) return;
+                  if (window._ssInitialized && window._ssVersion === 46) return;
                   var popupIds = ['custom_mitsubishi_popup_overlay', 'custom_weather_popup_overlay', 'custom_blueair_popup_overlay'];
                   var popupOpen = function() { for (var i = 0; i < popupIds.length; i++) { var el = document.getElementById(popupIds[i]); if (el && el.style.display !== 'none') return true; } return false; };
                   var timeDiv, dateDiv, curTempIcon, curTempLabel, curTempDiv, setpointIcon, setpointLabel, setpointDiv, weatherIconDiv, weatherTempDiv, weatherCondDiv;
@@ -603,7 +603,7 @@ views:
                     curTemp: curTempDiv, setpoint: setpointDiv,
                     weatherIcon: weatherIconDiv, weatherTemp: weatherTempDiv, weatherCond: weatherCondDiv
                   };
-                  window._ssVersion = 45;
+                  window._ssVersion = 46;
                   window._ssInitialized = true;
                 };
                 window._ssRunInit = _ssInit;
@@ -750,35 +750,35 @@ views:
                   };
 
                   modal.innerHTML = `
-                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:640px; padding:26px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:900px; padding:24px 30px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
                       <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                          <ha-icon icon="mdi:hvac" style="width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF;"></ha-icon>
+                        <div style="display:flex; align-items:center; gap:14px;">
+                          <ha-icon icon="mdi:hvac" style="width:36px; height:36px; --mdc-icon-size:36px; color:#00B0DF;"></ha-icon>
                           <div>
-                            <span style="font-size:24px; font-weight:800;">Mitsubishi AC System Controls</span>
+                            <span style="font-size:26px; font-weight:800;">Mitsubishi AC System Controls</span>
                             <div style="font-size:14px; font-weight:700; color:${subColor};">Live Real-Time Compressor & Sensor Diagnostics</div>
                           </div>
                         </div>
-                        <div id="close_mitsubishi_modal_btn" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                        <div id="close_mitsubishi_modal_btn" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:20px; color:${subColor};">✕</div>
                       </div>
 
-                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:16px; display:grid; grid-template-columns: 1.1fr 0.9fr 1fr; gap:10px; text-align:center;">
-                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
-                          <div style="font-size:15px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOM TEMP</div>
-                          <div id="pop_room_temp_val" style="font-size:26px; font-weight:800; color:${textColor}; margin-top:2px;">${d.curTemp}</div>
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:16px 20px; display:grid; grid-template-columns: 1.1fr 0.9fr 1fr; gap:14px; text-align:center;">
+                        <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOM TEMP</div>
+                          <div id="pop_room_temp_val" style="font-size:30px; font-weight:800; color:${textColor}; margin-top:2px;">${d.curTemp}</div>
                           <div id="pop_hvac_action_val" style="font-size:14px; font-weight:800; color:#00B0DF; margin-top:2px; letter-spacing:0.02em;">${d.hvacActionLabel}</div>
                         </div>
                         
-                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
-                          <div style="font-size:15px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">SYSTEM POWER</div>
-                          <div id="pop_power_val" style="font-size:26px; font-weight:800; color:#FF9F0A; margin-top:2px;">${d.powerVal}</div>
-                          <div style="font-size:15px; font-weight:700; color:${subColor}; margin-top:2px;">Compressor Usage</div>
+                        <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">SYSTEM POWER</div>
+                          <div id="pop_power_val" style="font-size:30px; font-weight:800; color:#FF9F0A; margin-top:2px;">${d.powerVal}</div>
+                          <div style="font-size:14px; font-weight:700; color:${subColor}; margin-top:2px;">Compressor Usage</div>
                         </div>
 
-                        <div style="background:${itemBg}; padding:14px; border-radius:16px; border:1px solid ${borderColor};">
-                          <div style="font-size:15px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
-                          <div id="pop_roof_temp_val" style="font-size:26px; font-weight:800; color:${textColor}; margin-top:2px;">${d.outdoorVal}</div>
-                          <div style="font-size:15px; font-weight:700; color:${subColor}; margin-top:2px;">Outdoor Unit</div>
+                        <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                          <div style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
+                          <div id="pop_roof_temp_val" style="font-size:30px; font-weight:800; color:${textColor}; margin-top:2px;">${d.outdoorVal}</div>
+                          <div style="font-size:14px; font-weight:700; color:${subColor}; margin-top:2px;">Outdoor Unit</div>
                         </div>
                       </div>
 
@@ -787,40 +787,40 @@ views:
                           <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">VENT DIRECTION / VANE POSITION</span>
                           <span id="pop_vane_pos_title" style="font-size:14px; font-weight:800; color:#00B0DF;">CURRENT: ${d.vanePos}</span>
                         </div>
-                        <div id="pop_vane_buttons_grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;">
+                        <div id="pop_vane_buttons_grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:8px;">
                           ${renderVaneButtons(d.vanePos)}
                         </div>
                       </div>
 
                       <div style="display:flex; flex-direction:column; gap:8px;">
                         <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">SYSTEM HVAC MODE</span>
-                        <div id="pop_mode_buttons_grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:6px;">
+                        <div id="pop_mode_buttons_grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:8px;">
                           ${renderModeButtons(d.curState)}
                         </div>
                       </div>
 
                       <div style="display:flex; flex-direction:column; gap:8px;">
                         <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">FAN SPEED CONTROL</span>
-                        <div id="pop_speed_buttons_grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px;">
+                        <div id="pop_speed_buttons_grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
                           ${renderSpeedButtons(d.fanMode)}
                         </div>
                       </div>
 
-                      <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:10px;">
-                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px; display:flex; align-items:center; gap:12px;">
-                          <ha-icon icon="mdi:eye-outline" style="width:28px; height:28px; --mdc-icon-size:28px; color:${d.iseeDetected ? '#30D158' : '#00B0DF'}; flex-shrink:0;"></ha-icon>
+                      <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:12px;">
+                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:14px;">
+                          <ha-icon icon="mdi:eye-outline" style="width:30px; height:30px; --mdc-icon-size:30px; color:${d.iseeDetected ? '#30D158' : '#00B0DF'}; flex-shrink:0;"></ha-icon>
                           <div>
-                            <div style="font-size:15px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">3D i-SEE OCCUPANCY SENSOR</div>
-                            <div id="pop_isee_status_txt" style="font-size:14px; font-weight:800; color:${d.iseeDetected ? '#30D158' : textColor}; margin-top:2px;">
+                            <div style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">3D i-SEE OCCUPANCY SENSOR</div>
+                            <div id="pop_isee_status_txt" style="font-size:15px; font-weight:800; color:${d.iseeDetected ? '#30D158' : textColor}; margin-top:2px;">
                               ${d.iseeDetected ? 'OCCUPANCY DETECTED' : 'CLEAR (NO MOTION DETECTED)'}
                             </div>
-                            <div style="font-size:14px; font-weight:700; color:${subColor}; margin-top:2px;">Direct/Indirect modes are managed by remote / AC hardware</div>
+                            <div style="font-size:13px; font-weight:700; color:${subColor}; margin-top:2px;">Direct/Indirect modes are managed by remote / AC hardware</div>
                           </div>
                         </div>
 
                         <button ontouchstart="this.style.opacity='0.4';" ontouchend="this.style.opacity='1';(function(){var h=window._getHass(); return h&&h.callService;})()('switch','toggle',{entity_id:'switch.air_conditioner_office_night_mode'}); setTimeout(window.updateMitsubishiPopupLive, 300);"
-                                style="padding:14px; border-radius:16px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; touch-action:manipulation;">
-                          <ha-icon icon="mdi:weather-night" style="width:22px; height:22px; --mdc-icon-size:22px; color:${d.nightState ? '#FF9F0A' : subColor};"></ha-icon>
+                                style="padding:14px; border-radius:16px; border:1px solid ${borderColor}; background:${cardBg}; color:${textColor}; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; touch-action:manipulation;">
+                          <ha-icon icon="mdi:weather-night" style="width:24px; height:24px; --mdc-icon-size:24px; color:${d.nightState ? '#FF9F0A' : subColor};"></ha-icon>
                           Night Mode: ${d.nightState ? 'ON' : 'OFF'}
                         </button>
                       </div>
@@ -911,107 +911,107 @@ views:
                   modal.ontouchend = function(ev) { if (ev.target === modal) modal.remove(); };
 
                   modal.innerHTML = `
-                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:680px; padding:24px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:940px; padding:24px 30px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
                       <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                          <ha-icon icon="${wIcon}" style="width:32px; height:32px; --mdc-icon-size:32px; color:#FF9F0A;"></ha-icon>
+                        <div style="display:flex; align-items:center; gap:14px;">
+                          <ha-icon icon="${wIcon}" style="width:36px; height:36px; --mdc-icon-size:36px; color:#FF9F0A;"></ha-icon>
                           <div>
-                            <span style="font-size:22px; font-weight:800;">Outdoor Weather & Roof Sensor</span>
+                            <span style="font-size:26px; font-weight:800;">Outdoor Weather & Roof Sensor</span>
                             <div style="font-size:14px; font-weight:700; color:${subColor};">Met.no Live Forecast</div>
                           </div>
                         </div>
-                        <div ontouchend="document.getElementById('${modalId}').remove();" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                        <div ontouchend="document.getElementById('${modalId}').remove();" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:20px; color:${subColor};">✕</div>
                       </div>
 
-                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:22px; padding:18px; display:flex; align-items:center; justify-content:space-between;">
-                        <div style="display:flex; align-items:center; gap:16px;">
-                          <ha-icon icon="${wIcon}" style="width:52px; height:52px; --mdc-icon-size:52px; color:#FF9F0A;"></ha-icon>
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:22px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="display:flex; align-items:center; gap:20px;">
+                          <ha-icon icon="${wIcon}" style="width:58px; height:58px; --mdc-icon-size:58px; color:#FF9F0A;"></ha-icon>
                           <div>
-                            <div style="font-size:36px; font-weight:800; line-height:1; color:${textColor};">${wTemp}</div>
-                            <div style="font-size:14px; font-weight:800; color:#FF9F0A; letter-spacing:0.06em; margin-top:4px;">${condText}</div>
+                            <div style="font-size:42px; font-weight:800; line-height:1; color:${textColor};">${wTemp}</div>
+                            <div style="font-size:15px; font-weight:800; color:#FF9F0A; letter-spacing:0.06em; margin-top:4px;">${condText}</div>
                           </div>
                         </div>
 
-                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:18px; padding:12px 18px; display:flex; align-items:center; gap:12px;">
-                          <ha-icon icon="mdi:home-roof" style="width:32px; height:32px; --mdc-icon-size:32px; color:#00B0DF;"></ha-icon>
+                        <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:18px; padding:14px 22px; display:flex; align-items:center; gap:14px;">
+                          <ha-icon icon="mdi:home-roof" style="width:36px; height:36px; --mdc-icon-size:36px; color:#00B0DF;"></ha-icon>
                           <div>
-                            <div style="font-size:15px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
-                            <div style="font-size:22px; font-weight:800; color:${textColor}; margin-top:2px;">${outT}</div>
+                            <div style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.04em;">ROOF CONDENSER</div>
+                            <div style="font-size:26px; font-weight:800; color:${textColor}; margin-top:2px;">${outT}</div>
                           </div>
                         </div>
                       </div>
 
                       <div style="display:flex; flex-direction:column; gap:8px;">
                         <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">5-DAY WEATHER FORECAST</span>
-                        <div id="weather_forecast_grid" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
-                          <div style="background:${cardBg}; padding:14px; border-radius:16px; text-align:center; font-size:14px; font-weight:700; color:${subColor}; grid-column: span 5;">Loading 5-day forecast...</div>
+                        <div id="weather_forecast_grid" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px;">
+                          <div style="background:${cardBg}; padding:16px; border-radius:16px; text-align:center; font-size:15px; font-weight:700; color:${subColor}; grid-column: span 5;">Loading 5-day forecast...</div>
                         </div>
                       </div>
 
                       <div style="display:flex; flex-direction:column; gap:8px;">
                         <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.08em;">ATMOSPHERIC & DAYLIGHT METRICS</span>
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px;">
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:water-percent" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:water-percent" style="width:26px; height:26px; --mdc-icon-size:26px; color:#00B0DF;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">HUMIDITY</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${hum}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">HUMIDITY</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${hum}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:weather-windy" style="width:24px; height:24px; --mdc-icon-size:24px; color:#30D158;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:weather-windy" style="width:26px; height:26px; --mdc-icon-size:26px; color:#30D158;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">WIND</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${windSpd}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">WIND</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${windSpd}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:gauge" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:gauge" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF9F0A;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">PRESSURE</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${pressure}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">PRESSURE</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${pressure}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:sun-wireless" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:sun-wireless" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF9F0A;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">UV INDEX</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${uv}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">UV INDEX</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${uv}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:weather-sunset-up" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF9F0A;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:weather-sunset-up" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF9F0A;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">SUNRISE</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${sunriseStr}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">SUNRISE</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${sunriseStr}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:weather-sunset-down" style="width:24px; height:24px; --mdc-icon-size:24px; color:#FF4D4D;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:weather-sunset-down" style="width:26px; height:26px; --mdc-icon-size:26px; color:#FF4D4D;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">SUNSET</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${sunsetStr}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">SUNSET</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${sunsetStr}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:thermometer-water" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:thermometer-water" style="width:26px; height:26px; --mdc-icon-size:26px; color:#00B0DF;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">DEW POINT</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${dew}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">DEW POINT</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${dew}</div>
                             </div>
                           </div>
 
-                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:12px; display:flex; align-items:center; gap:10px;">
-                            <ha-icon icon="mdi:home-roof" style="width:24px; height:24px; --mdc-icon-size:24px; color:#00B0DF;"></ha-icon>
+                          <div style="background:${itemBg}; border:1px solid ${borderColor}; border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+                            <ha-icon icon="mdi:home-roof" style="width:26px; height:26px; --mdc-icon-size:26px; color:#00B0DF;"></ha-icon>
                             <div>
-                              <div style="font-size:15px; font-weight:700; color:${subColor};">ROOF TEMP</div>
-                              <div style="font-size:16px; font-weight:800; color:${textColor}; margin-top:1px;">${outT}</div>
+                              <div style="font-size:14px; font-weight:700; color:${subColor};">ROOF TEMP</div>
+                              <div style="font-size:17px; font-weight:800; color:${textColor}; margin-top:1px;">${outT}</div>
                             </div>
                           </div>
                         </div>
@@ -1109,32 +1109,32 @@ views:
                   modal.ontouchend = function(ev) { if (ev.target === modal) modal.remove(); };
 
                   modal.innerHTML = `
-                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:600px; padding:26px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
+                    <div style="background:${modalBg}; border:1px solid ${borderColor}; border-radius:28px; width:100%; max-width:860px; padding:24px 30px; box-sizing:border-box; box-shadow:0 20px 50px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; color:${textColor}; font-family:'Hanken Grotesk','Inter',sans-serif; touch-action:manipulation;">
                       <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                          <ha-icon icon="mdi:air-purifier" style="width:32px; height:32px; --mdc-icon-size:32px; color:#30D158;"></ha-icon>
-                          <span style="font-size:24px; font-weight:800;">Office Air Purifier</span>
+                        <div style="display:flex; align-items:center; gap:14px;">
+                          <ha-icon icon="mdi:air-purifier" style="width:36px; height:36px; --mdc-icon-size:36px; color:#30D158;"></ha-icon>
+                          <span style="font-size:26px; font-weight:800;">Office Air Purifier</span>
                         </div>
-                        <div ontouchend="document.getElementById('${modalId}').remove();" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:18px; color:${subColor};">✕</div>
+                        <div ontouchend="document.getElementById('${modalId}').remove();" style="width:48px; height:48px; border-radius:50%; background:${cardBg}; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:800; font-size:20px; color:${subColor};">✕</div>
                       </div>
 
-                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:16px; display:flex; flex-direction:column; gap:10px;">
+                      <div style="background:${cardBg}; border:1px solid ${borderColor}; border-radius:20px; padding:18px 20px; display:flex; flex-direction:column; gap:12px;">
                         <div style="display:flex; align-items:center; justify-content:space-between;">
-                          <span style="font-size:14px; font-weight:700; color:${subColor}; letter-spacing:0.05em;">AIR QUALITY READINGS</span>
-                          <span style="background:${aqColor}22; border:1px solid ${aqColor}66; color:${aqColor}; padding:4px 12px; border-radius:14px; font-size:14px; font-weight:800; letter-spacing:0.04em;">${aqText}</span>
+                          <span style="font-size:14px; font-weight:800; color:${subColor}; letter-spacing:0.05em;">AIR QUALITY READINGS</span>
+                          <span style="background:${aqColor}22; border:1px solid ${aqColor}66; color:${aqColor}; padding:4px 14px; border-radius:14px; font-size:14px; font-weight:800; letter-spacing:0.04em;">${aqText}</span>
                         </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:center;">
-                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
-                            <div style="font-size:14px; font-weight:700; color:${subColor};">PM2.5</div>
-                            <div style="font-size:24px; font-weight:800; color:${aqColor}; margin-top:2px;">${pm25} <span style="font-size:14px;">µg/m³</span></div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; text-align:center;">
+                          <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:14px; font-weight:800; color:${subColor};">PM2.5</div>
+                            <div style="font-size:30px; font-weight:800; color:${aqColor}; margin-top:2px;">${pm25} <span style="font-size:15px;">µg/m³</span></div>
                           </div>
-                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
-                            <div style="font-size:14px; font-weight:700; color:${subColor};">PM1.0</div>
-                            <div style="font-size:24px; font-weight:800; color:${textColor}; margin-top:2px;">${pm1} <span style="font-size:14px;">µg/m³</span></div>
+                          <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:14px; font-weight:800; color:${subColor};">PM1.0</div>
+                            <div style="font-size:30px; font-weight:800; color:${textColor}; margin-top:2px;">${pm1} <span style="font-size:15px;">µg/m³</span></div>
                           </div>
-                          <div style="background:${itemBg}; padding:12px; border-radius:16px; border:1px solid ${borderColor};">
-                            <div style="font-size:14px; font-weight:700; color:${subColor};">PM10</div>
-                            <div style="font-size:24px; font-weight:800; color:${textColor}; margin-top:2px;">${pm10} <span style="font-size:14px;">µg/m³</span></div>
+                          <div style="background:${itemBg}; padding:14px 18px; border-radius:16px; border:1px solid ${borderColor};">
+                            <div style="font-size:14px; font-weight:800; color:${subColor};">PM10</div>
+                            <div style="font-size:30px; font-weight:800; color:${textColor}; margin-top:2px;">${pm10} <span style="font-size:15px;">µg/m³</span></div>
                           </div>
                         </div>
                       </div>
